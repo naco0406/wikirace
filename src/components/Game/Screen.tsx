@@ -95,7 +95,7 @@ const GameScreen: React.FC = () => {
                         <ArrowLeft className="w-6 h-6 text-white" />
                     </Button>
                 </div>
-                <h1 className="text-xl font-bold text-center flex-grow">위키 레이스</h1>
+                {/* <h1 className="text-xl font-bold text-center flex-grow">위키 레이스</h1> */}
                 <div className="flex items-center">
                     <span className="mr-4">목표: {dailyChallenge?.endPage || '-'}</span>
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
