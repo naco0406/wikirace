@@ -62,7 +62,7 @@ const RankingPage: React.FC = () => {
                                 </div>
                             ) : rankingData.length === 0 ? (
                                 <div className="flex-grow flex justify-center items-center">
-                                    <p className="text-center">아직 아무도 플레이를 완료하지 않았습니다!</p>
+                                    <p className="text-center py-12">아직 아무도 플레이를 완료하지 않았습니다!</p>
                                 </div>
                             ) : (
                                 <Table className="flex-grow">

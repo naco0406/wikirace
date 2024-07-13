@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-export const useTimer = (isLoading: boolean, isGameOver: boolean) => {
+export const useTimerDeprecated = (isLoading: boolean, isGameOver: boolean) => {
   const [timer, setTimer] = useState(0);
 
   useEffect(() => {

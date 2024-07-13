@@ -1,6 +1,8 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, limit as firestoreLimit, getDocs, Timestamp, runTransaction, Query, DocumentData } from 'firebase/firestore';
 import { MyRanking, Ranking } from './gameData';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,8 +19,14 @@ const db = getFirestore(app);
 
 export { db };
 
+export const getKSTDateString = () => {
+    const now = new Date();
+    const kstDate = toZonedTime(now, 'Asia/Seoul');
+    return format(kstDate, 'yyyy-MM-dd');
+};
+
 export const getTodayChallenge = async () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKSTDateString();
     const challengeRef = doc(db, 'dailyChallenges', today);
     const challengeSnap = await getDoc(challengeRef);
 
@@ -31,7 +39,7 @@ export const getTodayChallenge = async () => {
 };
 
 export const addRanking = async (ranking: MyRanking) => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKSTDateString();
     const rankingRef = doc(db, 'dailyRankings', today, 'users', ranking.userId);
     const challengeRef = doc(db, 'dailyChallenges', today);
 
@@ -65,9 +73,9 @@ export const addRanking = async (ranking: MyRanking) => {
 };
 
 export const getRankings = async (sortBy: string, limitCount: number = 10): Promise<Ranking[]> => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKSTDateString();
     const rankingsRef = collection(db, 'dailyRankings', today, 'users');
-    
+
     let q: Query<DocumentData>;
     if (sortBy === 'fastest') {
         q = query(

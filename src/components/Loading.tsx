@@ -3,9 +3,19 @@
 import React, { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { fetchDailyChallenge, DailyChallenge } from '@/lib/gameData';
+import { usePermanentDailyTimer } from '@/hooks/usePermanentDailyTimer';
+import { useTimer } from '@/contexts/TimerContext';
+import { useLocalRecord } from '@/hooks/useLocalRecord';
 
 export const Loading: React.FC = () => {
     const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
+    const { formattedTime, startTimer } = usePermanentDailyTimer();
+    const { setHasStartedToday } = useLocalRecord();
+
+    useEffect(() => {
+        startTimer();
+        setHasStartedToday(true);
+    }, [startTimer]);
 
     useEffect(() => {
         const loadChallenge = async () => {
@@ -26,6 +36,7 @@ export const Loading: React.FC = () => {
                     <>
                         <p className="mb-2"><span className="font-bold">시작:</span> {challenge.startPage}</p>
                         <p><span className="font-bold">목표:</span> {challenge.endPage}</p>
+                        <p className="mt-4"><span className="font-bold">오늘의 진행 시간:</span> {formattedTime}</p>
                     </>
                 ) : (
                     <p>챌린지 로딩 중</p>
@@ -38,12 +49,12 @@ export const Loading: React.FC = () => {
 interface GameLoadingProps {
     fromPage: string;
     toPage: string;
-    elapsedTime: string;
     moveCount: number;
     path: string[];
 }
 
-export const GameLoading: React.FC<GameLoadingProps> = ({ fromPage, toPage, elapsedTime, moveCount, path }) => {
+export const GameLoading: React.FC<GameLoadingProps> = ({ fromPage, toPage, moveCount, path }) => {
+    const { formattedTime } = useTimer();
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
             <h1 className="text-4xl font-bold mb-4">위키 레이스</h1>
@@ -54,7 +65,7 @@ export const GameLoading: React.FC<GameLoadingProps> = ({ fromPage, toPage, elap
                 <p className="mb-2">
                     <span className="font-bold">이동:</span> {fromPage ? `${fromPage} → ${toPage}` : toPage}
                 </p>
-                <p className="mb-2"><span className="font-bold">현재 시간:</span> {elapsedTime}</p>
+                <p className="mb-2"><span className="font-bold">현재 시간:</span> {formattedTime}</p>
                 <p className="mb-2"><span className="font-bold">이동 횟수:</span> {moveCount}</p>
                 <div className="mb-2">
                     <span className="font-bold">경로:</span>

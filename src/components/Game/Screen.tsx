@@ -19,6 +19,8 @@ import {
     DialogFooter,
     DialogClose,
 } from '@/components/ui/dialog';
+import { useTimer } from '@/contexts/TimerContext';
+import { useLocalRecord } from '@/hooks/useLocalRecord';
 
 const GameScreen: React.FC = () => {
     const {
@@ -36,14 +38,17 @@ const GameScreen: React.FC = () => {
         forcedEndReason,
         goBack,
         dailyChallenge,
-        timer,
-        formatTime,
         nickname,
         bestRecord,
-        handleGameOver
     } = useWikipedia();
 
+    const { formattedTime, startTimer, resetTimer } = useTimer();
     const [dialogOpen, setDialogOpen] = useState(false);
+    const { setHasGiveUpToday } = useLocalRecord();
+
+    useEffect(() => {
+        startTimer();
+    }, [startTimer]);
 
     useEffect(() => {
         if (dailyChallenge) {
@@ -59,7 +64,6 @@ const GameScreen: React.FC = () => {
     if (isGameOver) {
         return (
             <GameSuccess
-                time={formatTime(timer)}
                 moveCount={moveCount}
                 path={path}
                 nickname={nickname}
@@ -74,7 +78,6 @@ const GameScreen: React.FC = () => {
         <GameLoading
             fromPage={path[path.length - 2] || ''}
             toPage={path[path.length - 1] || ''}
-            elapsedTime={formatTime(timer)}
             moveCount={moveCount}
             path={path}
         />
@@ -106,7 +109,7 @@ const GameScreen: React.FC = () => {
                             <DialogHeader>
                                 <DialogTitle>게임을 그만두시겠습니까?</DialogTitle>
                                 <DialogDescription>
-                                    진행 상황이 저장되지 않습니다.
+                                    오늘은 더 이상 플레이 할 수 없습니다.
                                 </DialogDescription>
                             </DialogHeader>
                             <DialogFooter className="flex flex-row justify-end space-x-2">
@@ -114,7 +117,16 @@ const GameScreen: React.FC = () => {
                                     <Button variant="outline" className="flex-grow-0" onClick={() => setDialogOpen(false)}>취소</Button>
                                 </DialogClose>
                                 <Link href="/" passHref>
-                                    <Button variant="destructive" className="flex-grow-0">확인</Button>
+                                    <Button
+                                        variant="destructive"
+                                        className="flex-grow-0"
+                                        onClick={() => {
+                                            resetTimer();
+                                            setHasGiveUpToday(true);
+                                        }}
+                                    >
+                                        확인
+                                    </Button>
                                 </Link>
                             </DialogFooter>
                         </DialogContent>
@@ -131,7 +143,7 @@ const GameScreen: React.FC = () => {
                 <Card>
                     <CardContent className="p-4">
                         <div className="flex justify-between items-center">
-                            <span>소요 시간: {formatTime(timer)}</span>
+                            <span>소요 시간: {formattedTime}</span>
                             <span>이동 횟수: {moveCount}</span>
                         </div>
                         <div className="text-sm text-muted-foreground truncate mt-2">

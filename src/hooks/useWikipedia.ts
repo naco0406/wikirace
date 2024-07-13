@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecord } from './useLocalRecord';
 import { useNickname } from './useNickname';
 import { useScreenSize } from './useScreenSize';
-import { useTimer } from './useTimer';
+import { useTimer } from '@/contexts/TimerContext';
 
 interface WikiPageContent {
     title: string;
@@ -31,17 +31,17 @@ export const useWikipedia = () => {
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
     const { bestRecord, updateRecord } = useLocalRecord();
-    const { timer, formatTime } = useTimer(isLoading, isGameOver);
+    const { elapsedTime } = useTimer();
 
     const moveCountRef = useRef(moveCount);
-    const timerRef = useRef(timer);
+    const timerRef = useRef(elapsedTime);
     const pathRef = useRef(path);
 
     useEffect(() => {
         moveCountRef.current = moveCount;
-        timerRef.current = timer;
+        timerRef.current = elapsedTime;
         pathRef.current = path;
-    }, [moveCount, timer, path]);
+    }, [moveCount, elapsedTime, path]);
 
     useEffect(() => {
         if (initialPlatformRef.current === null) {
@@ -71,6 +71,9 @@ export const useWikipedia = () => {
 
     const fetchWikiPage = useCallback(async (title: string) => {
         setIsLoading(true);
+        if (dailyChallenge && title === dailyChallenge.endPage) {
+            handleGameOver();
+        }
         setTargetPage(formatPageTitle(title));
         const apiUrl = 'https://ko.wikipedia.org/w/api.php';
         const params = {
@@ -101,9 +104,6 @@ export const useWikipedia = () => {
                 fullurl: page.fullurl
             });
 
-            if (dailyChallenge && formattedTitle === dailyChallenge.endPage) {
-                handleGameOver();
-            }
         } catch (error) {
             console.error('Error fetching Wikipedia content:', error);
         } finally {
@@ -149,7 +149,7 @@ export const useWikipedia = () => {
     }, [path, fetchWikiPage]);
 
     const handleGameOver = useCallback(async () => {
-        const newRecord = { moveCount: moveCountRef.current, time: timerRef.current };
+        const newRecord = { moveCount: moveCountRef.current + 1, time: timerRef.current };
         updateRecord(newRecord);
 
         const generateUniqueId = () => {
@@ -190,8 +190,6 @@ export const useWikipedia = () => {
         dailyChallenge,
         nickname,
         bestRecord,
-        timer,
-        formatTime,
         handleGameOver
     };
 };
