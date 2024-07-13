@@ -45,7 +45,7 @@ export const addRanking = async (ranking: MyRanking) => {
 
     const rankingData = {
         nickname: ranking.nickname,
-        moveCount: ranking.moveCount,
+        moveCount: ranking.moveCount + 1,
         time: ranking.time,
         path: ranking.path,
         timestamp: Timestamp.now()

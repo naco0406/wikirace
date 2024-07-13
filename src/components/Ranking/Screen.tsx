@@ -12,7 +12,7 @@ import { Loader2 } from 'lucide-react';
 const RankingPage: React.FC = () => {
     const [rankingData, setRankingData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [tab, setTab] = useState('fastest');
+    const [tab, setTab] = useState('firstToFinish');
 
     const loadRankings = useCallback(async (sortBy: string) => {
         setLoading(true);
@@ -51,9 +51,9 @@ const RankingPage: React.FC = () => {
                 <CardContent className="flex-grow flex flex-col w-full px-0">
                     <Tabs defaultValue={tab} onValueChange={setTab} className="flex-grow flex flex-col w-full">
                         <TabsList className="grid w-full grid-cols-3 flex-shrink-0 border-b border-gray-200">
+                            <TabsTrigger value="firstToFinish" className="flex-1 text-center">최초 완료</TabsTrigger>
                             <TabsTrigger value="fastest" className="flex-1 text-center border-r border-gray-200">가장 빠름</TabsTrigger>
                             <TabsTrigger value="leastClicks" className="flex-1 text-center border-r border-gray-200">최소 클릭</TabsTrigger>
-                            <TabsTrigger value="firstToFinish" className="flex-1 text-center">최초 완료</TabsTrigger>
                         </TabsList>
                         <TabsContent value={tab} className="flex-grow flex flex-col">
                             {loading ? (
