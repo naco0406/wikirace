@@ -241,6 +241,8 @@ export const useWikipedia = () => {
         isMobile,
         isForcedEnd,
         forcedEndReason,
+        setIsForcedEnd,
+        setForcedEndReason,
         goBack,
         dailyChallenge,
         nickname,

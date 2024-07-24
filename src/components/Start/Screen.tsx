@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -24,6 +24,8 @@ import { useNickname } from '@/hooks/useNickname';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { getKSTDateString } from '@/lib/firebaseConfig';
 import { Trophy, Move, Clock } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useKeyboard } from '@/hooks/useKeyboard';
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
@@ -31,6 +33,25 @@ const StartScreen: React.FC = () => {
     const { bestRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
     const today = getKSTDateString();
     const [open, setOpen] = useState(false);
+    const router = useRouter();
+
+    const handleAdminAction = useCallback(() => {
+        router.push('/admin');
+    }, [router]);
+
+    const keyMap = {
+        'meta+a+z': handleAdminAction,
+        'ctrl+a+z': handleAdminAction,
+    };
+
+    const { isPressed } = useKeyboard(keyMap);
+
+    useEffect(() => {
+        if (isPressed('meta+a+d') || isPressed('ctrl+a+d')) {
+            console.log('Admin shortcut detected');
+            handleAdminAction();
+        }
+    }, [isPressed, handleAdminAction]);
 
     useEffect(() => {
         const loadDailyChallenge = async () => {

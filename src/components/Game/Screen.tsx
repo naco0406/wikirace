@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -22,6 +22,7 @@ import {
 import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { useRouter } from 'next/navigation';
+import { useKeyboard } from '@/hooks/useKeyboard';
 
 const GameScreen: React.FC = () => {
     const {
@@ -39,6 +40,9 @@ const GameScreen: React.FC = () => {
         isMobile,
         isForcedEnd,
         forcedEndReason,
+
+        setIsForcedEnd,
+        setForcedEndReason,
         goBack,
         dailyChallenge,
         nickname,
@@ -50,6 +54,25 @@ const GameScreen: React.FC = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const { hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
     const router = useRouter();
+
+    const handleForceEndAction = useCallback(() => {
+        setIsForcedEnd(true);
+        setForcedEndReason('검색 기능 사용이 감지되었습니다.');
+    }, [setIsForcedEnd, setForcedEndReason]);
+
+    const keyMap = {
+        'meta+f': handleForceEndAction,
+        'ctrl+f': handleForceEndAction,
+    };
+
+    const { isPressed } = useKeyboard(keyMap);
+
+    useEffect(() => {
+        if (isPressed('meta+f') || isPressed('ctrl+f')) {
+            console.log('Search shortcut detected');
+            handleForceEndAction();
+        }
+    }, [isPressed, handleForceEndAction]);
 
     useEffect(() => {
         startTimer();
