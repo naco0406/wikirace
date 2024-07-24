@@ -6,7 +6,7 @@ import { TimerProvider } from '@/contexts/TimerContext';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "위키레이스",
+  title: "링클 - Linkle",
   description: "위키피디아 스피드런",
 };
 

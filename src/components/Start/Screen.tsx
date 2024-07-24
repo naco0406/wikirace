@@ -3,6 +3,21 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel";
 import Link from 'next/link';
 import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
 import { useNickname } from '@/hooks/useNickname';
@@ -15,6 +30,7 @@ const StartScreen: React.FC = () => {
     const nickname = useNickname();
     const { bestRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
     const today = getKSTDateString();
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const loadDailyChallenge = async () => {
@@ -29,7 +45,7 @@ const StartScreen: React.FC = () => {
             <p className="text-lg mb-4 text-center text-white">안녕하세요, {nickname}님!</p>
             <Card className="w-full max-w-lg bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden">
                 <CardHeader className="p-6">
-                    <CardTitle className="text-3xl font-bold text-center">위키 레이스</CardTitle>
+                    <CardTitle className="text-3xl font-bold text-center">Linkle</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                     <h2 className="text-xl mb-4"><strong>오늘의 챌린지</strong> {today}</h2>
@@ -83,6 +99,35 @@ const StartScreen: React.FC = () => {
                                 </Link>
                             </Fragment>
                         )}
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="outline" className="w-full text-lg p-6">
+                                    링클이 무엇인가요?
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>링클, 매일 새로운 위키피디아 스피드런</DialogTitle>
+                                    <DialogDescription>
+                                        Linkle, a new Wikipedia speedrun every day
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <Carousel className="w-full max-w-sm mx-auto">
+                                    <CarouselContent>
+                                        {qaPairs.map((qa, index) => (
+                                            <CarouselItem key={index}>
+                                                <div className="p-4">
+                                                    <h3 className="font-bold mb-2">{qa.question}</h3>
+                                                    <p>{qa.answer}</p>
+                                                </div>
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    <CarouselPrevious />
+                                    <CarouselNext />
+                                </Carousel>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </CardContent>
             </Card>
@@ -99,3 +144,26 @@ const formatTime = (seconds: number) => {
     const remainingSeconds = seconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
+
+const qaPairs = [
+    {
+        question: "링클이 무엇인가요?",
+        answer: "링클은 매일 새로운 위키피디아 스피드런을 즐기는 게임입니다."
+    },
+    {
+        question: "링클은 어떻게 플레이하나요?",
+        answer: "매일 새로운 시작 페이지와 목표 페이지가 주어집니다. 시작 페이지에서 위키피디아 링크만을 통해 목표 페이지에 도달해야 합니다."
+    },
+    {
+        question: "다른 플레이어들과 경쟁할 수 있나요?",
+        answer: "네, 일일 랭킹을 통해 다른 플레이어들의 성적을 확인하고 경쟁할 수 있습니다."
+    },
+    {
+        question: "랭킹은 어떻게 계산되나요?",
+        answer: "하루동안 가장 먼저 클리어 한 사람, 가장 빠르게 클리어 한 사람, 가장 적은 이동 횟수로 클리어 한 사람이 각각 제공됩니다."
+    },
+    {
+        question: "매일 새로운 챌린지가 제공되나요?",
+        answer: "네, 매일 자정에 새로운 시작 페이지와 목표 페이지가 제공됩니다."
+    },
+];

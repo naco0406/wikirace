@@ -136,7 +136,7 @@ const GameScreen: React.FC = () => {
             </header>
 
             <div className="flex-grow overflow-auto p-4" onClick={handleLinkClick}>
-                <div className="wiki-content" dangerouslySetInnerHTML={{ __html: currentPage.html }} />
+                <div className="wiki-content wiki-content max-w-full overflow-x-hidden break-words" dangerouslySetInnerHTML={{ __html: currentPage.html }} />
             </div>
 
             <footer className="bg-secondary">

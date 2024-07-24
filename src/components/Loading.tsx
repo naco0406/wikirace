@@ -27,7 +27,7 @@ export const Loading: React.FC = () => {
 
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-            <h1 className="text-4xl font-bold mb-4">위키 레이스</h1>
+            <h1 className="text-4xl font-bold mb-4">Linkle</h1>
             <div className="text-xl mb-8">오늘의 게임을 준비 중입니다</div>
             <Loader2 className="w-16 h-16 animate-spin mb-8" />
             <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg">
@@ -57,7 +57,7 @@ export const GameLoading: React.FC<GameLoadingProps> = ({ fromPage, toPage, move
     const { formattedTime } = useTimer();
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
-            <h1 className="text-4xl font-bold mb-4">위키 레이스</h1>
+            <h1 className="text-4xl font-bold mb-4">Linkle</h1>
             <div className="text-xl mb-8">페이지 이동 중</div>
             <Loader2 className="w-16 h-16 animate-spin mb-8" />
             <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
