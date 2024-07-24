@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, limit as firestoreLimit, getDocs, Timestamp, runTransaction, Query, DocumentData } from 'firebase/firestore';
-import { MyRanking, Ranking } from './gameData';
+import { DailyChallenge, MyRanking, Ranking } from './gameData';
 import { format } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
@@ -35,6 +35,20 @@ export const getTodayChallenge = async () => {
     } else {
         console.error('No challenge found for today');
         return null;
+    }
+};
+
+export const addDailyChallenge = async (date: string, challenge: DailyChallenge) => {
+    try {
+        const challengeRef = doc(db, 'dailyChallenges', date);
+        await setDoc(challengeRef, {
+            ...challenge,
+            timestamp: Timestamp.now() // 추가된 시간 기록
+        });
+        console.log(`Challenge for ${date} added successfully`);
+    } catch (error) {
+        console.error('Error adding challenge: ', error);
+        throw error;
     }
 };
 
@@ -119,4 +133,36 @@ export const getRankings = async (sortBy: string, limitCount: number = 10): Prom
             timestamp: data.timestamp || Timestamp.now(), // Add the timestamp field
         } as Ranking;
     });
+};
+
+export const getAdminPassword = async (): Promise<string | null> => {
+    try {
+        const passwordRef = doc(db, 'adminSettings', 'constants');
+        const passwordDoc = await getDoc(passwordRef);
+        if (passwordDoc.exists()) {
+            return passwordDoc.data().password;
+        } else {
+            console.error('Admin password document does not exist');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching admin password: ', error);
+        throw error;
+    }
+};
+
+export const getAdminConsoleURL = async (): Promise<string | null> => {
+    try {
+        const consoleRef = doc(db, 'adminSettings', 'constants');
+        const consoleDoc = await getDoc(consoleRef);
+        if (consoleDoc.exists()) {
+            return consoleDoc.data().console;
+        } else {
+            console.error('Admin console document does not exist');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching admin console URL: ', error);
+        throw error;
+    }
 };
