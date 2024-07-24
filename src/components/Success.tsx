@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import confetti from 'canvas-confetti';
 import Link from 'next/link';
 import { useTimer } from '@/contexts/TimerContext';
+import { Share, ArrowLeft, Download, Trophy } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { getKSTDateString } from '@/lib/firebaseConfig';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 interface GameSuccessProps {
   moveCount: number;
@@ -16,6 +26,8 @@ interface GameSuccessProps {
 const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, bestRecord }) => {
   const router = useRouter();
   const { elapsedTime, resetTimer } = useTimer();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   React.useEffect(() => {
     confetti({
@@ -36,47 +48,108 @@ const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, be
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+  const today = getKSTDateString();
 
   const isNewRecord = bestRecord
     ? (moveCount < bestRecord.moveCount || (moveCount === bestRecord.moveCount && elapsedTime < bestRecord.time))
     : true;
 
+  const handleShare = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleDownload = async () => {
+    if (containerRef.current) {
+      const canvas = await html2canvas(containerRef.current, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        windowWidth: containerRef.current.scrollWidth,
+        windowHeight: containerRef.current.scrollHeight,
+        backgroundColor: null,
+      });
+      // 캔버스 크기를 약간 줄여 테두리 픽셀을 제거
+      const croppedCanvas = document.createElement('canvas');
+      const ctx = croppedCanvas.getContext('2d');
+      croppedCanvas.width = canvas.width - 2;
+      croppedCanvas.height = canvas.height - 2;
+      ctx?.drawImage(canvas, -1, -1);
+
+      const dataUrl = croppedCanvas.toDataURL('image/png');
+
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = `Linkle-${today}.png`;
+      link.click();
+    }
+  };
+
+  const ContentToShare = () => (
+    <Card className="w-full max-w-md bg-white text-gray-800">
+      <CardHeader>
+        <CardTitle className="text-2xl md:text-3xl font-bold text-center">축하합니다, {nickname}!</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-lg md:text-xl text-center">목표 페이지에 도달했습니다!</p>
+        <div className="space-y-2">
+          <p><strong>소요 시간:</strong> {formatTime(elapsedTime)}</p>
+          <p><strong>이동 횟수:</strong> {moveCount}</p>
+          {isNewRecord && (
+            <p className="text-green-600 font-bold">새로운 최고 기록을 달성했습니다!</p>
+          )}
+          {bestRecord && !isNewRecord && (
+            <p><strong>최고 기록:</strong> {formatTime(bestRecord.time)} (이동 횟수: {bestRecord.moveCount})</p>
+          )}
+          <div>
+            <strong>경로:</strong>
+            <ul className="list-disc list-inside">
+              {path.map((page, index) => (
+                <li key={index} className="truncate text-sm py-1">{page}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 text-white p-4">
-      <Card className="w-full max-w-md bg-white text-gray-800">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center">축하합니다, {nickname}!</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-xl mb-4 text-center">목표 페이지에 도달했습니다!</p>
-          <div className="space-y-2">
-            <p><strong>소요 시간:</strong> {formatTime(bestRecord?.time ?? 0)}</p>
-            <p><strong>이동 횟수:</strong> {moveCount}</p>
-            {isNewRecord && (
-              <p className="text-green-600 font-bold">새로운 최고 기록을 달성했습니다!</p>
-            )}
-            {bestRecord && !isNewRecord && (
-              <p><strong>최고 기록:</strong> {formatTime(bestRecord.time)} (이동 횟수: {bestRecord.moveCount})</p>
-            )}
-            <div>
-              <strong>경로:</strong>
-              <ul className="list-disc list-inside">
-                {path.map((page, index) => (
-                  <li key={index} className="truncate">{page}</li>
-                ))}
-              </ul>
+    <div className="h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 p-4">
+      <ContentToShare />
+      <div className="mt-6 w-full max-w-md flex justify-between">
+        <Button onClick={handleBackToHome} className="w-[48%] py-2 px-4 flex items-center justify-center">
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          <span className="text-sm">메인으로 돌아가기</span>
+        </Button>
+        <Button onClick={handleShare} className="w-[48%] py-2 px-4 bg-purple-600 hover:bg-purple-700 flex items-center justify-center">
+          <Share className="w-4 h-4 mr-1" />
+          <span className="text-sm">결과 공유</span>
+        </Button>
+      </div>
+      <Link href="/ranking" className="mt-4 w-full max-w-md">
+        <Button variant="outline" className="text-sm text-center w-full bg-transparent border border-[2px] text-white">
+          <Trophy className="w-4 h-4 mr-2" />
+          랭킹 보기
+        </Button>
+      </Link>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className='rounded-lg'>
+          <DialogHeader>
+            <DialogTitle>게임 결과</DialogTitle>
+          </DialogHeader>
+          <div ref={containerRef} className='bg-transparent'>
+            <div className="flex flex-col items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 p-4">
+              <ContentToShare />
             </div>
           </div>
-          <Button onClick={handleBackToHome} className="w-full mt-6 p-6">
-            메인으로 돌아가기
+          <Button onClick={handleDownload} className="mt-4 w-full">
+            <Download className="w-4 h-4 mr-2" />
+            결과 다운로드
           </Button>
-          <Link href="/ranking" className="block">
-            <p className="text-sm mt-4 text-center text-gray">
-              랭킹 보기
-            </p>
-          </Link>
-        </CardContent>
-      </Card>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
