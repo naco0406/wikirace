@@ -96,7 +96,7 @@ const StartScreen: React.FC = () => {
                                                 <div className="w-full mt-4 pt-4 border-t border-gray-300">
                                                     <div className="flex items-center justify-center mb-2">
                                                         <Trophy className="w-5 h-5 text-yellow-500 mr-2" />
-                                                        <span className="font-bold text-lg">나의 최고 기록</span>
+                                                        <span className="font-bold text-lg">나의 기록</span>
                                                     </div>
                                                     <div className="flex justify-center space-x-4">
                                                         <div className="flex items-center">

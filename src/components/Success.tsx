@@ -25,7 +25,8 @@ interface GameSuccessProps {
 
 const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, bestRecord }) => {
   const router = useRouter();
-  const { elapsedTime, resetTimer } = useTimer();
+  const { elapsedTime } = useTimer();
+  const [finalLocalTime, setFinalLocalTime] = useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -35,9 +36,8 @@ const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, be
       spread: 70,
       origin: { y: 0.6 }
     });
-
-    resetTimer();
-  }, [resetTimer]);
+    setFinalLocalTime(elapsedTime);
+  }, []);
 
   const handleBackToHome = () => {
     router.push('/');
@@ -51,7 +51,7 @@ const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, be
   const today = getKSTDateString();
 
   const isNewRecord = bestRecord
-    ? (moveCount < bestRecord.moveCount || (moveCount === bestRecord.moveCount && elapsedTime < bestRecord.time))
+    ? (moveCount < bestRecord.moveCount || (moveCount === bestRecord.moveCount && finalLocalTime < bestRecord.time))
     : true;
 
   const handleShare = () => {
@@ -93,14 +93,14 @@ const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, be
       <CardContent className="space-y-4">
         <p className="text-lg md:text-xl text-center">목표 페이지에 도달했습니다!</p>
         <div className="space-y-2">
-          <p><strong>소요 시간:</strong> {formatTime(elapsedTime)}</p>
+          <p><strong>소요 시간:</strong> {formatTime(finalLocalTime)}</p>
           <p><strong>이동 횟수:</strong> {moveCount}</p>
-          {isNewRecord && (
+          {/* {isNewRecord && (
             <p className="text-green-600 font-bold">새로운 최고 기록을 달성했습니다!</p>
           )}
           {bestRecord && !isNewRecord && (
-            <p><strong>최고 기록:</strong> {formatTime(bestRecord.time)} (이동 횟수: {bestRecord.moveCount})</p>
-          )}
+            <p><strong>나의 기록:</strong> {formatTime(bestRecord.time)} (이동 횟수: {bestRecord.moveCount})</p>
+          )} */}
           <div>
             <strong>경로:</strong>
             <ul className="list-disc list-inside">

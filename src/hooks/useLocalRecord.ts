@@ -61,24 +61,13 @@ export function useLocalRecord() {
     const today = getKSTDateString();
     setCurrentRecord(newRecord);
     localStorage.setItem('wikiRaceCurrentRecord', JSON.stringify({ record: newRecord, date: today }));
+    setBestRecord(newRecord);
+    localStorage.setItem('wikiRaceBestRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const finalizeRecord = () => {
-    const today = getKSTDateString();
-
-    if (!bestRecord ||
-      currentRecord.moveCount < bestRecord.moveCount ||
-      (currentRecord.moveCount === bestRecord.moveCount && currentRecord.time < bestRecord.time)) {
-      setBestRecord(currentRecord);
-      localStorage.setItem('wikiRaceBestRecord', JSON.stringify({ record: currentRecord, date: today }));
-    }
-
     setDailyStatus(prev => ({ ...prev, hasClearedToday: true }));
     updateDailyStatus({ hasStartedToday: true, hasClearedToday: true, hasGiveUpToday: false });
-
-    // Reset current record after finalizing
-    setCurrentRecord({ moveCount: 0, time: 0, path: [] });
-    localStorage.removeItem('wikiRaceCurrentRecord');
   };
 
   const setHasStartedToday = (value: boolean) => {
@@ -101,10 +90,10 @@ export function useLocalRecord() {
     localStorage.setItem('wikiRaceDailyStatus', JSON.stringify({ status, date: today }));
   };
 
-  const resetCurrentRecord = () => {
-    setCurrentRecord({ moveCount: 0, time: 0, path: [] });
-    localStorage.removeItem('wikiRaceCurrentRecord');
-  };
+  // const resetCurrentRecord = () => {
+  //   setCurrentRecord({ moveCount: 0, time: 0, path: [] });
+  //   localStorage.removeItem('wikiRaceCurrentRecord');
+  // };
 
   return {
     bestRecord,
@@ -117,6 +106,6 @@ export function useLocalRecord() {
     setHasStartedToday,
     setHasClearedToday,
     setHasGiveUpToday,
-    resetCurrentRecord
+    // resetCurrentRecord
   };
 }

@@ -30,7 +30,7 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { bestRecord, currentRecord, updateCurrentRecord, finalizeRecord, resetCurrentRecord } = useLocalRecord();
+    const { bestRecord, currentRecord, updateCurrentRecord, finalizeRecord } = useLocalRecord();
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -139,7 +139,8 @@ export const useWikipedia = () => {
                 );
 
                 if (isEnd || isRedirectEnd) {
-                    handleGameOver();
+                    // handleGameOver();
+                    setIsGameOver(true)
                 }
             }
 
@@ -169,6 +170,7 @@ export const useWikipedia = () => {
                 const newPath = [...path, formattedTitle];
                 setMoveCount(newMoveCount);
                 setPath(newPath);
+                console.log('handleLinkClick', newMoveCount, elapsedTime, newPath)
                 updateCurrentRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
                 fetchWikiPage(title);
             } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
@@ -188,42 +190,77 @@ export const useWikipedia = () => {
         const newMoveCount = moveCount + 1;
         setPath(newPath);
         setMoveCount(newMoveCount);
+        console.log('goBack', newMoveCount, elapsedTime, newPath)
         updateCurrentRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
         fetchWikiPage(previousPage);
     }, [path, fetchWikiPage, moveCount, elapsedTime, updateCurrentRecord]);
 
-    const handleGameOver = useCallback(async () => {
-        const finalRecord = { moveCount: moveCount + 1, time: elapsedTime, path };
-        updateCurrentRecord(finalRecord);
-        finalizeRecord();
+    useEffect(() => {
+        if (isGameOver) {
+            const submitRankingAsync = async () => {
+                const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
+                console.log('finalRecord', finalRecord);
+                console.log('handleGameOver', moveCount, elapsedTime, path)
+                updateCurrentRecord(finalRecord);
+                finalizeRecord();
 
-        const generateUniqueId = () => {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        };
+                const generateUniqueId = () => {
+                    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+                };
 
-        const userId = generateUniqueId();
+                const userId = generateUniqueId();
 
-        const myRanking: MyRanking = {
-            userId,
-            nickname,
-            moveCount: finalRecord.moveCount,
-            time: finalRecord.time,
-            path: finalRecord.path
-        };
+                const myRanking: MyRanking = {
+                    userId,
+                    nickname,
+                    moveCount: finalRecord.moveCount,
+                    time: finalRecord.time,
+                    path: finalRecord.path
+                };
 
-        console.log("MyRanking:", myRanking);
+                console.log("MyRanking:", myRanking);
 
-        await submitRanking(myRanking);
-        setIsGameOver(true);
-    }, [nickname, moveCount, elapsedTime, path, updateCurrentRecord, finalizeRecord]);
+                await submitRanking(myRanking);
+                setIsGameOver(true);
+            };
+            submitRankingAsync();
+        }
+    }, [isGameOver, moveCount, path, nickname]);
 
-    const resetGame = useCallback(() => {
-        setPath([]);
-        setMoveCount(0);
-        setIsGameOver(false);
-        resetCurrentRecord();
-        // Additional reset logic if needed
-    }, [resetCurrentRecord]);
+    // const handleGameOver = useCallback(async () => {
+    //     const finalRecord = { moveCount: moveCount + 1, time: elapsedTime, path };
+    //     console.log('finalRecord', finalRecord);
+    //     console.log('handleGameOver', moveCount + 1, elapsedTime, path)
+    //     updateCurrentRecord(finalRecord);
+    //     finalizeRecord();
+
+    //     const generateUniqueId = () => {
+    //         return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    //     };
+
+    //     const userId = generateUniqueId();
+
+    //     const myRanking: MyRanking = {
+    //         userId,
+    //         nickname,
+    //         moveCount: finalRecord.moveCount,
+    //         time: finalRecord.time,
+    //         path: finalRecord.path
+    //     };
+
+    //     console.log("MyRanking:", myRanking);
+
+    //     await submitRanking(myRanking);
+    //     setIsGameOver(true);
+    // }, [nickname, moveCount, elapsedTime, path, updateCurrentRecord, finalizeRecord]);
+
+    // const resetGame = useCallback(() => {
+    //     setPath([]);
+    //     setMoveCount(0);
+    //     setIsGameOver(false);
+    //     resetCurrentRecord();
+    //     // Additional reset logic if needed
+    // }, [resetCurrentRecord]);
 
     return {
         currentPage,
@@ -248,7 +285,7 @@ export const useWikipedia = () => {
         nickname,
         bestRecord,
         currentRecord,
-        handleGameOver,
-        resetGame
+        // handleGameOver,
+        // resetGame
     };
 };
