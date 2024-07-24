@@ -6,6 +6,7 @@ import { getKSTDateString } from '@/lib/firebaseConfig';
 interface Record {
   moveCount: number;
   time: number;
+  path: string[];
 }
 
 interface DailyStatus {
@@ -16,20 +17,32 @@ interface DailyStatus {
 
 export function useLocalRecord() {
   const [bestRecord, setBestRecord] = useState<Record | null>(null);
+  const [currentRecord, setCurrentRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [dailyStatus, setDailyStatus] = useState<DailyStatus>({ hasStartedToday: false, hasClearedToday: false, hasGiveUpToday: false });
 
   useEffect(() => {
-    const storedRecord = localStorage.getItem('wikiRaceBestRecord');
+    const storedBestRecord = localStorage.getItem('wikiRaceBestRecord');
+    const storedCurrentRecord = localStorage.getItem('wikiRaceCurrentRecord');
     const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
     const today = getKSTDateString();
 
-    if (storedRecord) {
-      const { record, date } = JSON.parse(storedRecord);
+    if (storedBestRecord) {
+      const { record, date } = JSON.parse(storedBestRecord);
       if (date === today) {
         setBestRecord(record);
       } else {
         localStorage.removeItem('wikiRaceBestRecord');
         setBestRecord(null);
+      }
+    }
+
+    if (storedCurrentRecord) {
+      const { record, date } = JSON.parse(storedCurrentRecord);
+      if (date === today) {
+        setCurrentRecord(record);
+      } else {
+        localStorage.removeItem('wikiRaceCurrentRecord');
+        setCurrentRecord({ moveCount: 0, time: 0, path: [] });
       }
     }
 
@@ -44,15 +57,28 @@ export function useLocalRecord() {
     }
   }, []);
 
-  const updateRecord = (newRecord: Record) => {
+  const updateCurrentRecord = (newRecord: Record) => {
     const today = getKSTDateString();
-    if (!bestRecord || newRecord.moveCount < bestRecord.moveCount ||
-      (newRecord.moveCount === bestRecord.moveCount && newRecord.time < bestRecord.time)) {
-      setBestRecord(newRecord);
-      localStorage.setItem('wikiRaceBestRecord', JSON.stringify({ record: newRecord, date: today }));
+    setCurrentRecord(newRecord);
+    localStorage.setItem('wikiRaceCurrentRecord', JSON.stringify({ record: newRecord, date: today }));
+  };
+
+  const finalizeRecord = () => {
+    const today = getKSTDateString();
+
+    if (!bestRecord ||
+      currentRecord.moveCount < bestRecord.moveCount ||
+      (currentRecord.moveCount === bestRecord.moveCount && currentRecord.time < bestRecord.time)) {
+      setBestRecord(currentRecord);
+      localStorage.setItem('wikiRaceBestRecord', JSON.stringify({ record: currentRecord, date: today }));
     }
+
     setDailyStatus(prev => ({ ...prev, hasClearedToday: true }));
     updateDailyStatus({ hasStartedToday: true, hasClearedToday: true, hasGiveUpToday: false });
+
+    // Reset current record after finalizing
+    setCurrentRecord({ moveCount: 0, time: 0, path: [] });
+    localStorage.removeItem('wikiRaceCurrentRecord');
   };
 
   const setHasStartedToday = (value: boolean) => {
@@ -75,14 +101,22 @@ export function useLocalRecord() {
     localStorage.setItem('wikiRaceDailyStatus', JSON.stringify({ status, date: today }));
   };
 
+  const resetCurrentRecord = () => {
+    setCurrentRecord({ moveCount: 0, time: 0, path: [] });
+    localStorage.removeItem('wikiRaceCurrentRecord');
+  };
+
   return {
     bestRecord,
-    updateRecord,
-    hasStartedToday: dailyStatus.hasStartedToday, 
+    currentRecord,
+    updateCurrentRecord,
+    finalizeRecord,
+    hasStartedToday: dailyStatus.hasStartedToday,
     hasClearedToday: dailyStatus.hasClearedToday,
     hasGiveUpToday: dailyStatus.hasGiveUpToday,
     setHasStartedToday,
     setHasClearedToday,
-    setHasGiveUpToday
+    setHasGiveUpToday,
+    resetCurrentRecord
   };
 }

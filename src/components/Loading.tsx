@@ -26,11 +26,11 @@ export const Loading: React.FC = () => {
     }, []);
 
     return (
-        <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+        <div className="w-full p-6 h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
             <h1 className="text-4xl font-bold mb-4">Linkle</h1>
             <div className="text-xl mb-8">오늘의 게임을 준비 중입니다</div>
             <Loader2 className="w-16 h-16 animate-spin mb-8" />
-            <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg">
+            <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg w-full">
                 <h2 className="text-2xl font-semibold mb-4">오늘의 챌린지</h2>
                 {challenge ? (
                     <>
@@ -56,11 +56,11 @@ interface GameLoadingProps {
 export const GameLoading: React.FC<GameLoadingProps> = ({ fromPage, toPage, moveCount, path }) => {
     const { formattedTime } = useTimer();
     return (
-        <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+        <div className="w-full p-6 h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white">
             <h1 className="text-4xl font-bold mb-4">Linkle</h1>
             <div className="text-xl mb-8">페이지 이동 중</div>
             <Loader2 className="w-16 h-16 animate-spin mb-8" />
-            <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+            <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg w-full">
                 <h2 className="text-2xl font-semibold mb-4">현재 상태</h2>
                 <p className="mb-2">
                     <span className="font-bold">이동:</span> {fromPage ? `${fromPage} → ${toPage}` : toPage}

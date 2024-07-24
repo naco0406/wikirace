@@ -30,18 +30,8 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { bestRecord, updateRecord } = useLocalRecord();
+    const { bestRecord, currentRecord, updateCurrentRecord, finalizeRecord, resetCurrentRecord } = useLocalRecord();
     const { elapsedTime } = useTimer();
-
-    const moveCountRef = useRef(moveCount);
-    const timerRef = useRef(elapsedTime);
-    const pathRef = useRef(path);
-
-    useEffect(() => {
-        moveCountRef.current = moveCount;
-        timerRef.current = elapsedTime;
-        pathRef.current = path;
-    }, [moveCount, elapsedTime, path]);
 
     useEffect(() => {
         if (initialPlatformRef.current === null) {
@@ -65,22 +55,56 @@ export const useWikipedia = () => {
         loadDailyChallenge();
     }, []);
 
+    useEffect(() => {
+        // Initialize game state from current record if it exists
+        if (currentRecord.path.length > 0) {
+            setPath(currentRecord.path);
+            setMoveCount(currentRecord.moveCount);
+            // You might want to set the current page to the last page in the path
+            // This might require fetching the page content
+            fetchWikiPage(currentRecord.path[currentRecord.path.length - 1]);
+        }
+    }, []);
+
     const formatPageTitle = (title: string) => {
         return title.replace(/_/g, ' ');
     };
+    const normalizePageTitle = (title: string) => {
+        return title.toLowerCase().replace(/\s+/g, ' ').trim();
+    };
+
+    const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
+        const normalizedCurrent = normalizePageTitle(currentTitle);
+        const normalizedEnd = normalizePageTitle(endTitle);
+
+        // Direct match
+        if (normalizedCurrent === normalizedEnd) return true;
+
+        // Check if the current title contains the end title or vice versa
+        if (normalizedCurrent.includes(normalizedEnd) || normalizedEnd.includes(normalizedCurrent)) return true;
+
+        // Check for plural/singular forms (very basic)
+        if (normalizedCurrent + 's' === normalizedEnd || normalizedCurrent === normalizedEnd + 's') return true;
+
+        // Check for parentheses
+        const currentWithoutParentheses = normalizedCurrent.replace(/\s*\(.*?\)\s*/g, '');
+        const endWithoutParentheses = normalizedEnd.replace(/\s*\(.*?\)\s*/g, '');
+        if (currentWithoutParentheses === endWithoutParentheses) return true;
+
+        return false;
+    }, []);
+
 
     const fetchWikiPage = useCallback(async (title: string) => {
         setIsLoading(true);
-        if (dailyChallenge && title === dailyChallenge.endPage) {
-            handleGameOver();
-        }
-        setTargetPage(formatPageTitle(title));
+        const formattedTitle = formatPageTitle(title);
+        setTargetPage(formattedTitle);
         const apiUrl = 'https://ko.wikipedia.org/w/api.php';
         const params = {
             action: 'parse',
             format: 'json',
             page: title,
-            prop: 'text|info',
+            prop: 'text|info|redirects',
             mobileformat: isMobile ? 'true' : 'false',
             redirects: 'true',
             origin: '*'
@@ -97,12 +121,27 @@ export const useWikipedia = () => {
                 html = html.replace(/<span class="mw-editsection">.*?<\/span>/g, '');
             }
 
-            const formattedTitle = formatPageTitle(page.title);
+            const pageTitle = formatPageTitle(page.title);
             setCurrentPage({
-                title: formattedTitle,
+                title: pageTitle,
                 html: html,
                 fullurl: page.fullurl
             });
+
+            // Check for game over conditions
+            if (dailyChallenge) {
+                const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
+
+                // Check redirects
+                const redirects = page.redirects || [];
+                const isRedirectEnd = redirects.some((redirect: any) =>
+                    isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
+                );
+
+                if (isEnd || isRedirectEnd) {
+                    handleGameOver();
+                }
+            }
 
         } catch (error) {
             console.error('Error fetching Wikipedia content:', error);
@@ -126,15 +165,18 @@ export const useWikipedia = () => {
             if (href && href.startsWith('/wiki/')) {
                 const title = decodeURIComponent(href.split('/wiki/')[1]);
                 const formattedTitle = formatPageTitle(title);
-                setMoveCount((prevCount) => prevCount + 1);
-                setPath(prevPath => [...prevPath, formattedTitle]);
+                const newMoveCount = moveCount + 1;
+                const newPath = [...path, formattedTitle];
+                setMoveCount(newMoveCount);
+                setPath(newPath);
+                updateCurrentRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
                 fetchWikiPage(title);
             } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
                 setIsForcedEnd(true);
                 setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
             }
         }
-    }, [isGameOver, fetchWikiPage]);
+    }, [isGameOver, fetchWikiPage, moveCount, path, elapsedTime, updateCurrentRecord]);
 
     const goBack = useCallback(() => {
         if (path.length <= 1) return;
@@ -143,14 +185,17 @@ export const useWikipedia = () => {
         newPath.pop();
         const previousPage = newPath[newPath.length - 1];
 
+        const newMoveCount = moveCount + 1;
         setPath(newPath);
-        setMoveCount(prevCount => prevCount + 1);
+        setMoveCount(newMoveCount);
+        updateCurrentRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
         fetchWikiPage(previousPage);
-    }, [path, fetchWikiPage]);
+    }, [path, fetchWikiPage, moveCount, elapsedTime, updateCurrentRecord]);
 
     const handleGameOver = useCallback(async () => {
-        const newRecord = { moveCount: moveCountRef.current + 1, time: timerRef.current };
-        updateRecord(newRecord);
+        const finalRecord = { moveCount: moveCount + 1, time: elapsedTime, path };
+        updateCurrentRecord(finalRecord);
+        finalizeRecord();
 
         const generateUniqueId = () => {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -161,16 +206,24 @@ export const useWikipedia = () => {
         const myRanking: MyRanking = {
             userId,
             nickname,
-            moveCount: moveCountRef.current,
-            time: timerRef.current,
-            path: pathRef.current
+            moveCount: finalRecord.moveCount,
+            time: finalRecord.time,
+            path: finalRecord.path
         };
 
         console.log("MyRanking:", myRanking);
 
         await submitRanking(myRanking);
         setIsGameOver(true);
-    }, [nickname, updateRecord]);
+    }, [nickname, moveCount, elapsedTime, path, updateCurrentRecord, finalizeRecord]);
+
+    const resetGame = useCallback(() => {
+        setPath([]);
+        setMoveCount(0);
+        setIsGameOver(false);
+        resetCurrentRecord();
+        // Additional reset logic if needed
+    }, [resetCurrentRecord]);
 
     return {
         currentPage,
@@ -179,7 +232,9 @@ export const useWikipedia = () => {
         path,
         targetPage,
         isGameOver,
+        setIsGameOver,
         moveCount,
+        setMoveCount,
         fetchWikiPage,
         handleLinkClick,
         setPath,
@@ -190,6 +245,8 @@ export const useWikipedia = () => {
         dailyChallenge,
         nickname,
         bestRecord,
-        handleGameOver
+        currentRecord,
+        handleGameOver,
+        resetGame
     };
 };

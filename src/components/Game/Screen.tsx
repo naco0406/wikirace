@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
+import { useRouter } from 'next/navigation';
 
 const GameScreen: React.FC = () => {
     const {
@@ -29,7 +30,9 @@ const GameScreen: React.FC = () => {
         isFirstLoad,
         path,
         isGameOver,
+        setIsGameOver,
         moveCount,
+        setMoveCount,
         fetchWikiPage,
         handleLinkClick,
         setPath,
@@ -40,22 +43,38 @@ const GameScreen: React.FC = () => {
         dailyChallenge,
         nickname,
         bestRecord,
+        currentRecord,
     } = useWikipedia();
 
     const { formattedTime, startTimer, resetTimer } = useTimer();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { setHasGiveUpToday } = useLocalRecord();
+    const { hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
+    const router = useRouter();
 
     useEffect(() => {
         startTimer();
     }, [startTimer]);
 
     useEffect(() => {
-        if (dailyChallenge) {
-            setPath([dailyChallenge.startPage]);
-            fetchWikiPage(dailyChallenge.startPage);
+        if (isFirstLoad) {
+            if (hasClearedToday) {
+                // If the user has already cleared today's challenge, show the success screen
+                setIsGameOver(true);
+            } else if (hasGiveUpToday) {
+                // If the user has given up today, redirect to the home page
+                router.push('/');
+            } else if (hasStartedToday && currentRecord.path.length > 0) {
+                // If the user has started today and has a current record, load the last visited page
+                setPath(currentRecord.path);
+                setMoveCount(currentRecord.moveCount);
+                fetchWikiPage(currentRecord.path[currentRecord.path.length - 1]);
+            } else if (dailyChallenge) {
+                // If it's a new game, start from the daily challenge start page
+                setPath([dailyChallenge.startPage]);
+                fetchWikiPage(dailyChallenge.startPage);
+            }
         }
-    }, [fetchWikiPage, setPath, dailyChallenge]);
+    }, [isFirstLoad, hasClearedToday, hasGiveUpToday, hasStartedToday, currentRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
@@ -98,7 +117,6 @@ const GameScreen: React.FC = () => {
                         <ArrowLeft className="w-6 h-6 text-white" />
                     </Button>
                 </div>
-                {/* <h1 className="text-xl font-bold text-center flex-grow">위키 레이스</h1> */}
                 <div className="flex items-center">
                     <span className="mr-4">목표: {dailyChallenge?.endPage || '-'}</span>
                     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -130,7 +148,6 @@ const GameScreen: React.FC = () => {
                                 </Link>
                             </DialogFooter>
                         </DialogContent>
-
                     </Dialog>
                 </div>
             </header>
