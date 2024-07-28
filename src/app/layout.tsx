@@ -20,7 +20,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <TimerProvider>
           {children}
-        </TimerProvider></body>
+        </TimerProvider>
+      </body>
     </html>
   );
 }
