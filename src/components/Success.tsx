@@ -146,7 +146,7 @@ const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, be
           </div>
           <Button onClick={handleDownload} className="mt-4 w-full">
             <Download className="w-4 h-4 mr-2" />
-            결과 다운로드
+            이미지 다운로드
           </Button>
         </DialogContent>
       </Dialog>

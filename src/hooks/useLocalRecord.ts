@@ -16,23 +16,21 @@ interface DailyStatus {
 }
 
 export function useLocalRecord() {
-  // const [bestRecord, setBestRecord] = useState<Record | null>(null);
-  const [currentRecord, setCurrentRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
+  const [localRecord, setLocalRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [dailyStatus, setDailyStatus] = useState<DailyStatus>({ hasStartedToday: false, hasClearedToday: false, hasGiveUpToday: false });
 
   useEffect(() => {
-    // const storedBestRecord = localStorage.getItem('wikiRaceBestRecord');
-    const storedCurrentRecord = localStorage.getItem('wikiRaceCurrentRecord');
+    const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
     const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
     const today = getKSTDateString();
 
-    if (storedCurrentRecord) {
-      const { record, date } = JSON.parse(storedCurrentRecord);
+    if (storedlocalRecord) {
+      const { record, date } = JSON.parse(storedlocalRecord);
       if (date === today) {
-        setCurrentRecord(record);
+        setLocalRecord(record);
       } else {
-        localStorage.removeItem('wikiRaceCurrentRecord');
-        setCurrentRecord({ moveCount: 0, time: 0, path: [] });
+        localStorage.removeItem('wikiRacelocalRecord');
+        setLocalRecord({ moveCount: 0, time: 0, path: [] });
       }
     }
 
@@ -47,10 +45,10 @@ export function useLocalRecord() {
     }
   }, []);
 
-  const updateCurrentRecord = (newRecord: Record) => {
+  const updatelocalRecord = (newRecord: Record) => {
     const today = getKSTDateString();
-    setCurrentRecord(newRecord);
-    localStorage.setItem('wikiRaceCurrentRecord', JSON.stringify({ record: newRecord, date: today }));
+    setLocalRecord(newRecord);
+    localStorage.setItem('wikiRacelocalRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const finalizeRecord = () => {
@@ -79,8 +77,8 @@ export function useLocalRecord() {
   };
 
   return {
-    currentRecord,
-    updateCurrentRecord,
+    localRecord,
+    updatelocalRecord,
     finalizeRecord,
     hasStartedToday: dailyStatus.hasStartedToday,
     hasClearedToday: dailyStatus.hasClearedToday,

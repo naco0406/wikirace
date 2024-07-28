@@ -51,7 +51,7 @@ const GameScreen: React.FC = () => {
     const nickname = useNickname();
     const { formattedTime, startTimer, resetTimer } = useTimer();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { currentRecord, hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
+    const { localRecord, hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
     const router = useRouter();
 
     const handleForceEndAction = useCallback(() => {
@@ -85,18 +85,18 @@ const GameScreen: React.FC = () => {
             } else if (hasGiveUpToday) {
                 // If the user has given up today, redirect to the home page
                 router.push('/');
-            } else if (hasStartedToday && currentRecord.path.length > 0) {
+            } else if (hasStartedToday && localRecord.path.length > 0) {
                 // If the user has started today and has a current record, load the last visited page
-                setPath(currentRecord.path);
-                setMoveCount(currentRecord.moveCount);
-                fetchWikiPage(currentRecord.path[currentRecord.path.length - 1]);
+                setPath(localRecord.path);
+                setMoveCount(localRecord.moveCount);
+                fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
             } else if (dailyChallenge) {
                 // If it's a new game, start from the daily challenge start page
                 setPath([dailyChallenge.startPage]);
                 fetchWikiPage(dailyChallenge.startPage);
             }
         }
-    }, [isFirstLoad, hasClearedToday, hasGiveUpToday, hasStartedToday, currentRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
+    }, [isFirstLoad, hasClearedToday, hasGiveUpToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
@@ -108,7 +108,7 @@ const GameScreen: React.FC = () => {
                 moveCount={moveCount}
                 path={path}
                 nickname={nickname}
-                bestRecord={currentRecord}
+                bestRecord={localRecord}
             />
         );
     }

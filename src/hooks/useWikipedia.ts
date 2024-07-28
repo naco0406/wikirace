@@ -30,7 +30,7 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { currentRecord, updateCurrentRecord, finalizeRecord } = useLocalRecord();
+    const { localRecord, updatelocalRecord, finalizeRecord } = useLocalRecord();
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -56,10 +56,10 @@ export const useWikipedia = () => {
     }, []);
 
     useEffect(() => {
-        if (currentRecord.path.length > 0) {
-            setPath(currentRecord.path);
-            setMoveCount(currentRecord.moveCount);
-            fetchWikiPage(currentRecord.path[currentRecord.path.length - 1]);
+        if (localRecord.path.length > 0) {
+            setPath(localRecord.path);
+            setMoveCount(localRecord.moveCount);
+            fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
         }
     }, []);
 
@@ -158,14 +158,14 @@ export const useWikipedia = () => {
                 setMoveCount(newMoveCount);
                 setPath(newPath);
                 console.log('handleLinkClick', newMoveCount, elapsedTime, newPath)
-                updateCurrentRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
+                updatelocalRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
                 fetchWikiPage(title);
             } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
                 setIsForcedEnd(true);
                 setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
             }
         }
-    }, [isGameOver, fetchWikiPage, moveCount, path, elapsedTime, updateCurrentRecord]);
+    }, [isGameOver, fetchWikiPage, moveCount, path, elapsedTime, updatelocalRecord]);
 
     const goBack = useCallback(() => {
         if (path.length <= 1) return;
@@ -178,9 +178,9 @@ export const useWikipedia = () => {
         setPath(newPath);
         setMoveCount(newMoveCount);
         console.log('goBack', newMoveCount, elapsedTime, newPath)
-        updateCurrentRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
+        updatelocalRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
         fetchWikiPage(previousPage);
-    }, [path, fetchWikiPage, moveCount, elapsedTime, updateCurrentRecord]);
+    }, [path, fetchWikiPage, moveCount, elapsedTime, updatelocalRecord]);
 
     useEffect(() => {
         if (isGameOver) {
@@ -188,7 +188,7 @@ export const useWikipedia = () => {
                 const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
                 console.log('finalRecord', finalRecord);
                 console.log('handleGameOver', moveCount, elapsedTime, path)
-                updateCurrentRecord(finalRecord);
+                updatelocalRecord(finalRecord);
                 finalizeRecord();
 
                 const generateUniqueId = () => {

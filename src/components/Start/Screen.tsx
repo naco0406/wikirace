@@ -30,7 +30,7 @@ import { useKeyboard } from '@/hooks/useKeyboard';
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
     const nickname = useNickname();
-    const { currentRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
+    const { localRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
     const today = getKSTDateString();
     const [open, setOpen] = useState(false);
     const router = useRouter();
@@ -92,20 +92,20 @@ const StartScreen: React.FC = () => {
                                             <p><strong>시작:</strong> {dailyChallenge ? dailyChallenge.startPage : '-'}</p>
                                             <p className="my-2">↓</p>
                                             <p><strong>목표:</strong> {dailyChallenge ? dailyChallenge.endPage : '-'}</p>
-                                            {currentRecord && (
+                                            {localRecord && (
                                                 <div className="w-full mt-4 pt-4 border-t border-gray-300">
                                                     <div className="flex items-center justify-center mb-2">
                                                         <Trophy className="w-5 h-5 text-yellow-500 mr-2" />
-                                                        <span className="font-bold text-lg">나의 기록</span>
+                                                        <span className="font-bold text-lg">오늘 나의 기록</span>
                                                     </div>
                                                     <div className="flex justify-center space-x-4">
                                                         <div className="flex items-center">
                                                             <Move className="w-4 h-4 text-blue-500 mr-1" />
-                                                            <span>{currentRecord.moveCount}번 이동</span>
+                                                            <span>{localRecord.moveCount}번 이동</span>
                                                         </div>
                                                         <div className="flex items-center">
                                                             <Clock className="w-4 h-4 text-green-500 mr-1" />
-                                                            <span>{formatTime(currentRecord.time)}</span>
+                                                            <span>{formatTime(localRecord.time)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
