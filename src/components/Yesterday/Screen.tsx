@@ -27,7 +27,8 @@ const YesterdayScreen: React.FC = () => {
             <Card className="w-full max-w-md bg-white text-gray-800 shadow-xl rounded-xl overflow-hidden">
                 <CardHeader className="bg-gradient-to-r from-blue-100 to-purple-100 p-6">
                     <CardTitle className="text-2xl font-bold text-center text-gray-800">
-                        <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-2" />어제의 기록
+                        <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-2" />
+                        어제의 기록
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
@@ -57,6 +58,7 @@ const YesterdayScreen: React.FC = () => {
                                 </ol>
                             </div>
                         </div>
+                        <span className='text-sm'>베타 기능입니다</span>
                     </div>
                 </CardContent>
             </Card>
