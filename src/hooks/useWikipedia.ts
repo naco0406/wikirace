@@ -74,19 +74,12 @@ export const useWikipedia = () => {
     };
 
     const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
+        if (currentTitle === endTitle) return true;
+
         const normalizedCurrent = normalizePageTitle(currentTitle);
         const normalizedEnd = normalizePageTitle(endTitle);
-
-        // Direct match
         if (normalizedCurrent === normalizedEnd) return true;
 
-        // Check if the current title contains the end title or vice versa
-        if (normalizedCurrent.includes(normalizedEnd) || normalizedEnd.includes(normalizedCurrent)) return true;
-
-        // Check for plural/singular forms (very basic)
-        if (normalizedCurrent + 's' === normalizedEnd || normalizedCurrent === normalizedEnd + 's') return true;
-
-        // Check for parentheses
         const currentWithoutParentheses = normalizedCurrent.replace(/\s*\(.*?\)\s*/g, '');
         const endWithoutParentheses = normalizedEnd.replace(/\s*\(.*?\)\s*/g, '');
         if (currentWithoutParentheses === endWithoutParentheses) return true;
