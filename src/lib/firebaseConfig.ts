@@ -43,9 +43,9 @@ export const addDailyChallenge = async (date: string, challenge: DailyChallenge)
         const challengeRef = doc(db, 'dailyChallenges', date);
         await setDoc(challengeRef, {
             ...challenge,
-            timestamp: Timestamp.now() // 추가된 시간 기록
+            // timestamp: Timestamp.now() 
         });
-        console.log(`Challenge for ${date} added successfully`);
+        // console.log(`Challenge for ${date} added successfully`);
     } catch (error) {
         console.error('Error adding challenge: ', error);
         throw error;
@@ -66,7 +66,6 @@ export const addRanking = async (ranking: MyRanking) => {
     };
 
     try {
-        // await setDoc(rankingRef, rankingData);
         await runTransaction(db, async (transaction) => {
             const challengeDoc = await transaction.get(challengeRef);
 
@@ -77,9 +76,9 @@ export const addRanking = async (ranking: MyRanking) => {
             const newTotalCount = (challengeDoc.data().totalCount || 0) + 1;
 
             transaction.set(rankingRef, rankingData);
-            console.log('Ranking data added successfully');
+            // console.log('Ranking data added successfully');
             transaction.update(challengeRef, { totalCount: newTotalCount });
-            console.log('TotalCount data added successfully');
+            // console.log('TotalCount data added successfully');
         });
     } catch (error) {
         console.error('Error adding ranking data:', error);

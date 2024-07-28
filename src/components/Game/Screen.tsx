@@ -65,7 +65,6 @@ const GameScreen: React.FC = () => {
 
     useEffect(() => {
         if (isPressed('meta+f') || isPressed('ctrl+f')) {
-            console.log('Search shortcut detected');
             handleForceEndAction();
         }
     }, [isPressed, handleForceEndAction]);

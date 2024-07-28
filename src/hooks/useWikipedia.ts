@@ -157,7 +157,6 @@ export const useWikipedia = () => {
                 const newPath = [...path, formattedTitle];
                 setMoveCount(newMoveCount);
                 setPath(newPath);
-                console.log('handleLinkClick', newMoveCount, elapsedTime, newPath)
                 updatelocalRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
                 fetchWikiPage(title);
             } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
@@ -177,7 +176,6 @@ export const useWikipedia = () => {
         const newMoveCount = moveCount + 1;
         setPath(newPath);
         setMoveCount(newMoveCount);
-        console.log('goBack', newMoveCount, elapsedTime, newPath)
         updatelocalRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
         fetchWikiPage(previousPage);
     }, [path, fetchWikiPage, moveCount, elapsedTime, updatelocalRecord]);
@@ -186,8 +184,6 @@ export const useWikipedia = () => {
         if (isGameOver) {
             const submitRankingAsync = async () => {
                 const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
-                console.log('finalRecord', finalRecord);
-                console.log('handleGameOver', moveCount, elapsedTime, path)
                 updatelocalRecord(finalRecord);
                 finalizeRecord();
 
@@ -204,8 +200,6 @@ export const useWikipedia = () => {
                     time: finalRecord.time,
                     path: finalRecord.path
                 };
-
-                console.log("MyRanking:", myRanking);
 
                 await submitRanking(myRanking);
                 setIsGameOver(true);
