@@ -151,6 +151,9 @@ const StartScreen: React.FC = () => {
                     </div>
                 </CardContent>
             </Card>
+            <Button variant="outline" className="w-full max-w-lg text-lg mt-4 px-6 bg-transparent" onClick={() => router.push('/yesterday')}>
+                어제의 기록
+            </Button>
             <p className="text-xs mt-8 text-center text-white">© 2024 Naco. All rights reserved.</p>
         </div>
     );
