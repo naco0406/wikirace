@@ -10,7 +10,7 @@ interface GameForcedEndProps {
 
 const GameForcedEnd: React.FC<GameForcedEndProps> = ({ reason }) => {
   return (
-    <div className="h-[100vh] flex items-center justify-center bg-red-100">
+    <div className="h-screen flex items-center justify-center bg-red-100">
       <Card className="w-full max-w-md bg-white text-red-800 border-2 border-red-500">
         <CardHeader>
           <CardTitle className="text-2xl font-bold flex items-center">

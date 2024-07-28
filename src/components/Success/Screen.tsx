@@ -103,7 +103,7 @@ const SuccessScreen: React.FC = () => {
     );
 
     return (
-        <div className="h--[100vh] w-screen flex flex-col items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 p-4">
+        <div className="h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-r from-green-400 to-blue-500 p-4">
             <ContentToShare />
             <div className="mt-6 w-full max-w-md flex justify-between">
                 <Button onClick={handleBackToHome} className="w-[48%] py-2 px-4 flex items-center justify-center">

@@ -62,7 +62,7 @@ const StartScreen: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-[100vh] w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
             <p className="text-lg mb-4 text-center text-white">안녕하세요, {nickname}님!</p>
             <Card className="w-full max-w-lg bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden">
                 <CardHeader className="p-6">
