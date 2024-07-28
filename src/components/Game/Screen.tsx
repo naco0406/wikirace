@@ -1,39 +1,37 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { GameLoading, Loading } from '@/components/Loading';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-import { Loading, GameLoading } from '@/components/Loading';
-import GameSuccess from '../Success';
-import { useWikipedia } from '@/hooks/useWikipedia';
-import GameForcedEnd from '../ForcedEnd';
-import { ArrowLeft } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import {
     Dialog,
-    DialogTrigger,
+    DialogClose,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
     DialogDescription,
     DialogFooter,
-    DialogClose,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
 import { useTimer } from '@/contexts/TimerContext';
-import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { useRouter } from 'next/navigation';
 import { useKeyboard } from '@/hooks/useKeyboard';
+import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { useNickname } from '@/hooks/useNickname';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import { useWikipedia } from '@/hooks/useWikipedia';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import GameForcedEnd from '../ForcedEnd';
 
 const GameScreen: React.FC = () => {
     const {
         currentPage,
         isLoading,
         isFirstLoad,
-        path,
         isGameOver,
-        setIsGameOver,
+        path,
         moveCount,
         setMoveCount,
         fetchWikiPage,
@@ -48,7 +46,6 @@ const GameScreen: React.FC = () => {
     } = useWikipedia();
 
     const { isMobile } = useScreenSize();
-    const nickname = useNickname();
     const { formattedTime, startTimer, resetTimer } = useTimer();
     const [dialogOpen, setDialogOpen] = useState(false);
     const { localRecord, hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
@@ -80,37 +77,26 @@ const GameScreen: React.FC = () => {
     useEffect(() => {
         if (isFirstLoad) {
             if (hasClearedToday) {
-                // If the user has already cleared today's challenge, show the success screen
-                setIsGameOver(true);
+                router.push('/success');
             } else if (hasGiveUpToday) {
-                // If the user has given up today, redirect to the home page
                 router.push('/');
             } else if (hasStartedToday && localRecord.path.length > 0) {
-                // If the user has started today and has a current record, load the last visited page
                 setPath(localRecord.path);
                 setMoveCount(localRecord.moveCount);
                 fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
             } else if (dailyChallenge) {
-                // If it's a new game, start from the daily challenge start page
                 setPath([dailyChallenge.startPage]);
                 fetchWikiPage(dailyChallenge.startPage);
             }
         }
     }, [isFirstLoad, hasClearedToday, hasGiveUpToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
 
-    if (isForcedEnd) {
-        return <GameForcedEnd reason={forcedEndReason} />;
+    if (isGameOver) {
+        router.push('/success');
     }
 
-    if (isGameOver) {
-        return (
-            <GameSuccess
-                moveCount={moveCount}
-                path={path}
-                nickname={nickname}
-                bestRecord={localRecord}
-            />
-        );
+    if (isForcedEnd) {
+        return <GameForcedEnd reason={forcedEndReason} />;
     }
 
     if (isFirstLoad) return <Loading />;
