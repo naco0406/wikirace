@@ -62,11 +62,10 @@ const StartScreen: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
+        <div className="min-h-[100vh] w-full flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4">
             <p className="text-lg mb-4 text-center text-white">안녕하세요, {nickname}님!</p>
             <Card className="w-full max-w-lg bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden">
                 <CardHeader className="p-6">
-                    <CardTitle className="text-3xl font-bold text-center">Linkle</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
                     <h2 className="text-xl mb-4"><strong>오늘의 챌린지</strong> {today}</h2>
@@ -133,7 +132,7 @@ const StartScreen: React.FC = () => {
                                         Linkle, a new Wikipedia speedrun every day
                                     </DialogDescription>
                                 </DialogHeader>
-                                <Carousel className="w-full max-w-sm mx-auto">
+                                <Carousel className="w-full max-w-xs mx-auto">
                                     <CarouselContent>
                                         {qaPairs.map((qa, index) => (
                                             <CarouselItem key={index}>

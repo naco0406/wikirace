@@ -38,7 +38,7 @@ const Admin = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-12">
+        <div className="flex flex-col items-center justify-center min-h-[100vh] bg-gray-100 p-12">
             <form onSubmit={handleAuthentication} className="p-6 bg-white rounded-lg shadow-md w-full h-full max-w-[768px]">
                 <h2 className="mb-6 text-xl font-bold">관리자 로그인</h2>
                 <Input

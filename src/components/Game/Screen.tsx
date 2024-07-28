@@ -112,7 +112,7 @@ const GameScreen: React.FC = () => {
     if (!currentPage) return <div>Error loading page</div>;
 
     return (
-        <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
+        <div className={`h-[100vh] flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
             <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
                 <div className="flex items-center">
                     <Button

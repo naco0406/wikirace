@@ -43,7 +43,7 @@ const RankingPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 flex items-center justify-center">
+        <div className="min-h-[100vh] bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 flex items-center justify-center">
             <Card className="w-full max-w-4xl h-full p-4 mx-auto bg-white text-gray-800 flex flex-col">
                 <CardHeader className="flex-shrink-0">
                     <CardTitle className="text-3xl font-bold text-center">랭킹</CardTitle>
