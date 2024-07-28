@@ -30,7 +30,7 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { bestRecord, currentRecord, updateCurrentRecord, finalizeRecord } = useLocalRecord();
+    const { currentRecord, updateCurrentRecord, finalizeRecord } = useLocalRecord();
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -56,12 +56,9 @@ export const useWikipedia = () => {
     }, []);
 
     useEffect(() => {
-        // Initialize game state from current record if it exists
         if (currentRecord.path.length > 0) {
             setPath(currentRecord.path);
             setMoveCount(currentRecord.moveCount);
-            // You might want to set the current page to the last page in the path
-            // This might require fetching the page content
             fetchWikiPage(currentRecord.path[currentRecord.path.length - 1]);
         }
     }, []);
@@ -121,18 +118,15 @@ export const useWikipedia = () => {
                 fullurl: page.fullurl
             });
 
-            // Check for game over conditions
             if (dailyChallenge) {
                 const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
 
-                // Check redirects
                 const redirects = page.redirects || [];
                 const isRedirectEnd = redirects.some((redirect: any) =>
                     isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
                 );
 
                 if (isEnd || isRedirectEnd) {
-                    // handleGameOver();
                     setIsGameOver(true)
                 }
             }
@@ -220,41 +214,6 @@ export const useWikipedia = () => {
         }
     }, [isGameOver, moveCount, path, nickname]);
 
-    // const handleGameOver = useCallback(async () => {
-    //     const finalRecord = { moveCount: moveCount + 1, time: elapsedTime, path };
-    //     console.log('finalRecord', finalRecord);
-    //     console.log('handleGameOver', moveCount + 1, elapsedTime, path)
-    //     updateCurrentRecord(finalRecord);
-    //     finalizeRecord();
-
-    //     const generateUniqueId = () => {
-    //         return Date.now().toString(36) + Math.random().toString(36).substr(2);
-    //     };
-
-    //     const userId = generateUniqueId();
-
-    //     const myRanking: MyRanking = {
-    //         userId,
-    //         nickname,
-    //         moveCount: finalRecord.moveCount,
-    //         time: finalRecord.time,
-    //         path: finalRecord.path
-    //     };
-
-    //     console.log("MyRanking:", myRanking);
-
-    //     await submitRanking(myRanking);
-    //     setIsGameOver(true);
-    // }, [nickname, moveCount, elapsedTime, path, updateCurrentRecord, finalizeRecord]);
-
-    // const resetGame = useCallback(() => {
-    //     setPath([]);
-    //     setMoveCount(0);
-    //     setIsGameOver(false);
-    //     resetCurrentRecord();
-    //     // Additional reset logic if needed
-    // }, [resetCurrentRecord]);
-
     return {
         currentPage,
         isLoading,
@@ -268,17 +227,11 @@ export const useWikipedia = () => {
         fetchWikiPage,
         handleLinkClick,
         setPath,
-        isMobile,
         isForcedEnd,
         forcedEndReason,
         setIsForcedEnd,
         setForcedEndReason,
         goBack,
         dailyChallenge,
-        nickname,
-        bestRecord,
-        currentRecord,
-        // handleGameOver,
-        // resetGame
     };
 };

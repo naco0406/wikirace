@@ -23,6 +23,8 @@ import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { useRouter } from 'next/navigation';
 import { useKeyboard } from '@/hooks/useKeyboard';
+import { useNickname } from '@/hooks/useNickname';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 const GameScreen: React.FC = () => {
     const {
@@ -37,22 +39,19 @@ const GameScreen: React.FC = () => {
         fetchWikiPage,
         handleLinkClick,
         setPath,
-        isMobile,
         isForcedEnd,
         forcedEndReason,
-
         setIsForcedEnd,
         setForcedEndReason,
         goBack,
         dailyChallenge,
-        nickname,
-        bestRecord,
-        currentRecord,
     } = useWikipedia();
 
+    const { isMobile } = useScreenSize();
+    const nickname = useNickname();
     const { formattedTime, startTimer, resetTimer } = useTimer();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const { hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
+    const { currentRecord, hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
     const router = useRouter();
 
     const handleForceEndAction = useCallback(() => {
@@ -109,7 +108,7 @@ const GameScreen: React.FC = () => {
                 moveCount={moveCount}
                 path={path}
                 nickname={nickname}
-                bestRecord={bestRecord}
+                bestRecord={currentRecord}
             />
         );
     }

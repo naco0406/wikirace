@@ -30,7 +30,7 @@ import { useKeyboard } from '@/hooks/useKeyboard';
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
     const nickname = useNickname();
-    const { bestRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
+    const { currentRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
     const today = getKSTDateString();
     const [open, setOpen] = useState(false);
     const router = useRouter();
@@ -92,7 +92,7 @@ const StartScreen: React.FC = () => {
                                             <p><strong>시작:</strong> {dailyChallenge ? dailyChallenge.startPage : '-'}</p>
                                             <p className="my-2">↓</p>
                                             <p><strong>목표:</strong> {dailyChallenge ? dailyChallenge.endPage : '-'}</p>
-                                            {bestRecord && (
+                                            {currentRecord && (
                                                 <div className="w-full mt-4 pt-4 border-t border-gray-300">
                                                     <div className="flex items-center justify-center mb-2">
                                                         <Trophy className="w-5 h-5 text-yellow-500 mr-2" />
@@ -101,11 +101,11 @@ const StartScreen: React.FC = () => {
                                                     <div className="flex justify-center space-x-4">
                                                         <div className="flex items-center">
                                                             <Move className="w-4 h-4 text-blue-500 mr-1" />
-                                                            <span>{bestRecord.moveCount}번 이동</span>
+                                                            <span>{currentRecord.moveCount}번 이동</span>
                                                         </div>
                                                         <div className="flex items-center">
                                                             <Clock className="w-4 h-4 text-green-500 mr-1" />
-                                                            <span>{formatTime(bestRecord.time)}</span>
+                                                            <span>{formatTime(currentRecord.time)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -113,11 +113,11 @@ const StartScreen: React.FC = () => {
                                         </div>
                                     </div>
                                 )}
-                                <Link href="/ranking" className="block">
+                                {/* <Link href="/ranking" className="block">
                                     <p className="text-sm mt-2 text-center text-gray">
                                         랭킹 보기
                                     </p>
-                                </Link>
+                                </Link> */}
                             </Fragment>
                         )}
                         <Dialog open={open} onOpenChange={setOpen}>

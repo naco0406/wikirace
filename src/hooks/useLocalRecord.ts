@@ -16,25 +16,15 @@ interface DailyStatus {
 }
 
 export function useLocalRecord() {
-  const [bestRecord, setBestRecord] = useState<Record | null>(null);
+  // const [bestRecord, setBestRecord] = useState<Record | null>(null);
   const [currentRecord, setCurrentRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [dailyStatus, setDailyStatus] = useState<DailyStatus>({ hasStartedToday: false, hasClearedToday: false, hasGiveUpToday: false });
 
   useEffect(() => {
-    const storedBestRecord = localStorage.getItem('wikiRaceBestRecord');
+    // const storedBestRecord = localStorage.getItem('wikiRaceBestRecord');
     const storedCurrentRecord = localStorage.getItem('wikiRaceCurrentRecord');
     const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
     const today = getKSTDateString();
-
-    if (storedBestRecord) {
-      const { record, date } = JSON.parse(storedBestRecord);
-      if (date === today) {
-        setBestRecord(record);
-      } else {
-        localStorage.removeItem('wikiRaceBestRecord');
-        setBestRecord(null);
-      }
-    }
 
     if (storedCurrentRecord) {
       const { record, date } = JSON.parse(storedCurrentRecord);
@@ -61,8 +51,6 @@ export function useLocalRecord() {
     const today = getKSTDateString();
     setCurrentRecord(newRecord);
     localStorage.setItem('wikiRaceCurrentRecord', JSON.stringify({ record: newRecord, date: today }));
-    setBestRecord(newRecord);
-    localStorage.setItem('wikiRaceBestRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const finalizeRecord = () => {
@@ -90,13 +78,7 @@ export function useLocalRecord() {
     localStorage.setItem('wikiRaceDailyStatus', JSON.stringify({ status, date: today }));
   };
 
-  // const resetCurrentRecord = () => {
-  //   setCurrentRecord({ moveCount: 0, time: 0, path: [] });
-  //   localStorage.removeItem('wikiRaceCurrentRecord');
-  // };
-
   return {
-    bestRecord,
     currentRecord,
     updateCurrentRecord,
     finalizeRecord,
@@ -106,6 +88,5 @@ export function useLocalRecord() {
     setHasStartedToday,
     setHasClearedToday,
     setHasGiveUpToday,
-    // resetCurrentRecord
   };
 }

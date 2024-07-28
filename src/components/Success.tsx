@@ -127,12 +127,12 @@ const GameSuccess: React.FC<GameSuccessProps> = ({ moveCount, path, nickname, be
           <span className="text-sm">결과 공유</span>
         </Button>
       </div>
-      <Link href="/ranking" className="mt-4 w-full max-w-md">
+      {/* <Link href="/ranking" className="mt-4 w-full max-w-md">
         <Button variant="outline" className="text-sm text-center w-full bg-transparent border border-[2px] text-white">
           <Trophy className="w-4 h-4 mr-2" />
           랭킹 보기
         </Button>
-      </Link>
+      </Link> */}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className='rounded-lg'>
