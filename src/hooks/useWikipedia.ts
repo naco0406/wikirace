@@ -94,9 +94,13 @@ export const useWikipedia = () => {
             action: 'parse',
             format: 'json',
             page: title,
-            prop: 'text|info|redirects',
-            mobileformat: isMobile ? 'true' : 'false',
+            prop: 'displaytitle|text|info|redirects',
+            disableeditsection: true,
+            disabletoc: true,
+            mainpage: false,
+            sectionpreview: false,
             redirects: 'true',
+            useskin: 'minerva',
             origin: '*'
         };
 
@@ -106,10 +110,24 @@ export const useWikipedia = () => {
 
             let html = page.text['*'];
 
-            if (isMobile) {
-                html = html.replace(/<a\s+(?:[^>]*?\s+)?class="external[^>]*>(.*?)<\/a>/g, '$1');
-                html = html.replace(/<span class="mw-editsection">.*?<\/span>/g, '');
-            }
+            // html = html.replace(/<table class="infobox.*?<\/table>/gs, '');
+            html = html.replace(/<div class="mw-references-wrap.*?<\/div>/gs, '');
+            html = html.replace(/<span class="mw-editsection.*?<\/span>/g, '');
+            html = html.replace(/<div class="dablink.*?<\/div>/g, '');
+            html = html.replace(/<audio.*?<\/audio>/g, '');
+
+            html = html.replace(/<div\s+(?:[^>]*\s+)?class="(?:[^"]*\s+)?hatnote(?:\s+[^"]*)?"\s*.*?<\/div>/gs, '');
+
+            // const seeAlsoTitles = ['같이 보기', 'See also'];
+            // const referencesTitles = ['각주', 'References'];
+            // const sections = page.sections;
+
+            // sections.forEach((section: { line: string; }) => {
+            //     if (seeAlsoTitles.includes(section.line) || referencesTitles.includes(section.line)) {
+            //         const sectionRegex = new RegExp(`<h2.*?>${section.line}.*?</h2>.*?(?=<h2|$)`, 'gs');
+            //         html = html.replace(sectionRegex, '');
+            //     }
+            // });
 
             const pageTitle = formatPageTitle(page.title);
             setCurrentPage({
@@ -140,7 +158,7 @@ export const useWikipedia = () => {
                 initialLoadRef.current = false;
             }
         }
-    }, [isMobile, dailyChallenge]);
+    }, [dailyChallenge]);
 
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (isGameOver) return;
