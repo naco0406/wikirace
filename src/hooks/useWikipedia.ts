@@ -72,13 +72,6 @@ export const useWikipedia = () => {
         }
     }, []);
 
-    const formatPageTitle = (title: string) => {
-        return title.replace(/_/g, ' ');
-    };
-    const normalizePageTitle = (title: string) => {
-        return title.toLowerCase().replace(/\s+/g, ' ').trim();
-    };
-
     const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
         if (currentTitle === endTitle) return true;
 
@@ -291,4 +284,12 @@ export const useWikipedia = () => {
         goBack,
         dailyChallenge,
     };
+};
+
+export const formatPageTitle = (title: string) => {
+    return title.replace(/_/g, ' ');
+};
+
+export const normalizePageTitle = (title: string) => {
+    return title.toLowerCase().replace(/\s+/g, ' ').trim();
 };
