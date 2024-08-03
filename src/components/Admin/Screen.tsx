@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { DailyChallenge } from '@/lib/gameData';
 import { useRouter } from 'next/navigation';
 import { openInNewTab } from '@/lib/utils';
 import { addDays, format } from 'date-fns';
-import { Minus, RefreshCw } from 'lucide-react';
+import { Minus, RefreshCw, Loader } from 'lucide-react';
 import { useForm, useFieldArray, FieldValues } from 'react-hook-form';
 import { cn } from "@/lib/utils";
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
@@ -23,10 +23,11 @@ const AdminScreen: React.FC = () => {
     const router = useRouter();
     const [adminConsoleUrl, setAdminConsoleUrl] = useState<string | null>(null);
     const DEFAULT_CONSOLE_URL = 'https://console.firebase.google.com/';
+    const [isAddingRandomChallenge, setIsAddingRandomChallenge] = useState(false);
 
     const { control, handleSubmit, register, setValue, watch, formState: { errors } } = useForm<{ challenges: ChallengeInput[] }>({
         defaultValues: {
-            challenges: [{ date: undefined, startPage: '', endPage: '' }]
+            challenges: []
         }
     });
 
@@ -36,8 +37,7 @@ const AdminScreen: React.FC = () => {
     });
 
     const watchedChallenges = watch("challenges");
-
-    const { title: randomTitle, isLoading: isTitleLoading, refetch: refetchTitle } = useRandomWikipediaTitle();
+    const { refetch: refetchTitle } = useRandomWikipediaTitle();
 
     useEffect(() => {
         const fetchAdminConsoleURL = async () => {
@@ -69,12 +69,31 @@ const AdminScreen: React.FC = () => {
         }
     };
 
-    const addNewChallenge = () => {
+    const addNewChallenge = useCallback(() => {
         const lastChallenge = watchedChallenges[watchedChallenges.length - 1];
         const lastDate = lastChallenge?.date;
         const nextDate = lastDate ? addDays(lastDate, 1) : new Date();
         append({ date: nextDate, startPage: '', endPage: '' });
-    };
+    }, [watchedChallenges, append]);
+
+    const addNewRandomChallenge = useCallback(async () => {
+        setIsAddingRandomChallenge(true);
+        const lastChallenge = watchedChallenges[watchedChallenges.length - 1];
+        const lastDate = lastChallenge?.date;
+        const nextDate = lastDate ? addDays(lastDate, 1) : new Date();
+
+        try {
+            const startPage = await refetchTitle();
+            const endPage = await refetchTitle();
+
+            append({ date: nextDate, startPage: startPage || '', endPage: endPage || '' });
+        } catch (error) {
+            console.error("랜덤 챌린지 생성 중 오류 발생:", error);
+            append({ date: nextDate, startPage: '', endPage: '' });
+        } finally {
+            setIsAddingRandomChallenge(false);
+        }
+    }, [watchedChallenges, append, refetchTitle]);
 
     const handleBackToHome = () => {
         router.push('/');
@@ -191,8 +210,18 @@ const AdminScreen: React.FC = () => {
                         </CardContent>
                     </Card>
                 ))}
+                {isAddingRandomChallenge && (
+                    <Card className="mb-4 relative">
+                        <CardContent className="pt-6 flex items-center justify-center h-16">
+                            <Loader className="animate-spin h-6 w-6" />
+                        </CardContent>
+                    </Card>
+                )}
                 <div className="mb-4 space-x-4">
                     <Button type="button" onClick={addNewChallenge}>새 챌린지 추가</Button>
+                    <Button type="button" onClick={addNewRandomChallenge} disabled={isAddingRandomChallenge}>
+                        새 랜덤 챌린지 추가
+                    </Button>
                     <Button type="submit">적용</Button>
                 </div>
             </form>
