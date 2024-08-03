@@ -14,6 +14,15 @@ interface WikiPageContent {
     fullurl: string;
 }
 
+interface Section {
+    index: string;
+    level: string;
+    line: string;
+    number: string;
+    anchor: string;
+    toclevel: number;
+}
+
 export const useWikipedia = () => {
     const [currentPage, setCurrentPage] = useState<WikiPageContent | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -94,10 +103,10 @@ export const useWikipedia = () => {
             action: 'parse',
             format: 'json',
             page: title,
-            prop: 'displaytitle|text|info|redirects',
+            prop: 'text|displaytitle|sections|categories|links|templates|parsetree',
             disableeditsection: true,
             disabletoc: true,
-            mainpage: false,
+            mobileformat: true,
             sectionpreview: false,
             redirects: 'true',
             useskin: 'minerva',
@@ -106,9 +115,53 @@ export const useWikipedia = () => {
 
         try {
             const response = await axios.get(apiUrl, { params });
+
+            if (!response.data || !response.data.parse) {
+                throw new Error('Invalid API response');
+            }
+
             const page = response.data.parse;
 
             let html = page.text['*'];
+
+            const sections: Section[] = page.sections || [];
+
+            const sectionsToRemove = ['같이 보기', '각주', '외부 링크'];
+
+            let sectionIndexesToRemove = sections
+                .filter((section: Section) => sectionsToRemove.some(title => section.line.toLowerCase().includes(title.toLowerCase())))
+                .map((section: Section) => parseInt(section.index));
+
+            // Sort indexes in ascending order to remove from top to bottom
+            sectionIndexesToRemove.sort((a: number, b: number) => a - b);
+
+            for (let index of sectionIndexesToRemove) {
+                const currentSection = sections.find(s => parseInt(s.index) === index);
+                if (!currentSection) {
+                    console.log(`Section not found for index ${index}`);
+                    continue;
+                }
+
+                const nextSection = sections.find(s => parseInt(s.index) > index);
+
+                const startPattern = `<h${currentSection.level}[^>]*id="[^"]*${currentSection.anchor}[^"]*"[^>]*>`;
+                const endPattern = nextSection
+                    ? `<h${nextSection.level}[^>]*id="[^"]*${nextSection.anchor}[^"]*"`
+                    : '<div id="mw-navigation">';
+
+                const sectionRegex = new RegExp(`${startPattern}[\\s\\S]*?(?=${endPattern})`, 's');
+                const sectionMatch = html.match(sectionRegex);
+
+                if (sectionMatch) {
+                    html = html.replace(sectionMatch[0], '');
+                    console.log(`Removed section: ${currentSection.line}`);
+                } else {
+                    console.log(`Could not find matches for section: ${currentSection.line}`);
+                }
+            }
+
+            // Remove navigation menu
+            html = html.replace(/<div id="mw-navigation">.*?<\/div>\s*<div id="footer" role="contentinfo">/gs, '<div id="footer" role="contentinfo">');
 
             // html = html.replace(/<table class="infobox.*?<\/table>/gs, '');
             html = html.replace(/<div class="mw-references-wrap.*?<\/div>/gs, '');
@@ -118,16 +171,8 @@ export const useWikipedia = () => {
 
             html = html.replace(/<div\s+(?:[^>]*\s+)?class="(?:[^"]*\s+)?hatnote(?:\s+[^"]*)?"\s*.*?<\/div>/gs, '');
 
-            // const seeAlsoTitles = ['같이 보기', 'See also'];
-            // const referencesTitles = ['각주', 'References'];
-            // const sections = page.sections;
-
-            // sections.forEach((section: { line: string; }) => {
-            //     if (seeAlsoTitles.includes(section.line) || referencesTitles.includes(section.line)) {
-            //         const sectionRegex = new RegExp(`<h2.*?>${section.line}.*?</h2>.*?(?=<h2|$)`, 'gs');
-            //         html = html.replace(sectionRegex, '');
-            //     }
-            // });
+            // Remove navbox completely
+            html = html.replace(/<div\s+(?:[^>]*\s+)?class="(?:[^"]*\s+)?navbox(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/div>\s*(?:<\/?div[^>]*>\s*)*(?=<div|$)/g, '');
 
             const pageTitle = formatPageTitle(page.title);
             setCurrentPage({
