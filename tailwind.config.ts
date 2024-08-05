@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss"
 import { fontFamily } from "tailwindcss/defaultTheme"
 
 const config = {
+  mode: 'jit', // Just-In-Time Compilation
   darkMode: ["class"],
   content: [
     './pages/**/*.{ts,tsx}',
@@ -56,9 +57,9 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        theme: {
-          DEFAULT: "#3366CC",
-          foreground: "#FFFFFF",  // 텍스트 색상, 필요에 따라 조정하세요
+        linkle: {
+          DEFAULT: "hsl(var(--linkle))",
+          foreground: "hsl(var(--linkle-foreground))",
         },
       },
       borderRadius: {

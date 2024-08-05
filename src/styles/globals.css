@@ -36,9 +36,9 @@
 
     --radius: 0.5rem;
 
-    --theme: 220 60% 50%;
+    --linkle: 220 60% 50%;
     /* #3366CC */
-    --theme-foreground: 0 0% 100%;
+    --linkle-foreground: 0 0% 100%;
     /* 흰색 텍스트, 필요에 따라 조정 */
   }
 
@@ -71,9 +71,9 @@
     --input: 0 0% 14.9%;
     --ring: 0 0% 83.1%;
 
-    --theme: 220 60% 50%;
+    --linkle: 220 60% 50%;
     /* #3366CC, 다크 모드에서도 동일하게 유지 */
-    --theme-foreground: 0 0% 100%;
+    --linkle-foreground: 0 0% 100%;
     /* 다크 모드에서도 흰색 텍스트 유지 */
   }
 }
@@ -87,6 +87,13 @@
     @apply bg-background text-foreground;
     font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
   }
+}
+
+:root {
+  --linkle: #3366CC;
+}
+.bg-linkle {
+  background-color: var(--linkle);
 }
 
 .wiki-content {
