@@ -217,12 +217,14 @@ const AdminScreen: React.FC = () => {
                         </CardContent>
                     </Card>
                 )}
-                <div className="mb-4 space-x-4">
-                    <Button type="button" onClick={addNewChallenge}>새 챌린지 추가</Button>
-                    <Button type="button" onClick={addNewRandomChallenge} disabled={isAddingRandomChallenge}>
-                        새 랜덤 챌린지 추가
-                    </Button>
-                    <Button type="submit">적용</Button>
+                <div className="flex flex-row mb-4 justify-between">
+                    <div className="mb-4 space-x-4">
+                        <Button type="button" variant="outline" onClick={addNewChallenge}>새 챌린지 추가</Button>
+                        <Button type="button" variant="outline" onClick={addNewRandomChallenge} disabled={isAddingRandomChallenge}>
+                            새 랜덤 챌린지 추가
+                        </Button>
+                    </div>
+                    <Button type="submit">업로드</Button>
                 </div>
             </form>
         </div>
