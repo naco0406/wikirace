@@ -19,11 +19,12 @@ import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { useNickname } from '@/hooks/useNickname';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useWikipedia } from '@/hooks/useWikipedia';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import GameForcedEnd from '../ForcedEnd';
+import PathRecord from '../PathRecord';
 
 const GameScreen: React.FC = () => {
     const {
@@ -100,62 +101,84 @@ const GameScreen: React.FC = () => {
 
     if (isFirstLoad) return <Loading />;
 
-    if (isLoading && !isFirstLoad) return (
-        <GameLoading
-            fromPage={path[path.length - 2] || ''}
-            toPage={path[path.length - 1] || ''}
-            moveCount={moveCount}
-            path={path}
-        />
-    );
+    if (isLoading && !isFirstLoad) {
+        return (
+            <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
+                <header className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-b border-[#E5E5E5] px-4 py-6">
+                    <div className="flex flex-row items-center">
+                        <Button
+                            variant="ghost"
+                            onClick={goBack}
+                            disabled={path.length <= 1}
+                        >
+                            <div className='flex flex-row items-center space-x-[10px]'>
+                                <ArrowLeft className="w-6 h-6 text-linkle-foreground" />
+                                <span className="font-[400] text-24 leading-28 text-linkle-foreground">{path[path.length - 2] || ''}</span>
+                            </div>
+                        </Button>
+                    </div>
+                    <div className="flex items-center">
+                        <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                    </div>
+                    <div className="flex flex-row items-center">
+                        <Button
+                            variant="ghost"
+                            disabled={true}
+                        >
+                            <CircleHelp className="w-6 h-6 text-linkle-foreground" />
+                        </Button>
+                    </div>
+                </header>
+
+                <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white overflow-hidden">
+                    <p className="mt-[28px] mb-[100px]" />
+                    <Loader2 className="w-[48px] h-[48px] animate-spin mt-[50px] mb-[40px] text-[#3366CC]" />
+                    <p className="font-[400] text-24 leading-28 mb-[80px]">로딩 중</p>
+                    <div className="flex flex-col min-h-[280px] items-center">
+                        <PathRecord path={path} />
+                    </div>
+                </div>
+
+                <footer className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-t border-[#E5E5E5] px-6 py-8">
+                    <div className="font-[400] text-24 leading-28 text-linkle-foreground truncate">
+                        현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span>
+                    </div>
+                    <div className="flex flex-row items-center space-x-[50px]">
+                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formattedTime}</span></span>
+                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{moveCount}</span></span>
+                    </div>
+                </footer>
+            </div>
+        );
+    }
 
     if (!currentPage) return <div>Error loading page</div>;
 
     return (
         <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
-            <header className="bg-primary text-primary-foreground p-4 flex justify-between items-center">
-                <div className="flex items-center">
+            <header className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-b border-[#E5E5E5] px-4 py-6">
+                <div className="flex flex-row items-center">
                     <Button
                         variant="ghost"
                         onClick={goBack}
                         disabled={path.length <= 1}
-                        className="mr-4 flex items-center text-white"
                     >
-                        <ArrowLeft className="w-6 h-6 text-white" />
+                        <div className='flex flex-row items-center space-x-[10px]'>
+                            <ArrowLeft className="w-6 h-6 text-linkle-foreground" />
+                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">{path[path.length - 2] || ''}</span>
+                        </div>
                     </Button>
                 </div>
                 <div className="flex items-center">
-                    <span className="mr-4">목표: {dailyChallenge?.endPage || '-'}</span>
-                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button variant="secondary">게임 그만두기</Button>
-                        </DialogTrigger>
-                        <DialogContent className="rounded-lg p-6">
-                            <DialogHeader>
-                                <DialogTitle>게임을 그만두시겠습니까?</DialogTitle>
-                                <DialogDescription>
-                                    오늘은 더 이상 플레이 할 수 없습니다.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter className="flex flex-row justify-end space-x-2">
-                                <DialogClose asChild>
-                                    <Button variant="outline" className="flex-grow-0" onClick={() => setDialogOpen(false)}>취소</Button>
-                                </DialogClose>
-                                <Link href="/" passHref>
-                                    <Button
-                                        variant="destructive"
-                                        className="flex-grow-0"
-                                        onClick={() => {
-                                            resetTimer();
-                                            setHasGiveUpToday(true);
-                                        }}
-                                    >
-                                        확인
-                                    </Button>
-                                </Link>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                    <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                </div>
+                <div className="flex flex-row items-center">
+                    <Button
+                        variant="ghost"
+                        disabled={true}
+                    >
+                        <CircleHelp className="w-6 h-6 text-linkle-foreground" />
+                    </Button>
                 </div>
             </header>
 
@@ -163,18 +186,14 @@ const GameScreen: React.FC = () => {
                 <div className="wiki-content wiki-content max-w-full overflow-x-hidden break-words" dangerouslySetInnerHTML={{ __html: currentPage.html }} />
             </div>
 
-            <footer className="bg-secondary">
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex justify-between items-center">
-                            <span>소요 시간: {formattedTime}</span>
-                            <span>이동 횟수: {moveCount}</span>
-                        </div>
-                        <div className="text-sm text-muted-foreground truncate mt-2">
-                            현재 페이지: {currentPage.title}
-                        </div>
-                    </CardContent>
-                </Card>
+            <footer className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-t border-[#E5E5E5] px-6 py-8">
+                <div className="font-[400] text-24 leading-28 text-linkle-foreground truncate">
+                    현재 문서: <span className="font-[600] text-[#3366CC]">{currentPage.title}</span>
+                </div>
+                <div className="flex flex-row items-center space-x-[50px]">
+                    <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formattedTime}</span></span>
+                    <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{moveCount}</span></span>
+                </div>
             </footer>
         </div>
     );

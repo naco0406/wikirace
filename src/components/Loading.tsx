@@ -31,13 +31,13 @@ export const Loading: React.FC = () => {
             <p className="mt-[28px] mb-[100px]" />
             <Logo width={250} height={75} />
             <Loader2 className="w-[48px] h-[48px] animate-spin mt-[50px] mb-[40px] text-[#3366CC]" />
-            <p className="font-[400] text-[24px] leading-[28px] mb-[80px]">오늘의 게임을 로딩 중입니다</p>
+            <p className="font-[400] text-24 leading-28 mb-[80px]">오늘의 게임을 로딩 중입니다</p>
             <div className="flex flex-col min-h-[280px] items-center">
                 {challenge ? (
                     <>
-                        <p className="mb-[30px]">출발 문서 : <span className="text-[#3366CC]">{challenge.startPage}</span></p>
+                        <p className="mb-[30px]">출발 문서 : <span className="font-[600] text-[#3366CC]">{challenge.startPage}</span></p>
                         <MoveDown />
-                        <p className="mt-[30px]">도착 문서 : <span className="text-[#3366CC]">{challenge.endPage}</span></p>
+                        <p className="mt-[30px]">도착 문서 : <span className="font-[600] text-[#3366CC]">{challenge.endPage}</span></p>
                     </>
                 ) : (
                     null
