@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { Loader2, MoveDown } from 'lucide-react';
-import { fetchDailyChallenge, DailyChallenge } from '@/lib/gameData';
-import { usePermanentDailyTimer } from '@/hooks/usePermanentDailyTimer';
+import Logo from '@/assets/Logo';
 import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
-import Logo from '@/assets/Logo';
+import { usePermanentDailyTimer } from '@/hooks/usePermanentDailyTimer';
+import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
+import { Loader2, MoveDown } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 export const Loading: React.FC = () => {
     const [challenge, setChallenge] = useState<DailyChallenge | null>(null);

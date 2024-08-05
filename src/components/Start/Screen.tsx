@@ -1,32 +1,15 @@
 "use client";
 
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-} from "@/components/ui/carousel";
-import Link from 'next/link';
-import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
-import { useNickname } from '@/hooks/useNickname';
-import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { getKSTDateString } from '@/lib/firebaseConfig';
-import { Trophy, Move, Clock } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useKeyboard } from '@/hooks/useKeyboard';
 import Logo from '@/assets/Logo';
+import { Button } from '@/components/ui/button';
+import { useKeyboard } from '@/hooks/useKeyboard';
+import { useLocalRecord } from '@/hooks/useLocalRecord';
+import { useNickname } from '@/hooks/useNickname';
+import { getKSTDateString } from '@/lib/firebaseConfig';
+import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);

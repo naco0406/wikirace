@@ -1,26 +1,13 @@
 "use client";
 
-import { GameLoading, Loading } from '@/components/Loading';
+import { Loading } from '@/components/Loading';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
 import { useTimer } from '@/contexts/TimerContext';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { useNickname } from '@/hooks/useNickname';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { useWikipedia } from '@/hooks/useWikipedia';
 import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import GameForcedEnd from '../ForcedEnd';
