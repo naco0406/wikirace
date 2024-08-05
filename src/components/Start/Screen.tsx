@@ -52,12 +52,12 @@ const StartScreen: React.FC = () => {
             <p className="font-[400] text-24 leading-28 mt-[28px] mb-[100px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p>
             {!(hasClearedToday || hasGiveUpToday) ? (
                 <Link href="/game" className="block">
-                    <Button className="w-full text-lg bg-linkle p-6 text-white">
+                    <Button className="w-full text-lg bg-linkle px-20 py-6 text-white">
                         {hasStartedToday ? '이어서 도전하기' : '시작'}
                     </Button>
                 </Link>
             ) : (
-                <Button className="w-full text-lg p-6 bg-linkle text-white cursor-not-allowed" disabled>
+                <Button className="w-full text-lg px-20 py-6 bg-linkle text-white cursor-not-allowed" disabled>
                     {hasClearedToday ? '오늘의 도전을 완료했습니다!' : '오늘의 도전을 포기했습니다.'}
                 </Button>
             )}
