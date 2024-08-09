@@ -4,8 +4,6 @@ import Logo from '@/assets/Logo';
 import { Button } from '@/components/ui/button';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { useNickname } from '@/hooks/useNickname';
-import { getKSTDateString } from '@/lib/firebaseConfig';
 import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,10 +11,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
-    const nickname = useNickname();
-    const { localRecord, hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
-    const today = getKSTDateString();
-    const [open, setOpen] = useState(false);
+    const { hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
     const router = useRouter();
 
     const handleAdminAction = useCallback(() => {
@@ -67,33 +62,3 @@ const StartScreen: React.FC = () => {
 };
 
 export default StartScreen;
-
-const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
-
-const qaPairs = [
-    {
-        question: "링클이 무엇인가요?",
-        answer: "링클은 매일 새로운 위키피디아 스피드런을 즐기는 게임입니다."
-    },
-    {
-        question: "링클은 어떻게 플레이하나요?",
-        answer: "매일 새로운 시작 페이지와 목표 페이지가 주어집니다. 시작 페이지에서 위키피디아 링크만을 통해 목표 페이지에 도달해야 합니다."
-    },
-    {
-        question: "다른 플레이어들과 경쟁할 수 있나요?",
-        answer: "네, 일일 랭킹을 통해 다른 플레이어들의 성적을 확인하고 경쟁할 수 있습니다."
-    },
-    {
-        question: "랭킹은 어떻게 계산되나요?",
-        answer: "하루동안 가장 먼저 클리어 한 사람, 가장 빠르게 클리어 한 사람, 가장 적은 이동 횟수로 클리어 한 사람이 각각 제공됩니다."
-    },
-    {
-        question: "매일 새로운 챌린지가 제공되나요?",
-        answer: "네, 매일 자정에 새로운 시작 페이지와 목표 페이지가 제공됩니다."
-    },
-];

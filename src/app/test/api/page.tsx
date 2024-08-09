@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import JSONTreeView from './JSONTreeView';
-import { WikipediaAPI, apiCategories, importantAPIs } from '@/lib/WikipediaService';
+import { WikipediaAPI, apiCategories, importantAPIs } from '@/service/WikipediaService';
 import { openInNewTab } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ExternalLink, Loader2, Send, Star } from 'lucide-react';

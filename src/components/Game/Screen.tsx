@@ -9,7 +9,7 @@ import { useScreenSize } from '@/hooks/useScreenSize';
 import { useWikipedia } from '@/hooks/useWikipedia';
 import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import GameForcedEnd from '../ForcedEnd';
 import PathRecord from '../PathRecord';
 
@@ -34,9 +34,8 @@ const GameScreen: React.FC = () => {
     } = useWikipedia();
 
     const { isMobile } = useScreenSize();
-    const { formattedTime, startTimer, resetTimer } = useTimer();
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const { localRecord, hasStartedToday, hasClearedToday, hasGiveUpToday, setHasGiveUpToday } = useLocalRecord();
+    const { formattedTime, startTimer } = useTimer();
+    const { localRecord, hasStartedToday, hasClearedToday, hasGiveUpToday } = useLocalRecord();
     const router = useRouter();
 
     const handleForceEndAction = useCallback(() => {

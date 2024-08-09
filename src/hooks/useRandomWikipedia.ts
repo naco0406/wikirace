@@ -1,4 +1,4 @@
-import { WikipediaAPI } from '@/lib/WikipediaService';
+import { WikipediaAPI } from '@/service/WikipediaService';
 import { useState, useEffect, useCallback } from 'react';
 import { formatPageTitle } from './useWikipedia';
 
