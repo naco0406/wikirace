@@ -43,9 +43,7 @@ export const addDailyChallenge = async (date: string, challenge: DailyChallenge)
         const challengeRef = doc(db, 'dailyChallenges', date);
         await setDoc(challengeRef, {
             ...challenge,
-            // timestamp: Timestamp.now() 
         });
-        // console.log(`Challenge for ${date} added successfully`);
     } catch (error) {
         console.error('Error adding challenge: ', error);
         throw error;

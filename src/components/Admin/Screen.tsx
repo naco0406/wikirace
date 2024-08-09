@@ -12,6 +12,7 @@ import { useForm, useFieldArray, FieldValues } from 'react-hook-form';
 import { cn } from "@/lib/utils";
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
 import { DatePickerWithToday } from '../ui/date-picker';
+import { PocketService } from '@/service/PocketService';
 
 interface ChallengeInput {
     date: Date | undefined;
@@ -56,7 +57,16 @@ const AdminScreen: React.FC = () => {
                         endPage: input.endPage,
                         totalCount: 0
                     };
-                    await addDailyChallenge(format(input.date, 'yyyy-MM-dd'), challengeData);
+                    // await addDailyChallenge(format(input.date, 'yyyy-MM-dd'), challengeData);
+                    const formattedDate = format(input.date, 'yyyy-MM-dd');
+
+                    // Firebase에 데이터 추가
+                    await addDailyChallenge(formattedDate, challengeData);
+
+                    // PocketBase에 데이터 추가
+                    console.log('Attempting: POST_add_daily_challenge');
+                    await PocketService.POST_add_daily_challenge(formattedDate, challengeData);
+                    console.log('PocketBase Uploaded');
                 }
             });
 
