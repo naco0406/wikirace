@@ -298,8 +298,6 @@ export const useWikipedia = () => {
         if (isGameOver) {
             const submitRankingAsync = async () => {
                 const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
-                updateLocalRecord(finalRecord);
-                updateLocalFullRecord(finalRecord);
                 finalizeRecord();
 
                 const generateUniqueId = () => {

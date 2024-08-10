@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -15,19 +16,24 @@ import { getKSTDateString } from '@/lib/firebaseConfig';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Copy, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
+import { OpenAIService } from '@/service/OpenAIService';
+import { Loader2 } from 'lucide-react';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
     const { elapsedTime } = useTimer();
     const nickname = useNickname();
-    const { localRecord } = useLocalRecord();
+    const { localRecord, localFullRecord } = useLocalRecord();
 
     const [finalLocalTime, setFinalLocalTime] = useState(0);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [shareResult, setShareResult] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [showCursor, setShowCursor] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         confetti({
             particleCount: 100,
             spread: 70,
@@ -47,12 +53,26 @@ const SuccessScreen: React.FC = () => {
     };
     const today = getKSTDateString();
 
-    const openShareModal = () => {
+    const openShareModal = async () => {
         setIsDialogOpen(true);
+        setIsLoading(true);
+        setShowCursor(true);
+        try {
+            const openAIService = new OpenAIService();
+            const result = await openAIService.GET_result_for_share(localFullRecord.path);
+            setShareResult(result);
+        } catch (error) {
+            console.error('Error getting share result:', error);
+            setShareResult('오류가 발생했습니다. 다시 시도해 주세요.');
+        }
+        setIsLoading(false);
+        setShowCursor(false);
     };
 
     const handleShare = async () => {
-
+        const shareText = `${today} 위키피디아 탐험\n소요 시간: ${formatTime(finalLocalTime)}\n이동 횟수: ${localRecord.moveCount}\n경로: ${shareResult}\n#위키피디아_탐험 #WikipediaExplorer`;
+        await navigator.clipboard.writeText(shareText);
+        alert('결과가 클립보드에 복사되었습니다.');
     };
 
     return (
@@ -86,9 +106,22 @@ const SuccessScreen: React.FC = () => {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className='rounded-lg'>
                     <DialogHeader>
-                        <DialogTitle>게임 결과</DialogTitle>
+                        <DialogTitle>링클 결과 공유하기</DialogTitle>
                     </DialogHeader>
-                    <Button onClick={handleShare} className="mt-4 w-full">
+                    <div className="mt-4 min-h-[2em]">
+                        {isLoading ? (
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                        ) : (
+                            <TypeAnimation
+                                sequence={[shareResult]}
+                                wrapper="span"
+                                cursor={showCursor}
+                                speed={50}
+                                style={{ fontSize: '1em', display: 'inline-block' }}
+                            />
+                        )}
+                    </div>
+                    <Button onClick={handleShare} className="mt-4 w-full" disabled={isLoading}>
                         <Copy className="w-4 h-4 mr-2" />
                         결과 복사하기
                     </Button>
