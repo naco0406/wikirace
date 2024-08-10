@@ -64,9 +64,9 @@ const AdminScreen: React.FC = () => {
                     await addDailyChallenge(formattedDate, challengeData);
 
                     // PocketBase에 데이터 추가
-                    console.log('Attempting: POST_add_daily_challenge');
-                    await PocketService.POST_add_daily_challenge(formattedDate, challengeData);
-                    console.log('PocketBase Uploaded');
+                    // console.log('Attempting: POST_add_daily_challenge');
+                    // await PocketService.POST_add_daily_challenge(formattedDate, challengeData);
+                    // console.log('PocketBase Uploaded');
                 }
             });
 

@@ -30,17 +30,17 @@ export const fetchDailyChallenge = async (): Promise<DailyChallenge | null> => {
     if (challenge && 'startPage' in challenge && 'endPage' in challenge) {
         return challenge as DailyChallenge;
     }
-    console.log('Attempting: GET_today_challenges');
-    const pocketChallent = await PocketService.GET_today_challenges();
-    console.log('PocketBase Fetched: ', pocketChallent);
+    // console.log('Attempting: GET_today_challenges');
+    // const pocketChallent = await PocketService.GET_today_challenges();
+    // console.log('PocketBase Fetched: ', pocketChallent);
     return null;
 };
 
 export const submitRanking = async (ranking: MyRanking): Promise<void> => {
     await addRanking(ranking);
-    console.log('Attempting: POST_add_Ranking');
-    await PocketService.POST_add_Ranking(ranking);
-    console.log('PocketBase Uploaded');
+    // console.log('Attempting: POST_add_Ranking');
+    // await PocketService.POST_add_Ranking(ranking);
+    // console.log('PocketBase Uploaded');
 };
 
 export const fetchRankings = async (sortBy: string, limit: number = 10): Promise<Ranking[]> => {

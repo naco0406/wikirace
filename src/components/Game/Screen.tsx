@@ -20,11 +20,14 @@ const GameScreen: React.FC = () => {
         isFirstLoad,
         isGameOver,
         path,
+        singlePath,
         moveCount,
         setMoveCount,
         fetchWikiPage,
         handleLinkClick,
         setPath,
+        setFullPath,
+        setSinglePath,
         isForcedEnd,
         forcedEndReason,
         setIsForcedEnd,
@@ -72,6 +75,8 @@ const GameScreen: React.FC = () => {
                 fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
             } else if (dailyChallenge) {
                 setPath([dailyChallenge.startPage]);
+                setFullPath([dailyChallenge.startPage]);
+                setSinglePath([dailyChallenge.startPage]);
                 fetchWikiPage(dailyChallenge.startPage);
             }
         }
@@ -95,11 +100,11 @@ const GameScreen: React.FC = () => {
                         <Button
                             variant="ghost"
                             onClick={goBack}
-                            disabled={path.length <= 1}
+                            disabled={true}
                         >
                             <div className='flex flex-row items-center space-x-[10px]'>
                                 <ArrowLeft className="w-6 h-6 text-linkle-foreground" />
-                                <span className="font-[400] text-24 leading-28 text-linkle-foreground">{path[path.length - 2] || ''}</span>
+                                <span className="font-[400] text-24 leading-28 text-linkle-foreground">{singlePath[singlePath.length - 2] || ''}</span>
                             </div>
                         </Button>
                     </div>
@@ -116,11 +121,10 @@ const GameScreen: React.FC = () => {
                     </div>
                 </header>
 
-                <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white overflow-hidden">
-                    <p className="mt-[28px] mb-[100px]" />
-                    <Loader2 className="w-[48px] h-[48px] animate-spin mt-[50px] mb-[40px] text-[#3366CC]" />
+                <div className="flex-grow overflow-auto w-full flex flex-col items-center justify-center bg-white overflow-hidden">
+                    <Loader2 className="w-[48px] h-[48px] animate-spin mb-[40px] text-[#3366CC]" />
                     <p className="font-[400] text-24 leading-28 mb-[80px]">로딩 중</p>
-                    <div className="flex flex-col min-h-[280px] items-center">
+                    <div className="flex flex-col items-center">
                         <PathRecord path={path} />
                     </div>
                 </div>
@@ -147,11 +151,11 @@ const GameScreen: React.FC = () => {
                     <Button
                         variant="ghost"
                         onClick={goBack}
-                        disabled={path.length <= 1}
+                        disabled={!singlePath[singlePath.length - 2]}
                     >
                         <div className='flex flex-row items-center space-x-[10px]'>
                             <ArrowLeft className="w-6 h-6 text-linkle-foreground" />
-                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">{path[path.length - 2] || ''}</span>
+                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">{singlePath[singlePath.length - 2] || ''}</span>
                         </div>
                     </Button>
                 </div>

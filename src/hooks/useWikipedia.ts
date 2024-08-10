@@ -7,6 +7,7 @@ import { useLocalRecord } from './useLocalRecord';
 import { useNickname } from './useNickname';
 import { useScreenSize } from './useScreenSize';
 import { useTimer } from '@/contexts/TimerContext';
+import { set } from 'date-fns';
 
 interface WikiPageContent {
     title: string;
@@ -28,6 +29,8 @@ export const useWikipedia = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
     const [path, setPath] = useState<string[]>([]);
+    const [fullPath, setFullPath] = useState<string[]>([]);
+    const [singlePath, setSinglePath] = useState<string[]>([]);
     const [targetPage, setTargetPage] = useState('');
     const [isGameOver, setIsGameOver] = useState(false);
     const [moveCount, setMoveCount] = useState(0);
@@ -39,7 +42,7 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { localRecord, updatelocalRecord, finalizeRecord } = useLocalRecord();
+    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord } = useLocalRecord();
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -69,6 +72,12 @@ export const useWikipedia = () => {
             setPath(localRecord.path);
             setMoveCount(localRecord.moveCount);
             fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
+        }
+        if (localFullRecord.path.length > 0) {
+            setFullPath(localFullRecord.path);
+        }
+        if (localSingleRecord.path.length > 0) {
+            setSinglePath(localSingleRecord.path);
         }
     }, []);
 
@@ -131,7 +140,7 @@ export const useWikipedia = () => {
             for (let index of sectionIndexesToRemove) {
                 const currentSection = sections.find(s => parseInt(s.index) === index);
                 if (!currentSection) {
-                    console.log(`Section not found for index ${index}`);
+                    // console.log(`Section not found for index ${index}`);
                     continue;
                 }
 
@@ -147,9 +156,9 @@ export const useWikipedia = () => {
 
                 if (sectionMatch) {
                     html = html.replace(sectionMatch[0], '');
-                    console.log(`Removed section: ${currentSection.line}`);
+                    // console.log(`Removed section: ${currentSection.line}`);
                 } else {
-                    console.log(`Could not find matches for section: ${currentSection.line}`);
+                    // console.log(`Could not find matches for section: ${currentSection.line}`);
                 }
             }
 
@@ -210,37 +219,87 @@ export const useWikipedia = () => {
                 const title = decodeURIComponent(href.split('/wiki/')[1]);
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
+
+                // 새로운 경로 생성
                 const newPath = [...path, formattedTitle];
+                const newFullPath = [...fullPath, formattedTitle];
+                const newSinglePath = [...singlePath, formattedTitle];
+
+                // 상태 업데이트
                 setMoveCount(newMoveCount);
                 setPath(newPath);
-                updatelocalRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
+                setFullPath(newFullPath);
+                setSinglePath(newSinglePath);
+
+                // 로컬 레코드 업데이트
+                updateLocalRecord({
+                    moveCount: newMoveCount,
+                    time: elapsedTime,
+                    path: newPath
+                });
+                updateLocalFullRecord({
+                    moveCount: newMoveCount,
+                    time: elapsedTime,
+                    path: newFullPath
+                });
+                updateLocalSingleRecord({
+                    moveCount: newMoveCount,
+                    time: elapsedTime,
+                    path: newSinglePath
+                });
+
                 fetchWikiPage(title);
             } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
                 setIsForcedEnd(true);
                 setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
             }
         }
-    }, [isGameOver, fetchWikiPage, moveCount, path, elapsedTime, updatelocalRecord]);
+    }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     const goBack = useCallback(() => {
-        if (path.length <= 1) return;
+        if (!singlePath[singlePath.length - 2]) return;
 
-        const newPath = [...path];
-        newPath.pop();
-        const previousPage = newPath[newPath.length - 1];
+        const previousPage = singlePath[singlePath.length - 2]; // 이전 페이지
+        const goBackText = '뒤로가기';
+
+        const newPath = [...path, previousPage];
+        const newFullPath = [...fullPath, goBackText];
+
+        const newSinglePath = [...singlePath];
+        newSinglePath.pop();
 
         const newMoveCount = moveCount + 1;
+
         setPath(newPath);
+        setFullPath(newFullPath);
+        setSinglePath(newSinglePath);
         setMoveCount(newMoveCount);
-        updatelocalRecord({ moveCount: newMoveCount, time: elapsedTime, path: newPath });
+
+        updateLocalRecord({
+            moveCount: newMoveCount,
+            time: elapsedTime,
+            path: newPath
+        });
+        updateLocalFullRecord({
+            moveCount: newMoveCount,
+            time: elapsedTime,
+            path: newFullPath
+        });
+        updateLocalSingleRecord({
+            moveCount: newMoveCount,
+            time: elapsedTime,
+            path: newSinglePath
+        });
+
         fetchWikiPage(previousPage);
-    }, [path, fetchWikiPage, moveCount, elapsedTime, updatelocalRecord]);
+    }, [path, fullPath, singlePath, fetchWikiPage, moveCount, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     useEffect(() => {
         if (isGameOver) {
             const submitRankingAsync = async () => {
                 const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
-                updatelocalRecord(finalRecord);
+                updateLocalRecord(finalRecord);
+                updateLocalFullRecord(finalRecord);
                 finalizeRecord();
 
                 const generateUniqueId = () => {
@@ -269,6 +328,7 @@ export const useWikipedia = () => {
         isLoading,
         isFirstLoad,
         path,
+        singlePath,
         targetPage,
         isGameOver,
         setIsGameOver,
@@ -277,6 +337,8 @@ export const useWikipedia = () => {
         fetchWikiPage,
         handleLinkClick,
         setPath,
+        setFullPath,
+        setSinglePath,
         isForcedEnd,
         forcedEndReason,
         setIsForcedEnd,
