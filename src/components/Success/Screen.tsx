@@ -83,7 +83,7 @@ const SuccessScreen: React.FC = () => {
                 <CardContent className="space-y-4">
                     <div className="space-y-8">
                         <div className="flex flex-col space-y-2">
-                            <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTime(finalLocalTime)}</span></span>
+                            <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(finalLocalTime)}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
                         </div>
                         <PathResult path={localRecord.path} />
@@ -110,7 +110,7 @@ const SuccessScreen: React.FC = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex flex-col space-y-2">
-                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: {formatTime(finalLocalTime)}</span>
+                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: {formatTimeInKor(finalLocalTime)}</span>
                         <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: {localRecord.moveCount}</span>
                         <div className="mt-4 min-h-[2em]">
                             {isLoading ? (
@@ -141,12 +141,6 @@ export default SuccessScreen;
 const AnimatedBackground = () => (
     <div className="absolute inset-0 bg-gradient-to-r from-green-400/30 to-blue-500/30 animate-gradient-x" />
 );
-
-const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-};
 
 export const formatTimeInKor = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
