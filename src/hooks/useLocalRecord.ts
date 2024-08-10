@@ -19,7 +19,17 @@ export function useLocalRecord() {
   const [localRecord, setLocalRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [localFullRecord, setLocalFullRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [localSingleRecord, setLocalSingleRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
-  const [dailyStatus, setDailyStatus] = useState<DailyStatus>({ hasStartedToday: false, hasClearedToday: false, resultOfToday: null });
+  const [dailyStatus, setDailyStatus] = useState<DailyStatus>(() => {
+    const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
+    const today = getKSTDateString();
+    if (storedStatus) {
+      const { status, date } = JSON.parse(storedStatus);
+      if (date === today) {
+        return status;
+      }
+    }
+    return { hasStartedToday: false, hasClearedToday: false, resultOfToday: null };
+  });
 
   useEffect(() => {
     const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
@@ -126,6 +136,7 @@ export function useLocalRecord() {
     hasStartedToday: dailyStatus.hasStartedToday,
     hasClearedToday: dailyStatus.hasClearedToday,
     resultOfToday: dailyStatus.resultOfToday,
+    dailyStatus,
     setHasStartedToday,
     setHasClearedToday,
     setResultOfToday,

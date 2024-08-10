@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
@@ -104,19 +105,26 @@ const SuccessScreen: React.FC = () => {
                 <DialogContent className='rounded-lg'>
                     <DialogHeader>
                         <DialogTitle>링클 결과 공유하기</DialogTitle>
+                        <DialogDescription>
+                            {linkleCount}번째 링클을 클리어했습니다!
+                        </DialogDescription>
                     </DialogHeader>
-                    <div className="mt-4 min-h-[2em]">
-                        {isLoading ? (
-                            <Loader2 className="w-6 h-6 animate-spin" />
-                        ) : (
-                            <TypeAnimation
-                                sequence={[shareResult]}
-                                wrapper="span"
-                                cursor={showCursor}
-                                speed={50}
-                                style={{ fontSize: '1em', display: 'inline-block' }}
-                            />
-                        )}
+                    <div className="flex flex-col space-y-2">
+                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: {formatTime(finalLocalTime)}</span>
+                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: {localRecord.moveCount}</span>
+                        <div className="mt-4 min-h-[2em]">
+                            {isLoading ? (
+                                <Loader2 className="w-6 h-6 animate-spin" />
+                            ) : (
+                                <TypeAnimation
+                                    sequence={[shareResult]}
+                                    wrapper="span"
+                                    cursor={showCursor}
+                                    speed={50}
+                                    style={{ fontSize: '1em', display: 'inline-block' }}
+                                />
+                            )}
+                        </div>
                     </div>
                     <Button onClick={handleShare} className="mt-4 w-full" disabled={isLoading}>
                         <Copy className="w-4 h-4 mr-2" />
@@ -140,7 +148,7 @@ const formatTime = (seconds: number) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
-const formatTimeInKor = (seconds: number): string => {
+export const formatTimeInKor = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
