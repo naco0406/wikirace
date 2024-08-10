@@ -52,7 +52,9 @@ const StartScreen: React.FC = () => {
         loadDailyChallenge();
     }, []);
 
-
+    const handleAuthor = useCallback(() => {
+        router.push('/author');
+    }, [router]);
 
     const { dailyStatus, localFullRecord, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
@@ -124,7 +126,7 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </div>
                 )}
-                <p className="text-xs mt-[300px] text-center text-linkle-foreground">© 2024 Naco & Minseo Lim. All rights reserved.</p>
+                <p className="text-xs mt-[300px] text-center text-linkle-foreground cursor-pointer" onClick={handleAuthor}>© 2024 Naco & Minseo Lim. All rights reserved.</p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="rounded-lg">
