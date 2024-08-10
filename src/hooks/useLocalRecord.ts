@@ -72,21 +72,21 @@ export function useLocalRecord() {
   const updateLocalRecord = (newRecord: Record) => {
     const today = getKSTDateString();
     setLocalRecord(newRecord);
-    console.log('localRecord: ', newRecord.path);
+    // console.log('localRecord: ', newRecord.path);
     localStorage.setItem('wikiRacelocalRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const updateLocalFullRecord = (newRecord: Record) => {
     const today = getKSTDateString();
     setLocalFullRecord(newRecord);
-    console.log('localFullRecord: ', newRecord.path);
+    // console.log('localFullRecord: ', newRecord.path);
     localStorage.setItem('wikiRacelocalFullRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const updateLocalSingleRecord = (newRecord: Record) => {
     const today = getKSTDateString();
     setLocalSingleRecord(newRecord);
-    console.log('localSingleRecord: ', newRecord.path);
+    // console.log('localSingleRecord: ', newRecord.path);
     localStorage.setItem('wikiRacelocalSingleRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
