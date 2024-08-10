@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { formatTimeInKor } from '../Success/Screen';
-import { Loader2, Copy, Share } from 'lucide-react';
+import { Loader2, Copy, Share, CircleHelp } from 'lucide-react';
 import { TypeAnimation } from 'react-type-animation';
 import {
     Dialog,
@@ -94,6 +94,16 @@ const StartScreen: React.FC = () => {
     return (
         <>
             <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white overflow-hidden">
+                <header className="absolute top-0 right-0 items-center">
+                    <div className="flex flex-row px-4 h-[80px] justify-between items-center">
+                        <Button
+                            variant="ghost"
+                            disabled={true}
+                        >
+                            <CircleHelp className="w-6 h-6 text-linkle-foreground" />
+                        </Button>
+                    </div>
+                </header>
                 <p className="mt-[28px] mb-[200px]" />
                 <Logo width={250} height={75} />
                 <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p>
