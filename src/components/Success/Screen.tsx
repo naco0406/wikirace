@@ -1,6 +1,5 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -11,21 +10,21 @@ import {
 } from "@/components/ui/dialog";
 import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { useNickname } from '@/hooks/useNickname';
 import { getKSTDateString } from '@/lib/firebaseConfig';
+import { OpenAIService } from '@/service/OpenAIService';
 import confetti from 'canvas-confetti';
-import { ArrowLeft, Copy, Share } from 'lucide-react';
+import { ArrowLeft, Copy, Loader2, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
-import { OpenAIService } from '@/service/OpenAIService';
-import { Loader2 } from 'lucide-react';
+import { calculateLinkleDayNumber } from '@/assets/constants';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
     const { elapsedTime } = useTimer();
-    const nickname = useNickname();
-    const { localRecord, localFullRecord } = useLocalRecord();
+    const { localRecord, localFullRecord, resultOfToday, setResultOfToday } = useLocalRecord();
+    const linkleCount = calculateLinkleDayNumber();
 
     const [finalLocalTime, setFinalLocalTime] = useState(0);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,31 +45,29 @@ const SuccessScreen: React.FC = () => {
         router.push('/');
     };
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-    const today = getKSTDateString();
-
     const openShareModal = async () => {
         setIsDialogOpen(true);
         setIsLoading(true);
         setShowCursor(true);
-        try {
-            const openAIService = new OpenAIService();
-            const result = await openAIService.GET_result_for_share(localFullRecord.path);
-            setShareResult(result);
-        } catch (error) {
-            console.error('Error getting share result:', error);
-            setShareResult('오류가 발생했습니다. 다시 시도해 주세요.');
+        if (resultOfToday === null) {
+            try {
+                const openAIService = new OpenAIService();
+                const result = await openAIService.GET_result_for_share(localFullRecord.path);
+                setShareResult(result);
+                setResultOfToday(result);
+            } catch (error) {
+                console.error('Error getting share result:', error);
+                setShareResult('오류가 발생했습니다. 다시 시도해 주세요.');
+            }
+        } else {
+            setShareResult(resultOfToday);
         }
         setIsLoading(false);
         setShowCursor(false);
     };
 
     const handleShare = async () => {
-        const shareText = `${today} 위키피디아 탐험\n소요 시간: ${formatTime(finalLocalTime)}\n이동 횟수: ${localRecord.moveCount}\n경로: ${shareResult}\n#위키피디아_탐험 #WikipediaExplorer`;
+        const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(finalLocalTime)}\n\n${shareResult}\n\nhttps://linkle-beta.vercel.app/`;
         await navigator.clipboard.writeText(shareText);
         alert('결과가 클립보드에 복사되었습니다.');
     };
@@ -80,7 +77,7 @@ const SuccessScreen: React.FC = () => {
             <AnimatedBackground />
             <Card className="relative z-10 w-full max-w-xl bg-white text-gray-800">
                 <CardHeader>
-                    <CardTitle className="text-2xl md:text-3xl font-bold text-center">목표 페이지에 도달했습니다!</CardTitle>
+                    <CardTitle className="text-2xl md:text-2xl font-bold text-center">{linkleCount}번째 링클을 클리어했습니다!</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-8">
@@ -136,3 +133,23 @@ export default SuccessScreen;
 const AnimatedBackground = () => (
     <div className="absolute inset-0 bg-gradient-to-r from-green-400/30 to-blue-500/30 animate-gradient-x" />
 );
+
+const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+const formatTimeInKor = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+        return `${hours.toString().padStart(2, '0')}시간 ${mins.toString().padStart(2, '0')}분 ${secs.toString().padStart(2, '0')}초`;
+    } else if (mins > 0) {
+        return `${mins.toString().padStart(2, '0')}분 ${secs.toString().padStart(2, '0')}초`;
+    } else {
+        return `${secs.toString().padStart(2, '0')}초`;
+    }
+};

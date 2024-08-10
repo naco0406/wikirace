@@ -38,7 +38,7 @@ const GameScreen: React.FC = () => {
 
     const { isMobile } = useScreenSize();
     const { formattedTime, startTimer } = useTimer();
-    const { localRecord, hasStartedToday, hasClearedToday, hasGiveUpToday } = useLocalRecord();
+    const { localRecord, hasStartedToday, hasClearedToday } = useLocalRecord();
     const router = useRouter();
 
     const handleForceEndAction = useCallback(() => {
@@ -67,8 +67,6 @@ const GameScreen: React.FC = () => {
         if (isFirstLoad) {
             if (hasClearedToday) {
                 router.push('/success');
-            } else if (hasGiveUpToday) {
-                router.push('/');
             } else if (hasStartedToday && localRecord.path.length > 0) {
                 setPath(localRecord.path);
                 setMoveCount(localRecord.moveCount);
@@ -80,7 +78,7 @@ const GameScreen: React.FC = () => {
                 fetchWikiPage(dailyChallenge.startPage);
             }
         }
-    }, [isFirstLoad, hasClearedToday, hasGiveUpToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
+    }, [isFirstLoad, hasClearedToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
 
     if (isGameOver) {
         router.push('/success');

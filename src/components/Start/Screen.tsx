@@ -11,7 +11,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
-    const { hasClearedToday, hasGiveUpToday, hasStartedToday } = useLocalRecord();
+    const { hasClearedToday, hasStartedToday } = useLocalRecord();
     const router = useRouter();
 
     const handleAdminAction = useCallback(() => {
@@ -45,7 +45,7 @@ const StartScreen: React.FC = () => {
             <p className="mt-[28px] mb-[100px]" />
             <Logo width={250} height={75} />
             <p className="font-[400] text-24 leading-28 mt-[28px] mb-[100px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p>
-            {!(hasClearedToday || hasGiveUpToday) ? (
+            {!(hasClearedToday) ? (
                 <Link href="/game" className="block">
                     <Button className="w-full text-lg bg-linkle px-20 py-6 text-white">
                         {hasStartedToday ? '이어서 도전하기' : '시작'}
@@ -53,7 +53,7 @@ const StartScreen: React.FC = () => {
                 </Link>
             ) : (
                 <Button className="w-full text-lg px-20 py-6 bg-linkle text-white cursor-not-allowed" disabled>
-                    {hasClearedToday ? '오늘의 도전을 완료했습니다!' : '오늘의 도전을 포기했습니다.'}
+                   오늘의 도전을 완료했습니다!
                 </Button>
             )}
             <p className="text-xs mt-[300px] text-center text-linkle-foreground">© 2024 Naco & Minseo Lim. All rights reserved.</p>

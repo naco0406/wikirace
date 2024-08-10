@@ -12,14 +12,14 @@ interface Record {
 interface DailyStatus {
   hasStartedToday: boolean;
   hasClearedToday: boolean;
-  hasGiveUpToday: boolean;
+  resultOfToday: string | null;
 }
 
 export function useLocalRecord() {
   const [localRecord, setLocalRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [localFullRecord, setLocalFullRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [localSingleRecord, setLocalSingleRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
-  const [dailyStatus, setDailyStatus] = useState<DailyStatus>({ hasStartedToday: false, hasClearedToday: false, hasGiveUpToday: false });
+  const [dailyStatus, setDailyStatus] = useState<DailyStatus>({ hasStartedToday: false, hasClearedToday: false, resultOfToday: null });
 
   useEffect(() => {
     const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
@@ -64,7 +64,7 @@ export function useLocalRecord() {
         setDailyStatus(status);
       } else {
         localStorage.removeItem('wikiRaceDailyStatus');
-        setDailyStatus({ hasStartedToday: false, hasClearedToday: false, hasGiveUpToday: false });
+        setDailyStatus({ hasStartedToday: false, hasClearedToday: false, resultOfToday: null });
       }
     }
   }, []);
@@ -72,27 +72,27 @@ export function useLocalRecord() {
   const updateLocalRecord = (newRecord: Record) => {
     const today = getKSTDateString();
     setLocalRecord(newRecord);
-    // console.log('localRecord: ', newRecord.path);
+    console.log('localRecord: ', newRecord.path);
     localStorage.setItem('wikiRacelocalRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const updateLocalFullRecord = (newRecord: Record) => {
     const today = getKSTDateString();
     setLocalFullRecord(newRecord);
-    // console.log('localFullRecord: ', newRecord.path);
+    console.log('localFullRecord: ', newRecord.path);
     localStorage.setItem('wikiRacelocalFullRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const updateLocalSingleRecord = (newRecord: Record) => {
     const today = getKSTDateString();
     setLocalSingleRecord(newRecord);
-    // console.log('localSingleRecord: ', newRecord.path);
+    console.log('localSingleRecord: ', newRecord.path);
     localStorage.setItem('wikiRacelocalSingleRecord', JSON.stringify({ record: newRecord, date: today }));
   };
 
   const finalizeRecord = () => {
     setDailyStatus(prev => ({ ...prev, hasClearedToday: true }));
-    updateDailyStatus({ hasStartedToday: true, hasClearedToday: true, hasGiveUpToday: false });
+    updateDailyStatus({ ...dailyStatus, hasStartedToday: true, hasClearedToday: true });
   };
 
   const setHasStartedToday = (value: boolean) => {
@@ -105,9 +105,9 @@ export function useLocalRecord() {
     updateDailyStatus({ ...dailyStatus, hasClearedToday: value });
   };
 
-  const setHasGiveUpToday = (value: boolean) => {
-    setDailyStatus(prev => ({ ...prev, hasGiveUpToday: value }));
-    updateDailyStatus({ ...dailyStatus, hasGiveUpToday: value });
+  const setResultOfToday = (value: string) => {
+    setDailyStatus(prev => ({ ...prev, resultOfToday: value }));
+    updateDailyStatus({ ...dailyStatus, resultOfToday: value });
   };
 
   const updateDailyStatus = (status: DailyStatus) => {
@@ -125,9 +125,9 @@ export function useLocalRecord() {
     finalizeRecord,
     hasStartedToday: dailyStatus.hasStartedToday,
     hasClearedToday: dailyStatus.hasClearedToday,
-    hasGiveUpToday: dailyStatus.hasGiveUpToday,
+    resultOfToday: dailyStatus.resultOfToday,
     setHasStartedToday,
     setHasClearedToday,
-    setHasGiveUpToday,
+    setResultOfToday,
   };
 }
