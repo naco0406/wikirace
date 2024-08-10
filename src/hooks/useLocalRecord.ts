@@ -19,17 +19,28 @@ export function useLocalRecord() {
   const [localRecord, setLocalRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [localFullRecord, setLocalFullRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
   const [localSingleRecord, setLocalSingleRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
-  const [dailyStatus, setDailyStatus] = useState<DailyStatus>(() => {
-    const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
-    const today = getKSTDateString();
-    if (storedStatus) {
-      const { status, date } = JSON.parse(storedStatus);
-      if (date === today) {
-        return status;
+  const [dailyStatus, setDailyStatus] = useState<DailyStatus>({
+    hasStartedToday: false,
+    hasClearedToday: false,
+    resultOfToday: null
+  });
+
+  useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    if (typeof window !== 'undefined') {
+      const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
+      const today = getKSTDateString();
+      if (storedStatus) {
+        const { status, date } = JSON.parse(storedStatus);
+        if (date === today) {
+          setDailyStatus(status);
+        } else {
+          // 날짜가 다르면 초기화
+          localStorage.removeItem('wikiRaceDailyStatus');
+        }
       }
     }
-    return { hasStartedToday: false, hasClearedToday: false, resultOfToday: null };
-  });
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   useEffect(() => {
     const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
