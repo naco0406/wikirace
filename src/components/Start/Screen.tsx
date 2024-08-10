@@ -126,7 +126,9 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </div>
                 )}
-                <p className="text-xs mt-[300px] text-center text-linkle-foreground cursor-pointer" onClick={handleAuthor}>© 2024 Naco & Minseo Lim. All rights reserved.</p>
+                <p className="text-xs mt-[300px] text-center text-linkle-foreground cursor-pointer" onClick={handleAuthor}>
+                    © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
+                </p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="rounded-lg">
