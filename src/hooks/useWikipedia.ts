@@ -68,18 +68,22 @@ export const useWikipedia = () => {
     }, []);
 
     useEffect(() => {
-        if (localRecord.path.length > 0) {
-            setPath(localRecord.path);
-            setMoveCount(localRecord.moveCount);
-            fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
-        }
-        if (localFullRecord.path.length > 0) {
-            setFullPath(localFullRecord.path);
-        }
-        if (localSingleRecord.path.length > 0) {
-            setSinglePath(localSingleRecord.path);
-        }
-    }, []);
+        const timeoutId = setTimeout(() => {
+            if (localRecord.path.length > 0) {
+                setPath(localRecord.path);
+                setMoveCount(localRecord.moveCount);
+                fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
+            }
+            if (localFullRecord.path.length > 0) {
+                setFullPath(localFullRecord.path);
+            }
+            if (localSingleRecord.path.length > 0) {
+                setSinglePath(localSingleRecord.path);
+            }
+        }, 0);
+
+        return () => clearTimeout(timeoutId);
+    }, [localRecord, localFullRecord, localSingleRecord]);
 
     const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
         if (currentTitle === endTitle) return true;

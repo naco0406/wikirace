@@ -26,68 +26,57 @@ export function useLocalRecord() {
   });
 
   useEffect(() => {
-    // 클라이언트 사이드에서만 실행
-    if (typeof window !== 'undefined') {
+    const timeoutId = setTimeout(() => {
+      if (typeof window === 'undefined') return;
+
+      const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
+      const storedlocalFullRecord = localStorage.getItem('wikiRacelocalFullRecord');
+      const storedlocaSingleRecord = localStorage.getItem('wikiRacelocalSingleRecord');
       const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
       const today = getKSTDateString();
+
+      if (storedlocalRecord) {
+        const { record, date } = JSON.parse(storedlocalRecord);
+        if (date === today) {
+          setLocalRecord(record);
+        } else {
+          localStorage.removeItem('wikiRacelocalRecord');
+          setLocalRecord({ moveCount: 0, time: 0, path: [] });
+        }
+      }
+
+      if (storedlocalFullRecord) {
+        const { record, date } = JSON.parse(storedlocalFullRecord);
+        if (date === today) {
+          setLocalFullRecord(record);
+        } else {
+          localStorage.removeItem('wikiRacelocalFullRecord');
+          setLocalFullRecord({ moveCount: 0, time: 0, path: [] });
+        }
+      }
+
+      if (storedlocaSingleRecord) {
+        const { record, date } = JSON.parse(storedlocaSingleRecord);
+        if (date === today) {
+          setLocalSingleRecord(record);
+        } else {
+          localStorage.removeItem('wikiRacelocalSingleRecord');
+          setLocalSingleRecord({ moveCount: 0, time: 0, path: [] });
+        }
+      }
+
       if (storedStatus) {
         const { status, date } = JSON.parse(storedStatus);
         if (date === today) {
           setDailyStatus(status);
         } else {
-          // 날짜가 다르면 초기화
           localStorage.removeItem('wikiRaceDailyStatus');
+          setDailyStatus({ hasStartedToday: false, hasClearedToday: false, resultOfToday: null });
         }
       }
-    }
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+    }, 0);
 
-  useEffect(() => {
-    const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
-    const storedlocalFullRecord = localStorage.getItem('wikiRacelocalFullRecord');
-    const storedlocaSingleRecord = localStorage.getItem('wikiRacelocalSingleRecord');
-    const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
-    const today = getKSTDateString();
-
-    if (storedlocalRecord) {
-      const { record, date } = JSON.parse(storedlocalRecord);
-      if (date === today) {
-        setLocalRecord(record);
-      } else {
-        localStorage.removeItem('wikiRacelocalRecord');
-        setLocalRecord({ moveCount: 0, time: 0, path: [] });
-      }
-    }
-
-    if (storedlocalFullRecord) {
-      const { record, date } = JSON.parse(storedlocalFullRecord);
-      if (date === today) {
-        setLocalFullRecord(record);
-      } else {
-        localStorage.removeItem('wikiRacelocalFullRecord');
-        setLocalFullRecord({ moveCount: 0, time: 0, path: [] });
-      }
-    }
-
-    if (storedlocaSingleRecord) {
-      const { record, date } = JSON.parse(storedlocaSingleRecord);
-      if (date === today) {
-        setLocalSingleRecord(record);
-      } else {
-        localStorage.removeItem('wikiRacelocalSingleRecord');
-        setLocalSingleRecord({ moveCount: 0, time: 0, path: [] });
-      }
-    }
-
-    if (storedStatus) {
-      const { status, date } = JSON.parse(storedStatus);
-      if (date === today) {
-        setDailyStatus(status);
-      } else {
-        localStorage.removeItem('wikiRaceDailyStatus');
-        setDailyStatus({ hasStartedToday: false, hasClearedToday: false, resultOfToday: null });
-      }
-    }
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const updateLocalRecord = (newRecord: Record) => {
