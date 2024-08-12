@@ -116,7 +116,7 @@ interface ReleaseProps {
 }
 const ReleaseHistory: ReleaseProps[] = [
     { date: "2024.08.10", version: "0.1.2", content: "새로운 경로 정책 반영\nGPT를 이용한 결과 공유" },
-    { date: "2024.08.05", version: "0.1.1", content: "위키피디아 API 개선\n링클 디자인 적용\n관리자 랜덤 챌린지 자동 생성" },
+    { date: "2024.08.05", version: "0.1.1", content: "위키피디아 API 개선\n링클 디자인 적용\n관리자 랜덤 챌린지 자동 생성\n위키피디아 API 테스트 페이지 생성" },
     { date: "2024.07.29", version: "0.1.0", content: "링클 이름 도입\n어제의 기록 시범 도입\n랭킹 제거\n대량 리팩토링, 버그 수정" },
     { date: "2024.07.25", version: "0.0.2", content: "관리자 페이지 추가\n시간, 랭킹 정책 변경\n이미지로 결과 공유" },
     { date: "2024.07.13", version: "0.0.1", content: "플레이 가능한 최초 배포\nNext.js, Firebase 사용" },

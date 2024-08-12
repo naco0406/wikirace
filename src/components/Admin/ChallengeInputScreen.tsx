@@ -20,7 +20,7 @@ interface ChallengeInput {
     endPage: string;
 }
 
-const AdminScreen: React.FC = () => {
+const ChallengeInputScreen: React.FC = () => {
     const router = useRouter();
     const [adminConsoleUrl, setAdminConsoleUrl] = useState<string | null>(null);
     const DEFAULT_CONSOLE_URL = 'https://console.firebase.google.com/';
@@ -241,4 +241,4 @@ const AdminScreen: React.FC = () => {
     );
 };
 
-export default AdminScreen;
+export default ChallengeInputScreen;

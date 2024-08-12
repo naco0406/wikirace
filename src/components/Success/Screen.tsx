@@ -54,8 +54,8 @@ const SuccessScreen: React.FC = () => {
             try {
                 const openAIService = new OpenAIService();
                 const result = await openAIService.GET_result_for_share(localFullRecord.path);
-                setShareResult(result);
-                setResultOfToday(result);
+                setShareResult(result.result);
+                setResultOfToday(result.result);
             } catch (error) {
                 console.error('Error getting share result:', error);
                 setShareResult('OpenAI API 오류가 발생했습니다. 다시 시도해 주세요.');

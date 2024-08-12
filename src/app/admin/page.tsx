@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import AdminScreen from '@/components/Admin/Screen';
 import { getAdminPassword } from '@/lib/firebaseConfig';
 import { useRouter } from 'next/navigation';
+import ChallengeInputScreen from '@/components/Admin/ChallengeInputScreen';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import WikiAPITestScreen from '@/components/Admin/WikiAPITestScreen';
+import OpenAiAPITestScreen from '@/components/Admin/OpenAiAPITestScreen';
 
 const Admin = () => {
     const router = useRouter();
@@ -29,13 +32,35 @@ const Admin = () => {
         }
     };
 
-    if (isAuthenticated) {
-        return <AdminScreen />;
-    }
-
     const handleBackToHome = () => {
         router.push('/');
     };
+
+    if (isAuthenticated) {
+        return (
+            <div className="p-6 bg-white w-full min-h-screen mx-auto">
+                <div className="w-full mx-auto">
+                    <Tabs defaultValue="challenge">
+                        <TabsList className="grid w-full max-w-[768px] grid-cols-3 mx-auto">
+                            <TabsTrigger value="challenge">챌린지 입력</TabsTrigger>
+                            <TabsTrigger value="openai">OpenAI API 테스트</TabsTrigger>
+                            <TabsTrigger value="wiki">위키 API 테스트</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="challenge">
+                            <ChallengeInputScreen />
+                        </TabsContent>
+                        <TabsContent value="openai">
+                            <OpenAiAPITestScreen />
+                        </TabsContent>
+                        <TabsContent value="wiki">
+                            <WikiAPITestScreen />
+                        </TabsContent>
+                    </Tabs>
+                    <Button variant="ghost" className="grid w-full mt-4 max-w-[768px] mx-auto" onClick={handleBackToHome}>메인으로 돌아가기</Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-12">

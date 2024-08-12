@@ -14,7 +14,7 @@ import { openInNewTab } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ExternalLink, Loader2, Send, Star } from 'lucide-react';
 
-const APITestScreen: React.FC = () => {
+const WikiAPITestScreen: React.FC = () => {
   const router = useRouter();
 
   const [apiMethod, setApiMethod] = useState(Object.keys(WikipediaAPI)[0]);
@@ -203,4 +203,4 @@ const APITestScreen: React.FC = () => {
   );
 };
 
-export default APITestScreen;
+export default WikiAPITestScreen;
