@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
-import { OpenAIService } from '@/service/OpenAIService';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -20,6 +19,7 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
+import { OpenAIService } from '@/service/OpenAI/OpenAIService';
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);

@@ -12,7 +12,6 @@ import {
 import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { getKSTDateString } from '@/lib/firebaseConfig';
-import { OpenAIService } from '@/service/OpenAIService';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Copy, Loader2, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -20,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
 import { calculateLinkleDayNumber } from '@/assets/constants';
+import { OpenAIService } from '@/service/OpenAI/OpenAIService';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
