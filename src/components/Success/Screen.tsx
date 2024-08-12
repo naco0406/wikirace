@@ -23,11 +23,11 @@ import { calculateLinkleDayNumber } from '@/assets/constants';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
-    const { elapsedTime } = useTimer();
+    // const { elapsedTime } = useTimer();
     const { localRecord, localFullRecord, resultOfToday, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
 
-    const [finalLocalTime, setFinalLocalTime] = useState(0);
+    // const [finalLocalTime, setFinalLocalTime] = useState(0);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [shareResult, setShareResult] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +39,7 @@ const SuccessScreen: React.FC = () => {
             spread: 70,
             origin: { y: 0.6 }
         });
-        setFinalLocalTime(elapsedTime);
+        // setFinalLocalTime(localFullRecord.time);
     }, []);
 
     const handleBackToHome = () => {
@@ -58,7 +58,7 @@ const SuccessScreen: React.FC = () => {
                 setResultOfToday(result);
             } catch (error) {
                 console.error('Error getting share result:', error);
-                setShareResult('오류가 발생했습니다. 다시 시도해 주세요.');
+                setShareResult('OpenAI API 오류가 발생했습니다. 다시 시도해 주세요.');
             }
         } else {
             setShareResult(resultOfToday);
@@ -68,7 +68,7 @@ const SuccessScreen: React.FC = () => {
     };
 
     const handleShare = async () => {
-        const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(finalLocalTime)}\n\n${shareResult}\n\nhttps://linkle-beta.vercel.app/`;
+        const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-beta.vercel.app/`;
         await navigator.clipboard.writeText(shareText);
         alert('결과가 클립보드에 복사되었습니다.');
     };
@@ -83,7 +83,7 @@ const SuccessScreen: React.FC = () => {
                 <CardContent className="space-y-4">
                     <div className="space-y-8">
                         <div className="flex flex-col space-y-2">
-                            <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(finalLocalTime)}</span></span>
+                            <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
                         </div>
                         <PathResult path={localRecord.path} />
@@ -110,7 +110,7 @@ const SuccessScreen: React.FC = () => {
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex flex-col space-y-2">
-                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: {formatTimeInKor(finalLocalTime)}</span>
+                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: {formatTimeInKor(localFullRecord.time)}</span>
                         <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: {localRecord.moveCount}</span>
                         <div className="mt-4 min-h-[2em]">
                             {isLoading ? (

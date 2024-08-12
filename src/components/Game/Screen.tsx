@@ -78,11 +78,13 @@ const GameScreen: React.FC = () => {
                 fetchWikiPage(dailyChallenge.startPage);
             }
         }
-    }, [isFirstLoad, hasClearedToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setMoveCount, router]);
+    }, [isFirstLoad, hasClearedToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setFullPath, setSinglePath, setMoveCount, router]);
 
-    if (isGameOver) {
-        router.push('/success');
-    }
+    useEffect(() => {
+        if (isGameOver) {
+            router.push('/success');
+        }
+    }, [isGameOver, router]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
