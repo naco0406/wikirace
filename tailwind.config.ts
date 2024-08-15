@@ -22,6 +22,7 @@ const config = {
     extend: {
       fontFamily: {
         sans: ["Pretendard Variable", "Pretendard", ...fontFamily.sans],
+        rhodium: ['Rhodium Libre', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

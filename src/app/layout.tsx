@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="font-pretendard">
+      <body className="font-sans">
         <TimerProvider>
           {children}
         </TimerProvider>
