@@ -106,12 +106,15 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </div>
                 </header>
-                <p className="mt-[28px] mb-[200px]" />
-                <Logo width={250} height={75} />
-                <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p>
+                <div className='pl-[32px] flex flex-row space-x-2'>
+                    <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-8xl font-[400]">Linkle</h1>
+                    <p className="font-['Rhodium_Libre'] text-[#3366CC] text-md">#{linkleCount}</p>
+                </div>
+                {/* <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p> */}
+                <p className="font-[400] text-xl leading-28 mb-[60px] text-linkle-foreground">매일 위키피디아 탐험하기</p>
                 {!(hasClearedToday) ? (
                     <Link href="/game" className="block mb-[40px]">
-                        <Button className="w-full text-lg bg-linkle px-20 py-6 text-white">
+                        <Button className="w-full text-lg bg-linkle px-20 py-6 text-white h-[56px] rounded-[28px]">
                             {hasStartedToday ? '이어서 도전하기' : '시작'}
                         </Button>
                     </Link>
@@ -126,7 +129,7 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </div>
                 )}
-                <p className="text-xs mt-[300px] text-center text-linkle-foreground cursor-pointer" onClick={handleAuthor}>
+                <p className="text-xs text-center text-linkle-foreground cursor-pointer absolute bottom-10" onClick={handleAuthor}>
                     © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
                 </p>
             </div>
