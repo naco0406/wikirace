@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import { TimerProvider } from '@/contexts/TimerContext';
+import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: "링클 - Linkle",
@@ -22,6 +23,7 @@ export default function RootLayout({
         <TimerProvider>
           {children}
         </TimerProvider>
+        <Analytics />
       </body>
     </html>
   );
