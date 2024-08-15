@@ -95,7 +95,7 @@ const GameScreen: React.FC = () => {
     if (isLoading && !isFirstLoad) {
         return (
             <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
-                <header className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-b border-[#E5E5E5] px-4 py-6">
+                <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6">
                     <div className="flex flex-row items-center">
                         <Button
                             variant="ghost"
@@ -129,7 +129,7 @@ const GameScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <footer className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-t border-[#E5E5E5] px-6 py-8">
+                <footer className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-8">
                     <div className="font-[400] text-24 leading-28 text-linkle-foreground truncate">
                         현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span>
                     </div>
@@ -146,7 +146,7 @@ const GameScreen: React.FC = () => {
 
     return (
         <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
-            <header className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-b border-[#E5E5E5] px-4 py-6">
+            <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6">
                 <div className="flex flex-row items-center">
                     <Button
                         variant="ghost"
@@ -176,7 +176,7 @@ const GameScreen: React.FC = () => {
                 <div className="wiki-content wiki-content max-w-full overflow-x-hidden break-words" dangerouslySetInnerHTML={{ __html: currentPage.html }} />
             </div>
 
-            <footer className="flex flex-row max-h-[80px] justify-between items-center bg-white border border-t border-[#E5E5E5] px-6 py-8">
+            <footer className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-8">
                 <div className="font-[400] text-24 leading-28 text-linkle-foreground truncate">
                     현재 문서: <span className="font-[600] text-[#3366CC]">{currentPage.title}</span>
                 </div>

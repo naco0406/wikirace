@@ -1,17 +1,7 @@
 "use client";
 
-import Logo from '@/assets/Logo';
 import { calculateLinkleDayNumber } from '@/assets/constants';
 import { Button } from '@/components/ui/button';
-import { useKeyboard } from '@/hooks/useKeyboard';
-import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect, useState } from 'react';
-import { formatTimeInKor } from '../Success/Screen';
-import { Loader2, Copy, Share, CircleHelp } from 'lucide-react';
-import { TypeAnimation } from 'react-type-animation';
 import {
     Dialog,
     DialogContent,
@@ -19,7 +9,16 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
+import { useKeyboard } from '@/hooks/useKeyboard';
+import { useLocalRecord } from '@/hooks/useLocalRecord';
+import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
 import { OpenAIService } from '@/service/OpenAI/OpenAIService';
+import { CircleHelp, Copy, Loader2, Share } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
+import { TypeAnimation } from 'react-type-animation';
+import { formatTimeInKor } from '../Success/Screen';
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
@@ -95,7 +94,7 @@ const StartScreen: React.FC = () => {
 
     return (
         <>
-            <div className="min-h-screen w-full flex flex-col items-center justify-center bg-white overflow-hidden">
+            <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] overflow-hidden">
                 <header className="absolute top-0 right-0 items-center">
                     <div className="flex flex-row px-4 h-[80px] justify-between items-center">
                         <Button
@@ -112,7 +111,7 @@ const StartScreen: React.FC = () => {
                 </div>
                 {/* <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p> */}
                 <p className="font-[400] text-xl leading-28 mb-[60px] text-linkle-foreground">매일 위키피디아 탐험하기</p>
-                {!(hasClearedToday) ? (
+                {!hasClearedToday ? (
                     <Link href="/game" className="block mb-[40px]">
                         <Button className="w-full text-lg bg-linkle px-20 py-6 text-white h-[56px] rounded-[28px]">
                             {hasStartedToday ? '이어서 도전하기' : '시작'}
@@ -120,7 +119,7 @@ const StartScreen: React.FC = () => {
                     </Link>
                 ) : (
                     <div className='flex flex-col space-y-4 items-center'>
-                        <Button className="w-full max-w-md text-lg px-20 py-6 bg-linkle text-white cursor-not-allowed" disabled>
+                        <Button className="w-full max-w-md text-lg px-20 py-6 bg-linkle text-white cursor-not-allowed h-[56px] rounded-[28px]" disabled>
                             오늘의 도전을 완료했습니다!
                         </Button>
                         <Button onClick={openShareModal} className="w-full py-2 px-4 flex items-center justify-center" variant="ghost">

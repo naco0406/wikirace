@@ -7,7 +7,6 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Instagram, Figma, Flame, FileCode2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Logo from '@/assets/Logo';
 
 const BasicInfoCard = () => (
     <Card className="w-full bg-black text-white mb-4 rounded-[20px] border-black">
@@ -115,6 +114,7 @@ interface ReleaseProps {
     content: string;
 }
 const ReleaseHistory: ReleaseProps[] = [
+    { date: "2024.08.15", version: "0.1.3", content: "전체 컨셉 및 디자인 개편" },
     { date: "2024.08.10", version: "0.1.2", content: "새로운 경로 정책 반영\nGPT를 이용한 결과 공유" },
     { date: "2024.08.05", version: "0.1.1", content: "위키피디아 API 개선\n링클 디자인 적용\n관리자 랜덤 챌린지 자동 생성\n위키피디아 API 테스트 페이지 생성" },
     { date: "2024.07.29", version: "0.1.0", content: "링클 이름 도입\n어제의 기록 시범 도입\n랭킹 제거\n대량 리팩토링, 버그 수정" },
@@ -143,7 +143,7 @@ const Author = () => {
             </header>
             <div className="w-full max-w-[768px] space-y-4">
                 <div className='flex flex-row w-full justify-center'>
-                    <Logo width={200} height={60} />
+                    <h1 className="py-4 font-['Rhodium_Libre'] text-[#3366CC] text-6xl font-[400]">Linkle</h1>
                 </div>
                 <BasicInfoCard />
                 <CreditsAndFontsCard />
