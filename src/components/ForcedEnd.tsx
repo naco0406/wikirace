@@ -20,10 +20,10 @@ const GameForcedEnd: React.FC<GameForcedEndProps> = ({ reason }) => {
         </CardHeader>
         <CardContent>
           <p className="mb-4">{reason}</p>
-          <p className="mb-6 text-sm">게임 규칙을 위반하여 게임이 강제 종료되었습니다.</p>
+          <p className="mb-6 text-sm">게임 규칙을 위반하였습니다.</p>
           <Link href="/">
             <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
-              메인으로 돌아가기
+              게임으로 돌아가기
             </Button>
           </Link>
         </CardContent>

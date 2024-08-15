@@ -53,3 +53,29 @@ export const PathResult = ({ path }: { path: string[] }) => {
         </div>
     );
 };
+
+export const PathAdmin = ({ path }: { path: string[] }) => {
+    return (
+        <div className="flex flex-wrap items-center justify-start">
+            {path.map((item, index) => (
+                <Fragment key={index}>
+                    {index > 0 && (
+                        <span className="font-[400] text-sm text-linkle-foreground mx-2 flex-shrink-0">
+                            →
+                        </span>
+                    )}
+                    <span
+                        className={`
+              font-[400] text-sm text-linkle-foreground
+              ${index === 0 || index === path.length - 1 ? 'font-[600]' : ''}
+              whitespace-nowrap
+            `}
+                        style={index === 0 || index === path.length - 1 ? { color: '#3366CC' } : {}}
+                    >
+                        {item}
+                    </span>
+                </Fragment>
+            ))}
+        </div>
+    );
+};

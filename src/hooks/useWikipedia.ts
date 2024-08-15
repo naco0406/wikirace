@@ -50,10 +50,10 @@ export const useWikipedia = () => {
             initialPlatformRef.current = isMobile ? 'mobile' : 'desktop';
         } else if (!initialLoadRef.current) {
             const currentPlatform = isMobile ? 'mobile' : 'desktop';
-            if (currentPlatform !== initialPlatformRef.current) {
-                setIsForcedEnd(true);
-                setForcedEndReason('게임 진행 도중 플랫폼이 변경되었습니다. (모바일 ↔ PC)');
-            }
+            // if (currentPlatform !== initialPlatformRef.current) {
+            //     setIsForcedEnd(true);
+            //     setForcedEndReason('게임 진행 도중 플랫폼이 변경되었습니다. (모바일 ↔ PC)');
+            // }
         }
     }, [isMobile]);
 
@@ -253,10 +253,11 @@ export const useWikipedia = () => {
                 });
 
                 fetchWikiPage(title);
-            } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
-                setIsForcedEnd(true);
-                setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
             }
+            // } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
+            //     setIsForcedEnd(true);
+            //     setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
+            // }
         }
     }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 

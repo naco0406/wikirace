@@ -56,7 +56,7 @@ const Admin = () => {
                             <WikiAPITestScreen />
                         </TabsContent>
                     </Tabs>
-                    <Button variant="ghost" className="grid w-full mt-4 max-w-[768px] mx-auto" onClick={handleBackToHome}>메인으로 돌아가기</Button>
+                    {/* <Button variant="ghost" className="grid w-full mt-4 max-w-[768px] mx-auto" onClick={handleBackToHome}>메인으로 돌아가기</Button> */}
                 </div>
             </div>
         );
