@@ -261,7 +261,7 @@ const OpenAiAPITestScreen: React.FC = () => {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {detailedResults.map((item, index) => (
+                                            {detailedResults.slice(0, -1).map((item, index) => (
                                                 <TableRow key={index}>
                                                     <TableCell>{similarityToEmoji(item.similarity)}</TableCell>
                                                     <TableCell className="font-medium">{item.word}</TableCell>
