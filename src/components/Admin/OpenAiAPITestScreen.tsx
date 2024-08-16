@@ -1,22 +1,21 @@
 "use client"
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { openInNewTab } from '@/lib/utils';
-import { OpenAIService, OpenAIServiceResult } from "@/service/OpenAI/OpenAIService";
-import { AlertCircle, ArrowLeft, CheckCircle2, ExternalLink, Loader2, Send, Terminal, XCircle, RefreshCw, PanelRightOpen } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useState, useCallback, useEffect } from 'react';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
-import { cn } from "@/lib/utils";
+import { cn, openInNewTab } from '@/lib/utils';
+import { OpenAIService, OpenAIServiceResult } from "@/service/OpenAI/OpenAIService";
+import { OpenAIResponse, similarityToEmoji } from "@/service/OpenAI/utils";
+import { AlertCircle, ArrowLeft, CheckCircle2, ExternalLink, Loader2, PanelRightOpen, RefreshCw, Send, Terminal, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PathAdmin } from "../PathRecord";
-import { ResultItem } from "./ResponseItem";
-import { OpenAIResponse } from "@/service/OpenAI/utils";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 
 interface RandomTitle {
     title: string;
@@ -252,14 +251,28 @@ const OpenAiAPITestScreen: React.FC = () => {
                                 <CheckCircle2 className="h-4 w-4" color="#10b981" />
                                 <AlertTitle>성공</AlertTitle>
                                 <AlertDescription>
-                                    <div className="text-lg pt-2">
-                                        {detailedResults.slice(0, -1).map((item, index) => (
-                                            <ResultItem key={index} item={item} />
-                                        ))}
-                                        🏁
-                                    </div>
-                                    {/* <Separator className="my-2" />
-                                    <p className="text-sm mt-2">전체 결과: {result}</p> */}
+                                    <Table className="mt-2">
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[100px]">이모지</TableHead>
+                                                <TableHead>제목</TableHead>
+                                                <TableHead className="w-[100px]">유사도</TableHead>
+                                                <TableHead>근거</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {detailedResults.map((item, index) => (
+                                                <TableRow key={index}>
+                                                    <TableCell>{similarityToEmoji(item.similarity)}</TableCell>
+                                                    <TableCell className="font-medium">{item.word}</TableCell>
+                                                    <TableCell>{item.similarity}</TableCell>
+                                                    <TableCell>{item.reason}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                    <Separator className="my-6" />
+                                    <p className="text-sm mt-2">전체 결과: {result}</p>
                                 </AlertDescription>
                             </Alert>
                         )}
