@@ -122,7 +122,7 @@ const StartScreen: React.FC = () => {
                         <Button className="w-full max-w-md text-lg px-20 py-6 bg-linkle text-white cursor-not-allowed h-[56px] rounded-[28px]" disabled>
                             오늘의 도전을 완료했습니다!
                         </Button>
-                        <Button onClick={openShareModal} className="w-full py-2 px-4 flex items-center justify-center" variant="ghost">
+                        <Button onClick={openShareModal} className="w-full py-2 px-4 flex items-center justify-center hover:bg-transparent" variant="ghost">
                             <Share className="w-4 h-4 mr-1" />
                             <span className="text-sm">결과 공유</span>
                         </Button>

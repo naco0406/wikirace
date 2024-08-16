@@ -4,6 +4,14 @@ import { OpenAIResponse, validateJsonOutput, createEmojiString } from './utils';
 
 const MAX_RETRIES = 3;
 
+export interface OpenAIServiceResult {
+    result: string;
+    attempts: number;
+    error?: string;
+    fullResponse?: string;
+    detailedResults: OpenAIResponse[];
+}
+
 export class OpenAIService {
     private openai: OpenAI;
 
@@ -14,7 +22,7 @@ export class OpenAIService {
         });
     }
 
-    async GET_result_for_share(pageTitles: string[]): Promise<{ result: string; attempts: number; error?: string; fullResponse?: string }> {
+    async GET_result_for_share(pageTitles: string[]): Promise<OpenAIServiceResult> {
         if (pageTitles.length < 2) {
             throw new Error("At least two page titles are required.");
         }
@@ -67,7 +75,11 @@ export class OpenAIService {
                 // Convert JSON to emoji string
                 const emojiString = createEmojiString(parsedResult.slice(0, -1), pageTitles, backIndices);
 
-                return { result: emojiString, attempts: retries + 1 };
+                return {
+                    result: emojiString,
+                    attempts: retries + 1,
+                    detailedResults: parsedResult
+                };
             } catch (error) {
                 console.error('OpenAI API error:', error);
                 retries++;
@@ -77,6 +89,7 @@ export class OpenAIService {
                         attempts: retries,
                         error: `Failed after ${retries} attempts. Last error: ${(error as Error).message}`,
                         fullResponse: JSON.stringify(error, null, 2),
+                        detailedResults: []
                     };
                 }
             }

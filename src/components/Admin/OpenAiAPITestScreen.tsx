@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { openInNewTab } from '@/lib/utils';
-import { OpenAIService } from "@/service/OpenAI/OpenAIService";
+import { OpenAIService, OpenAIServiceResult } from "@/service/OpenAI/OpenAIService";
 import { AlertCircle, ArrowLeft, CheckCircle2, ExternalLink, Loader2, Send, Terminal, XCircle, RefreshCw, PanelRightOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState, useCallback, useEffect } from 'react';
@@ -15,6 +15,8 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter, DrawerT
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
 import { cn } from "@/lib/utils";
 import { PathAdmin } from "../PathRecord";
+import { ResultItem } from "./ResponseItem";
+import { OpenAIResponse } from "@/service/OpenAI/utils";
 
 interface RandomTitle {
     title: string;
@@ -30,6 +32,7 @@ const OpenAiAPITestScreen: React.FC = () => {
     const [result, setResult] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [fullResponse, setFullResponse] = useState<string>('');
+    const [detailedResults, setDetailedResults] = useState<OpenAIResponse[]>([]);
     const [attempts, setAttempts] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(false);
     const [pageTitles, setPageTitles] = useState<string>("");
@@ -47,8 +50,9 @@ const OpenAiAPITestScreen: React.FC = () => {
         setResult('');
         setFullResponse('');
         setAttempts(0);
+        setDetailedResults([]);
         try {
-            const response = await openAIService.GET_result_for_share(pageTitles.split(',').map(title => title.trim()));
+            const response: OpenAIServiceResult = await openAIService.GET_result_for_share(pageTitles.split(',').map(title => title.trim()));
             setResult(response.result);
             setAttempts(response.attempts);
             if (response.error) {
@@ -57,6 +61,7 @@ const OpenAiAPITestScreen: React.FC = () => {
                     setFullResponse(response.fullResponse);
                 }
             }
+            setDetailedResults(response.detailedResults);
         } catch (error) {
             console.error('API call failed:', error);
             setError(`Error: ${(error as Error).message}`);
@@ -247,7 +252,14 @@ const OpenAiAPITestScreen: React.FC = () => {
                                 <CheckCircle2 className="h-4 w-4" color="#10b981" />
                                 <AlertTitle>성공</AlertTitle>
                                 <AlertDescription>
-                                    <pre className="whitespace-pre-wrap text-lg pt-2">{result}</pre>
+                                    <div className="text-lg pt-2">
+                                        {detailedResults.slice(0, -1).map((item, index) => (
+                                            <ResultItem key={index} item={item} />
+                                        ))}
+                                        🏁
+                                    </div>
+                                    {/* <Separator className="my-2" />
+                                    <p className="text-sm mt-2">전체 결과: {result}</p> */}
                                 </AlertDescription>
                             </Alert>
                         )}
