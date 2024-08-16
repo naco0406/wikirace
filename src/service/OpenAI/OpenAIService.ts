@@ -1,8 +1,8 @@
 import OpenAI from 'openai';
-import { validateJsonOutput } from './ValidateOutput';
 import { ResultShareSystemMessage } from './SystemMessage';
+import { OpenAIResponse, validateJsonOutput, createEmojiString } from './utils';
 
-const MAX_RETRIES = 5;
+const MAX_RETRIES = 3;
 
 export class OpenAIService {
     private openai: OpenAI;
@@ -57,15 +57,15 @@ export class OpenAIService {
                 }
 
                 // Parse the JSON result
-                const parsedResult = JSON.parse(result) as Array<{ index: number; word: string; similarity: number }>;
+                const parsedResult = JSON.parse(result) as Array<OpenAIResponse>;
 
                 // Validate the output format
-                if (!this.validateJsonOutput(parsedResult, filteredWordsToCompare)) {
+                if (!validateJsonOutput(parsedResult, filteredWordsToCompare)) {
                     throw new Error("Invalid output format from OpenAI");
                 }
 
                 // Convert JSON to emoji string
-                const emojiString = this.createEmojiString(parsedResult, pageTitles, backIndices);
+                const emojiString = createEmojiString(parsedResult.slice(0, -1), pageTitles, backIndices);
 
                 return { result: emojiString, attempts: retries + 1 };
             } catch (error) {
@@ -83,54 +83,5 @@ export class OpenAIService {
         }
 
         throw new Error("This should never happen due to the return in the catch block");
-    }
-
-    private validateJsonOutput(output: Array<{ index: number; word: string; similarity: number }>, filteredWordsToCompare: string[]): boolean {
-        if (output.length !== filteredWordsToCompare.length) {
-            return false;
-        }
-
-        for (let i = 0; i < output.length; i++) {
-            const item = output[i];
-            if (item.index !== i || item.word !== filteredWordsToCompare[i] || item.similarity < 0 || item.similarity > 1) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private createEmojiString(
-        output: Array<{ index: number; word: string; similarity: number }>,
-        originalWords: string[],
-        backIndices: number[]
-    ): string {
-        const emojiMap = new Map<number, string>();
-
-        // 유사도 기반 이모지 매핑
-        output.forEach(item => {
-            if (item.index < originalWords.length - 1) {  // referenceWord 제외
-                emojiMap.set(item.index, this.similarityToEmoji(item.similarity));
-            }
-        });
-
-        // 전체 이모지 문자열 생성
-        return originalWords.map((_, index) => {
-            if (backIndices.includes(index)) {
-                return "⏪";
-            }
-            if (index === originalWords.length - 1) {
-                return "🏁";
-            }
-            return emojiMap.get(index) || "🟥"; // 매핑된 이모지 또는 기본값
-        }).join('');
-    }
-
-    private similarityToEmoji(similarity: number): string {
-        if (similarity >= 0.8) return '🟦';
-        if (similarity >= 0.6) return '🟩';
-        if (similarity >= 0.4) return '🟨';
-        if (similarity >= 0.2) return '🟧';
-        return '🟥';
     }
 }
