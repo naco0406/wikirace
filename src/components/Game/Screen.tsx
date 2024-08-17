@@ -49,6 +49,8 @@ const GameScreen: React.FC = () => {
     const keyMap = {
         'meta+f': handleForceEndAction,
         'ctrl+f': handleForceEndAction,
+        'meta+g': handleForceEndAction,
+        'ctrl+g': handleForceEndAction,
     };
 
     const { isPressed } = useKeyboard(keyMap);
