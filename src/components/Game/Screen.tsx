@@ -111,7 +111,11 @@ const GameScreen: React.FC = () => {
                         </Button>
                     </div>
                     <div className="flex items-center">
-                        <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                        {isMobile ?
+                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                            :
+                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                        }
                     </div>
                     <div className="flex flex-row items-center">
                         <Button
@@ -131,15 +135,27 @@ const GameScreen: React.FC = () => {
                     </div>
                 </div>
 
-                <footer className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-8">
-                    <div className="font-[400] text-24 leading-28 text-linkle-foreground truncate">
-                        현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span>
-                    </div>
-                    <div className="flex flex-row items-center space-x-4">
-                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formattedTime}</span></span>
-                        <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{moveCount}</span></span>
-                    </div>
-                </footer>
+                {isMobile ?
+                    <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2">
+                        <div className="flex flex-row justify-start w-full font-[400] text-24 leading-28 text-linkle-foreground truncate">
+                            <div>현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span></div>
+                        </div>
+                        <div className="flex flex-row w-full justify-between items-center">
+                            <div className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formattedTime}</span></div>
+                            <div className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{moveCount}</span></div>
+                        </div>
+                    </footer>
+                    :
+                    <footer className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-8">
+                        <div className="font-[400] text-24 leading-28 text-linkle-foreground truncate">
+                            현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span>
+                        </div>
+                        <div className="flex flex-row items-center space-x-4">
+                            <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formattedTime}</span></span>
+                            <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{moveCount}</span></span>
+                        </div>
+                    </footer>
+                }
             </div>
         );
     }
