@@ -1,5 +1,6 @@
 "use client"
 
+import { calculateLinkleDayNumber } from '@/assets/constants';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -9,25 +10,20 @@ import {
     DialogHeader,
     DialogTitle
 } from "@/components/ui/dialog";
-import { useTimer } from '@/contexts/TimerContext';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
-import { getKSTDateString } from '@/lib/firebaseConfig';
+import { OpenAIService } from '@/service/OpenAI/OpenAIService';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, Copy, Loader2, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
-import { calculateLinkleDayNumber } from '@/assets/constants';
-import { OpenAIService } from '@/service/OpenAI/OpenAIService';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
-    // const { elapsedTime } = useTimer();
     const { localRecord, localFullRecord, resultOfToday, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
 
-    // const [finalLocalTime, setFinalLocalTime] = useState(0);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [shareResult, setShareResult] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -37,9 +33,23 @@ const SuccessScreen: React.FC = () => {
         confetti({
             particleCount: 100,
             spread: 70,
-            origin: { y: 0.6 }
+            origin: {
+                y: 0.6
+            }
         });
-        // setFinalLocalTime(localFullRecord.time);
+
+        const interval = setInterval(() => {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: {
+                    x: Math.random(),
+                    y: Math.random()
+                }
+            });
+        }, 2000); // 2초마다 실행
+
+        return () => clearInterval(interval);
     }, []);
 
     const handleBackToHome = () => {
