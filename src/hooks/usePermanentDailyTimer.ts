@@ -9,7 +9,7 @@ export function usePermanentDailyTimer() {
 
     const startTimer = useCallback(() => {
         const today = getKSTDateString();
-        const storedData = localStorage.getItem('dailyTimer');
+        const storedData = localStorage.getItem('linkleDailyTimer');
         let startTime: number;
 
         if (storedData) {
@@ -18,11 +18,11 @@ export function usePermanentDailyTimer() {
                 startTime = time;
             } else {
                 startTime = Date.now();
-                localStorage.setItem('dailyTimer', JSON.stringify({ date: today, time: startTime }));
+                localStorage.setItem('linkleDailyTimer', JSON.stringify({ date: today, time: startTime }));
             }
         } else {
             startTime = Date.now();
-            localStorage.setItem('dailyTimer', JSON.stringify({ date: today, time: startTime }));
+            localStorage.setItem('linkleDailyTimer', JSON.stringify({ date: today, time: startTime }));
         }
 
         setIsTimerRunning(true);
@@ -32,7 +32,7 @@ export function usePermanentDailyTimer() {
         let intervalId: NodeJS.Timeout | undefined;
 
         if (isTimerRunning) {
-            const storedData = localStorage.getItem('dailyTimer');
+            const storedData = localStorage.getItem('linkleDailyTimer');
             if (storedData) {
                 const { time } = JSON.parse(storedData);
                 intervalId = setInterval(() => {
@@ -47,7 +47,7 @@ export function usePermanentDailyTimer() {
     }, [isTimerRunning]);
 
     const resetTimer = useCallback(() => {
-        localStorage.removeItem('dailyTimer');
+        localStorage.removeItem('linkleDailyTimer');
         setElapsedTime(0);
         setIsTimerRunning(false);
     }, []);

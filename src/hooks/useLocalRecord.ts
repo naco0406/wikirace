@@ -15,63 +15,53 @@ interface DailyStatus {
   resultOfToday: string | null;
 }
 
+interface LinkleLocalData {
+  localRecord: Record;
+  localFullRecord: Record;
+  localSingleRecord: Record;
+  dailyStatus: DailyStatus;
+  date: string;
+}
+
 export function useLocalRecord() {
-  const [localRecord, setLocalRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
-  const [localFullRecord, setLocalFullRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
-  const [localSingleRecord, setLocalSingleRecord] = useState<Record>({ moveCount: 0, time: 0, path: [] });
-  const [dailyStatus, setDailyStatus] = useState<DailyStatus>({
-    hasStartedToday: false,
-    hasClearedToday: false,
-    resultOfToday: null
+  const [localData, setLocalData] = useState<LinkleLocalData>({
+    localRecord: { moveCount: 0, time: 0, path: [] },
+    localFullRecord: { moveCount: 0, time: 0, path: [] },
+    localSingleRecord: { moveCount: 0, time: 0, path: [] },
+    dailyStatus: {
+      hasStartedToday: false,
+      hasClearedToday: false,
+      resultOfToday: null
+    },
+    date: getKSTDateString()
   });
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (typeof window === 'undefined') return;
 
-      const storedlocalRecord = localStorage.getItem('wikiRacelocalRecord');
-      const storedlocalFullRecord = localStorage.getItem('wikiRacelocalFullRecord');
-      const storedlocaSingleRecord = localStorage.getItem('wikiRacelocalSingleRecord');
-      const storedStatus = localStorage.getItem('wikiRaceDailyStatus');
+      const storedData = localStorage.getItem('linkleLocalData');
       const today = getKSTDateString();
 
-      if (storedlocalRecord) {
-        const { record, date } = JSON.parse(storedlocalRecord);
-        if (date === today) {
-          setLocalRecord(record);
+      if (storedData) {
+        const parsedData: LinkleLocalData = JSON.parse(storedData);
+        if (parsedData.date === today) {
+          setLocalData(parsedData);
         } else {
-          localStorage.removeItem('wikiRacelocalRecord');
-          setLocalRecord({ moveCount: 0, time: 0, path: [] });
-        }
-      }
-
-      if (storedlocalFullRecord) {
-        const { record, date } = JSON.parse(storedlocalFullRecord);
-        if (date === today) {
-          setLocalFullRecord(record);
-        } else {
-          localStorage.removeItem('wikiRacelocalFullRecord');
-          setLocalFullRecord({ moveCount: 0, time: 0, path: [] });
-        }
-      }
-
-      if (storedlocaSingleRecord) {
-        const { record, date } = JSON.parse(storedlocaSingleRecord);
-        if (date === today) {
-          setLocalSingleRecord(record);
-        } else {
-          localStorage.removeItem('wikiRacelocalSingleRecord');
-          setLocalSingleRecord({ moveCount: 0, time: 0, path: [] });
-        }
-      }
-
-      if (storedStatus) {
-        const { status, date } = JSON.parse(storedStatus);
-        if (date === today) {
-          setDailyStatus(status);
-        } else {
-          localStorage.removeItem('wikiRaceDailyStatus');
-          setDailyStatus({ hasStartedToday: false, hasClearedToday: false, resultOfToday: null });
+          // Reset data for a new day
+          const newData: LinkleLocalData = {
+            localRecord: { moveCount: 0, time: 0, path: [] },
+            localFullRecord: { moveCount: 0, time: 0, path: [] },
+            localSingleRecord: { moveCount: 0, time: 0, path: [] },
+            dailyStatus: {
+              hasStartedToday: false,
+              hasClearedToday: false,
+              resultOfToday: null
+            },
+            date: today
+          };
+          setLocalData(newData);
+          localStorage.setItem('linkleLocalData', JSON.stringify(newData));
         }
       }
     }, 0);
@@ -79,64 +69,94 @@ export function useLocalRecord() {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  const updateLocalStorage = (newData: LinkleLocalData) => {
+    localStorage.setItem('linkleLocalData', JSON.stringify(newData));
+  };
+
   const updateLocalRecord = (newRecord: Record) => {
-    const today = getKSTDateString();
-    setLocalRecord(newRecord);
-    console.log('localRecord: ', newRecord.path);
-    localStorage.setItem('wikiRacelocalRecord', JSON.stringify({ record: newRecord, date: today }));
+    setLocalData(prev => {
+      const updatedData = { ...prev, localRecord: newRecord, date: getKSTDateString() };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   const updateLocalFullRecord = (newRecord: Record) => {
-    const today = getKSTDateString();
-    setLocalFullRecord(newRecord);
-    console.log('localFullRecord: ', newRecord.path);
-    localStorage.setItem('wikiRacelocalFullRecord', JSON.stringify({ record: newRecord, date: today }));
+    setLocalData(prev => {
+      const updatedData = { ...prev, localFullRecord: newRecord, date: getKSTDateString() };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   const updateLocalSingleRecord = (newRecord: Record) => {
-    const today = getKSTDateString();
-    setLocalSingleRecord(newRecord);
-    console.log('localSingleRecord: ', newRecord.path);
-    localStorage.setItem('wikiRacelocalSingleRecord', JSON.stringify({ record: newRecord, date: today }));
+    setLocalData(prev => {
+      const updatedData = { ...prev, localSingleRecord: newRecord, date: getKSTDateString() };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   const finalizeRecord = () => {
-    setDailyStatus(prev => ({ ...prev, hasClearedToday: true }));
-    updateDailyStatus({ ...dailyStatus, hasStartedToday: true, hasClearedToday: true });
+    setLocalData(prev => {
+      const updatedData = {
+        ...prev,
+        dailyStatus: { ...prev.dailyStatus, hasStartedToday: true, hasClearedToday: true },
+        date: getKSTDateString()
+      };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   const setHasStartedToday = (value: boolean) => {
-    setDailyStatus(prev => ({ ...prev, hasStartedToday: value }));
-    updateDailyStatus({ ...dailyStatus, hasStartedToday: value });
+    setLocalData(prev => {
+      const updatedData = {
+        ...prev,
+        dailyStatus: { ...prev.dailyStatus, hasStartedToday: value },
+        date: getKSTDateString()
+      };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   const setHasClearedToday = (value: boolean) => {
-    setDailyStatus(prev => ({ ...prev, hasClearedToday: value }));
-    updateDailyStatus({ ...dailyStatus, hasClearedToday: value });
+    setLocalData(prev => {
+      const updatedData = {
+        ...prev,
+        dailyStatus: { ...prev.dailyStatus, hasClearedToday: value },
+        date: getKSTDateString()
+      };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   const setResultOfToday = (value: string) => {
-    setDailyStatus(prev => ({ ...prev, resultOfToday: value }));
-    updateDailyStatus({ ...dailyStatus, resultOfToday: value });
-  };
-
-  const updateDailyStatus = (status: DailyStatus) => {
-    const today = getKSTDateString();
-    localStorage.setItem('wikiRaceDailyStatus', JSON.stringify({ status, date: today }));
+    setLocalData(prev => {
+      const updatedData = {
+        ...prev,
+        dailyStatus: { ...prev.dailyStatus, resultOfToday: value },
+        date: getKSTDateString()
+      };
+      updateLocalStorage(updatedData);
+      return updatedData;
+    });
   };
 
   return {
-    localRecord,
-    localFullRecord,
-    localSingleRecord,
+    localRecord: localData.localRecord,
+    localFullRecord: localData.localFullRecord,
+    localSingleRecord: localData.localSingleRecord,
     updateLocalRecord,
     updateLocalFullRecord,
     updateLocalSingleRecord,
     finalizeRecord,
-    hasStartedToday: dailyStatus.hasStartedToday,
-    hasClearedToday: dailyStatus.hasClearedToday,
-    resultOfToday: dailyStatus.resultOfToday,
-    dailyStatus,
+    hasStartedToday: localData.dailyStatus.hasStartedToday,
+    hasClearedToday: localData.dailyStatus.hasClearedToday,
+    resultOfToday: localData.dailyStatus.resultOfToday,
+    dailyStatus: localData.dailyStatus,
     setHasStartedToday,
     setHasClearedToday,
     setResultOfToday,
