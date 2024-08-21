@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { PathResult } from '../PathRecord';
 import { formatTimeInKor } from '../Success/Screen';
+import { Help } from '../Help';
+
 
 const StartScreen: React.FC = () => {
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
@@ -48,10 +50,15 @@ const StartScreen: React.FC = () => {
         router.push('/author');
     }, [router]);
 
+    const handleOpenHelpModal = () => {
+        setIsDialogOpen(true);
+    };
+
     const { dailyStatus, localFullRecord, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
     const [shareResult, setShareResult] = useState<string | null>(dailyStatus.resultOfToday);
     const [shareText, setShareText] = useState<string | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         setShareResult(dailyStatus.resultOfToday);
@@ -94,14 +101,14 @@ const StartScreen: React.FC = () => {
                     <div className="flex flex-row px-4 h-[80px] justify-between items-center">
                         <Button
                             variant="ghost"
-                            disabled={true}
+                            onClick={handleOpenHelpModal}
                         >
                             <CircleHelp className="w-6 h-6 text-linkle-foreground" />
                         </Button>
                     </div>
                 </header>
                 <div className='pl-[32px] flex flex-row space-x-2'>
-                    <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-8xl font-[400]">Linkle</h1>
+                    <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-6xl sm:text-8xl font-[400]">Linkle</h1>
                     <p className="font-['Rhodium_Libre'] text-[#3366CC] text-md">#{linkleCount}</p>
                 </div>
                 {/* <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p> */}
@@ -136,6 +143,7 @@ const StartScreen: React.FC = () => {
                 <p className="text-xs text-center text-linkle-foreground cursor-pointer absolute bottom-10" onClick={handleAuthor}>
                     © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
                 </p>
+                <Help isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
             </div>
         </>
     );

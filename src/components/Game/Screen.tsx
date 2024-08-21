@@ -9,9 +9,10 @@ import { useScreenSize } from '@/hooks/useScreenSize';
 import { useWikipedia } from '@/hooks/useWikipedia';
 import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import GameForcedEnd from '../ForcedEnd';
 import PathRecord from '../PathRecord';
+import { Help } from '../Help';
 
 const GameScreen: React.FC = () => {
     const {
@@ -40,6 +41,11 @@ const GameScreen: React.FC = () => {
     const { formattedTime, startTimer } = useTimer();
     const { localRecord, hasStartedToday, hasClearedToday } = useLocalRecord();
     const router = useRouter();
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const handleOpenHelpModal = () => {
+        setIsDialogOpen(true);
+    };
 
     const handleForceEndAction = useCallback(() => {
         setIsForcedEnd(true);
@@ -103,6 +109,7 @@ const GameScreen: React.FC = () => {
                             variant="ghost"
                             onClick={goBack}
                             disabled={true}
+                            className='hover:bg-transparent'
                         >
                             <div className='flex flex-row items-center space-x-[10px]'>
                                 <ArrowLeft className="w-6 h-6 text-linkle-foreground" />
@@ -120,7 +127,7 @@ const GameScreen: React.FC = () => {
                     <div className="flex flex-row items-center">
                         <Button
                             variant="ghost"
-                            disabled={true}
+                            onClick={handleOpenHelpModal}
                         >
                             <CircleHelp className="w-6 h-6 text-linkle-foreground" />
                         </Button>
@@ -156,6 +163,7 @@ const GameScreen: React.FC = () => {
                         </div>
                     </footer>
                 }
+                <Help isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
             </div>
         );
     }
@@ -170,6 +178,7 @@ const GameScreen: React.FC = () => {
                         variant="ghost"
                         onClick={goBack}
                         disabled={!singlePath[singlePath.length - 2]}
+                        className='hover:bg-transparent'
                     >
                         <div className='flex flex-row items-center space-x-[10px]'>
                             <ArrowLeft className="w-6 h-6 text-linkle-foreground" />
@@ -187,7 +196,7 @@ const GameScreen: React.FC = () => {
                 <div className="flex flex-row items-center">
                     <Button
                         variant="ghost"
-                        disabled={true}
+                        onClick={handleOpenHelpModal}
                     >
                         <CircleHelp className="w-6 h-6 text-linkle-foreground" />
                     </Button>
@@ -219,6 +228,7 @@ const GameScreen: React.FC = () => {
                     </div>
                 </footer>
             }
+            <Help isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
         </div>
     );
 };
