@@ -94,9 +94,22 @@
   font-family: "Rhodium Libre", sans-serif;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
+}
+
 :root {
   --linkle: #3366CC;
 }
+
 .bg-linkle {
   background-color: var(--linkle);
 }
