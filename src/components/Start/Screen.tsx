@@ -120,7 +120,7 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </Link>
                 ) : (
-                    <div className='flex flex-col space-y-8 items-center w-full max-w-md'>
+                    <div className='flex flex-col space-y-8 items-center w-full max-w-md px-4'>
                         <div className="flex flex-col space-y-4 w-full">
                             <div className="text-xl font-[600] text-center my-6 text-linkle-foreground">{linkleCount}번째 링클을 클리어했습니다!</div>
                             <div className="flex flex-col space-y-2 w-full justify-start">

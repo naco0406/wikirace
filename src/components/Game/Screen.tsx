@@ -134,7 +134,7 @@ const GameScreen: React.FC = () => {
                     </div>
                 </header>
 
-                <div className="flex-grow overflow-auto w-full flex flex-col items-center justify-center bg-white overflow-hidden">
+                <div className="flex-grow overflow-auto w-full flex flex-col items-center justify-center bg-white overflow-hidden px-4">
                     <Loader2 className="w-[48px] h-[48px] animate-spin mb-[40px] text-[#3366CC]" />
                     <p className="font-[400] text-24 leading-28 mb-[80px]">로딩 중</p>
                     <div className="flex flex-col items-center">
