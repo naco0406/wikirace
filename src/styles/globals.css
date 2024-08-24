@@ -234,28 +234,33 @@
   padding: 0.2em 0.4em;
 }
 
-/* 기존 스타일은 그대로 두고 아래 스타일만 추가합니다 */
-html,
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
 body {
-  height: 100vh;
-  /* iOS Safari에 대한 대응 */
+  padding: var(--sat) var(--sar) var(--sab) var(--sal);
+}
+
+html {
   height: -webkit-fill-available;
 }
 
-/* 모바일 Safari에서 주소창이 사라질 때 높이 변경 방지 */
-html {
-  overflow: hidden;
-}
-
-/* iOS Safari에서 스크롤 가능한 컨텐츠 영역 설정 */
 body {
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
-/* 최상위 컨테이너에 적용할 클래스 */
-.full-height-container {
-  min-height: 100vh;
-  /* iOS Safari에 대한 대응 */
-  min-height: -webkit-fill-available;
+.full-height {
+  height: 100vh;
+  height: -webkit-fill-available;
+}
+
+/* iOS에서 오버스크롤 시 배경색 설정 */
+body {
+  background-color: #ffffff;
+  /* 또는 원하는 배경색 */
 }
