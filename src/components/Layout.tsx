@@ -6,7 +6,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="full-height bg-background text-foreground overflow-hidden">
+    <div className="full-height bg-background text-foreground overflow-hidden h-[100dvh]">
       <div className="w-full h-full mx-auto bg-white shadow-md overflow-auto">
         {children}
       </div>
