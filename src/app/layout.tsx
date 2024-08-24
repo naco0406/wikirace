@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Viewport } from "next";
 import "../styles/globals.css";
 import { TimerProvider } from '@/contexts/TimerContext';
 import { Analytics } from '@vercel/analytics/react';
@@ -7,7 +8,12 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 export const metadata: Metadata = {
   title: "링클 - Linkle",
   description: "매일 위키피디아 탐색하기",
-  viewport: "width=device-width, initial-scale=1, viewport-fit=cover"
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({

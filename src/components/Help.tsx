@@ -16,7 +16,7 @@ interface Props {
 export const Help: React.FC<Props> = ({ isDialogOpen, setIsDialogOpen }) => {
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="rounded-lg p-6 pt-8 max-w-sm max-h-[calc(100vh-2rem)] flex flex-col">
+            <DialogContent className="rounded-lg p-6 pt-8 max-w-sm max-h-[calc(100vh-4rem)] flex flex-col">
                 <DialogHeader className="flex-shrink-0 flex flex-col items-center">
                     <DialogTitle>
                         <p className="font-['Rhodium_Libre'] text-[#3366CC] text-4xl font-[400]">Linkle</p>
