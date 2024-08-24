@@ -49,6 +49,10 @@ const CreditsAndFontsCard = () => (
                         <span>개발</span>
                         <span>고영</span>
                     </div>
+                    <div className="flex justify-between">
+                        <span>기술 고문</span>
+                        <span>서동휘</span>
+                    </div>
                     <div className="flex justify-between items-center">
                         <span>아이디어 제공</span>
                         <div className="flex items-center space-x-2">
