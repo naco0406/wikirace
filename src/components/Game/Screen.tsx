@@ -102,7 +102,7 @@ const GameScreen: React.FC = () => {
 
     if (isLoading && !isFirstLoad) {
         return (
-            <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
+            <div className="h-[100dvh] flex flex-col">
                 <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6">
                     <div className="flex flex-row items-center">
                         <Button
@@ -124,7 +124,7 @@ const GameScreen: React.FC = () => {
                             <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
                         }
                     </div>
-                    <div className="flex flex-row items-center">
+                    <div className="flex flex-row items-center absolute bottom-0 ">
                         <Button
                             variant="ghost"
                             onClick={handleOpenHelpModal}
@@ -143,7 +143,7 @@ const GameScreen: React.FC = () => {
                 </div>
 
                 {isMobile ?
-                    <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2">
+                    <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2 absolute bottom-0 min-h-[80px]">
                         <div className="flex flex-row justify-start w-full font-[400] text-24 leading-28 text-linkle-foreground truncate">
                             <div>현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span></div>
                         </div>
@@ -171,7 +171,7 @@ const GameScreen: React.FC = () => {
     if (!currentPage) return <div>Error loading page</div>;
 
     return (
-        <div className={`h-screen flex flex-col ${isMobile ? 'mobile-layout' : 'desktop-layout'}`}>
+        <div className="h-[100dvh] flex flex-col">
             <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6">
                 <div className="flex flex-row items-center">
                     <Button
@@ -208,7 +208,7 @@ const GameScreen: React.FC = () => {
             </div>
 
             {isMobile ?
-                <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2">
+                <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2 absolute bottom-0 min-h-[80px] w-full">
                     <div className="flex flex-row justify-start w-full font-[400] text-24 leading-28 text-linkle-foreground truncate">
                         <div>현재 문서: <span className="font-[600] text-[#3366CC]">{currentPage.title}</span></div>
                     </div>
