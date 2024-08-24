@@ -103,11 +103,10 @@ const GameScreen: React.FC = () => {
     if (isLoading && !isFirstLoad) {
         return (
             <div className="h-[100dvh] flex flex-col">
-                <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6">
+                <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6 w-full">
                     <div className="flex flex-row items-center">
                         <Button
                             variant="ghost"
-                            onClick={goBack}
                             disabled={true}
                             className='hover:bg-transparent'
                         >
@@ -124,10 +123,10 @@ const GameScreen: React.FC = () => {
                             <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
                         }
                     </div>
-                    <div className="flex flex-row items-center absolute bottom-0 ">
+                    <div className="flex flex-row items-center">
                         <Button
                             variant="ghost"
-                            onClick={handleOpenHelpModal}
+                            disabled={true}
                         >
                             <CircleHelp className="w-6 h-6 text-linkle-foreground" />
                         </Button>
