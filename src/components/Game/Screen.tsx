@@ -143,7 +143,7 @@ const GameScreen: React.FC = () => {
                 </div>
 
                 {isMobile ?
-                    <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2 absolute bottom-0 min-h-[80px]">
+                    <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2 absolute bottom-0 min-h-[80px] w-full">
                         <div className="flex flex-row justify-start w-full font-[400] text-24 leading-28 text-linkle-foreground truncate">
                             <div>현재 문서: <span className="font-[600] text-[#3366CC]">{path[path.length - 1] || ''}</span></div>
                         </div>
