@@ -114,7 +114,7 @@ interface ReleaseProps {
     content: string;
 }
 const ReleaseHistory: ReleaseProps[] = [
-    { date: "2024.08.21", version: "0.2.0", content: "1차 배포 준비" },
+    { date: "2024.08.24", version: "0.2.0", content: "1차 배포 준비\nios 사파리 지원" },
     { date: "2024.08.15", version: "0.1.3", content: "전체 컨셉 및 디자인 개편\nVercel Analytics 적용" },
     { date: "2024.08.10", version: "0.1.2", content: "새로운 경로 정책 반영\nGPT를 이용한 결과 공유" },
     { date: "2024.08.05", version: "0.1.1", content: "위키피디아 API 개선\n링클 디자인 적용\n관리자 랜덤 챌린지 자동 생성\n위키피디아 API 테스트 페이지 생성" },
