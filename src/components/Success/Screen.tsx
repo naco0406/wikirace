@@ -51,7 +51,7 @@ const SuccessScreen: React.FC = () => {
         }, 2000); // 2초마다 실행
 
         return () => clearInterval(interval);
-    }, []);
+    }, [hasClearedToday]);
 
     const handleBackToHome = () => {
         router.push('/');
