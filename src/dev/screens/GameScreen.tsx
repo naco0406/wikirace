@@ -4,17 +4,22 @@ import GameForcedEnd from '@/components/ForcedEnd';
 import { Help } from '@/components/Help';
 import PathRecord from '@/components/PathRecord';
 import { Button } from '@/components/ui/button';
-import { useTimer } from '@/contexts/TimerContext';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useWikipediaDev } from '../hooks/useWikipediaDev';
+import { useChallengeTimer } from '../hooks/useChallengeTimer';
 import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
+import { useWikipediaDev } from '../hooks/useWikipediaDev';
+import { incrementTotalCount } from '../utils/gameDataDev';
 import { DEV_Loading } from './LoadingScreen';
 
-const DEV_GameScreen: React.FC = () => {
+interface DEV_GameScreenProps {
+    challengeId: string;
+}
+
+const DEV_GameScreen: React.FC<DEV_GameScreenProps> = ({ challengeId }) => {
     const {
         currentPage,
         isLoading,
@@ -34,12 +39,12 @@ const DEV_GameScreen: React.FC = () => {
         setIsForcedEnd,
         setForcedEndReason,
         goBack,
-        dailyChallenge,
-    } = useWikipediaDev();
+        challenge,
+    } = useWikipediaDev(challengeId);
 
     const { isMobile } = useScreenSize();
-    const { formattedTime, startTimer } = useTimer();
-    const { localRecord, hasStartedToday, hasClearedToday } = useLocalRecordDev();
+    const { formattedTime, startTimer, resetTimer } = useChallengeTimer(challengeId);
+    const { localRecord, hasStarted, hasCleared } = useLocalRecordDev(challengeId);
     const router = useRouter();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -69,36 +74,41 @@ const DEV_GameScreen: React.FC = () => {
 
     useEffect(() => {
         startTimer();
-    }, [startTimer]);
+        return () => resetTimer(); // Reset timer when component unmounts
+    }, [startTimer, resetTimer]);
 
     useEffect(() => {
         if (isFirstLoad) {
-            if (hasClearedToday) {
-                router.push('/success');
-            } else if (hasStartedToday && localRecord.path.length > 0) {
+            if (hasCleared) {
+                router.push(`/dev/success/${challengeId}`);
+            } else if (hasStarted && localRecord.path.length > 0) {
                 setPath(localRecord.path);
                 setMoveCount(localRecord.moveCount);
                 fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
-            } else if (dailyChallenge) {
-                setPath([dailyChallenge.startPage]);
-                setFullPath([dailyChallenge.startPage]);
-                setSinglePath([dailyChallenge.startPage]);
-                fetchWikiPage(dailyChallenge.startPage);
+            } else if (challenge) {
+                setPath([challenge.startPage]);
+                setFullPath([challenge.startPage]);
+                setSinglePath([challenge.startPage]);
+                fetchWikiPage(challenge.startPage);
             }
         }
-    }, [isFirstLoad, hasClearedToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setFullPath, setSinglePath, setMoveCount, router]);
+    }, [isFirstLoad, hasCleared, hasStarted, localRecord, challenge, fetchWikiPage, setPath, setFullPath, setSinglePath, setMoveCount, router, challengeId]);
 
     useEffect(() => {
         if (isGameOver) {
-            router.push('/success');
+            const finishGame = async () => {
+                await incrementTotalCount(challengeId);
+                router.push(`/dev/success/${challengeId}`);
+            };
+            finishGame();
         }
-    }, [isGameOver, router]);
+    }, [isGameOver, router, challengeId]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
     }
 
-    if (isFirstLoad) return <DEV_Loading />;
+    if (isFirstLoad) return <DEV_Loading challengeId={challengeId} />;
 
     if (isLoading && !isFirstLoad) {
         return (
@@ -118,9 +128,9 @@ const DEV_GameScreen: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                         {isMobile ?
-                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{challenge?.endPage || '-'}</span></span>
                             :
-                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                            <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{challenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{challenge?.endPage || '-'}</span></span>
                         }
                     </div>
                     <div className="flex flex-row items-center">
@@ -187,9 +197,9 @@ const DEV_GameScreen: React.FC = () => {
                 </div>
                 <div className="flex items-center">
                     {isMobile ?
-                        <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                        <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{challenge?.endPage || '-'}</span></span>
                         :
-                        <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{dailyChallenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{dailyChallenge?.endPage || '-'}</span></span>
+                        <span className="font-[400] text-24 leading-28 text-linkle-foreground">목표: <span className="font-[600] text-[#3366CC]">{challenge?.startPage || '-'}</span> → <span className="font-[600] text-[#3366CC]">{challenge?.endPage || '-'}</span></span>
                     }
                 </div>
                 <div className="flex flex-row items-center">

@@ -118,7 +118,7 @@ const StartScreen: React.FC = () => {
                     <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-6xl sm:text-8xl font-[400]">Linkle</h1>
                     <p className="font-['Rhodium_Libre'] text-[#3366CC] text-md">#{linkleCount}</p>
                 </div>
-                {isDev && <p className="font-[400] text-24 leading-28 mb-[60px] text-red-500">Prod Database</p>}
+                {isDev && <p className="font-[400] text-24 leading-28 mb-[30px] text-red-500">Prod Database</p>}
                 {/* <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p> */}
                 {!hasClearedToday && !isDev && <p className="font-[400] text-xl leading-28 mb-[60px] text-linkle-foreground">매일 위키피디아 탐험하기</p>}
                 {!hasClearedToday ? (

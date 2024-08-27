@@ -1,5 +1,5 @@
-import { Timestamp } from 'firebase/firestore';
-import { addRanking, getRankings, getTodayChallenge } from './firebaseConfigDev';
+import { Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
+import { addRanking, getRankings, getChallenge, addChallenge, getAllChallenges, db } from './firebaseConfigDev';
 
 export interface DailyChallenge {
     startPage: string;
@@ -24,29 +24,33 @@ export interface MyRanking {
     path: string[];
 }
 
-export const fetchDailyChallenge = async (): Promise<DailyChallenge | null> => {
-    const challenge = await getTodayChallenge();
+export const fetchChallenge = async (challengeId: string): Promise<DailyChallenge | null> => {
+    const challenge = await getChallenge(challengeId);
     if (challenge && 'startPage' in challenge && 'endPage' in challenge) {
         return challenge as DailyChallenge;
     }
     return null;
 };
 
-export const submitRanking = async (ranking: MyRanking): Promise<void> => {
-    await addRanking(ranking);
+export const createChallenge = async (challenge: DailyChallenge): Promise<string> => {
+    return await addChallenge(challenge);
 };
 
-export const fetchRankings = async (sortBy: string, limit: number = 10): Promise<Ranking[]> => {
-    const rankings = await getRankings(sortBy, limit);
-    return rankings.map(ranking => {
-        const data = ranking as any;  // Type assertion to avoid TS errors
-        return {
-            id: ranking.id,
-            nickname: data.nickname || 'Unknown',
-            moveCount: data.moveCount || 0,
-            time: data.time || 0,
-            path: data.path || [],
-            timestamp: data.timestamp || Timestamp.now(), // Add the timestamp field
-        };
+export const submitRanking = async (challengeId: string, ranking: MyRanking): Promise<void> => {
+    await addRanking(challengeId, ranking);
+};
+
+export const fetchRankings = async (challengeId: string, sortBy: string, limit: number = 10): Promise<Ranking[]> => {
+    return await getRankings(challengeId, sortBy, limit);
+};
+
+export const fetchAllChallenges = async (): Promise<{ id: string; challenge: DailyChallenge }[]> => {
+    return await getAllChallenges();
+};
+
+export const incrementTotalCount = async (challengeId: string): Promise<void> => {
+    const challengeRef = doc(db, 'dev_linkle', challengeId);
+    await updateDoc(challengeRef, {
+        totalCount: increment(1)
     });
 };

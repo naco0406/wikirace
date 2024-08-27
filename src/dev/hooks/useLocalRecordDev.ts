@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { getKSTDateString } from '@/lib/firebaseConfig';
 
 interface Record {
   moveCount: number;
@@ -9,65 +8,63 @@ interface Record {
   path: string[];
 }
 
-interface DailyStatus {
-  hasStartedToday: boolean;
-  hasClearedToday: boolean;
-  resultOfToday: string | null;
+interface ChallengeStatus {
+  hasStarted: boolean;
+  hasCleared: boolean;
+  result: string | null;
 }
 
 interface LinkleLocalData {
+  challengeId: string;
   localRecord: Record;
   localFullRecord: Record;
   localSingleRecord: Record;
-  dailyStatus: DailyStatus;
-  date: string;
+  challengeStatus: ChallengeStatus;
 }
 
-export function useLocalRecordDev() {
+export function useLocalRecordDev(initialChallengeId: string) {
   const [localData, setLocalData] = useState<LinkleLocalData>({
+    challengeId: initialChallengeId,
     localRecord: { moveCount: 0, time: 0, path: [] },
     localFullRecord: { moveCount: 0, time: 0, path: [] },
     localSingleRecord: { moveCount: 0, time: 0, path: [] },
-    dailyStatus: {
-      hasStartedToday: false,
-      hasClearedToday: false,
-      resultOfToday: null
-    },
-    date: getKSTDateString()
+    challengeStatus: {
+      hasStarted: false,
+      hasCleared: false,
+      result: null
+    }
   });
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (typeof window === 'undefined') return;
-
-      const storedData = localStorage.getItem('DEV_linkleLocalData');
-      const today = getKSTDateString();
-
-      if (storedData) {
-        const parsedData: LinkleLocalData = JSON.parse(storedData);
-        if (parsedData.date === today) {
-          setLocalData(parsedData);
-        } else {
-          // Reset data for a new day
-          const newData: LinkleLocalData = {
-            localRecord: { moveCount: 0, time: 0, path: [] },
-            localFullRecord: { moveCount: 0, time: 0, path: [] },
-            localSingleRecord: { moveCount: 0, time: 0, path: [] },
-            dailyStatus: {
-              hasStartedToday: false,
-              hasClearedToday: false,
-              resultOfToday: null
-            },
-            date: today
-          };
-          setLocalData(newData);
-          localStorage.setItem('DEV_linkleLocalData', JSON.stringify(newData));
-        }
+    const storedData = localStorage.getItem('DEV_linkleLocalData');
+    if (storedData) {
+      const parsedData: LinkleLocalData = JSON.parse(storedData);
+      if (parsedData.challengeId === initialChallengeId) {
+        setLocalData(parsedData);
+      } else {
+        // Reset data for a new challenge
+        resetLocalData(initialChallengeId);
       }
-    }, 0);
+    } else {
+      resetLocalData(initialChallengeId);
+    }
+  }, [initialChallengeId]);
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+  const resetLocalData = (challengeId: string) => {
+    const newData: LinkleLocalData = {
+      challengeId: challengeId,
+      localRecord: { moveCount: 0, time: 0, path: [] },
+      localFullRecord: { moveCount: 0, time: 0, path: [] },
+      localSingleRecord: { moveCount: 0, time: 0, path: [] },
+      challengeStatus: {
+        hasStarted: false,
+        hasCleared: false,
+        result: null
+      }
+    };
+    setLocalData(newData);
+    localStorage.setItem('DEV_linkleLocalData', JSON.stringify(newData));
+  };
 
   const updateLocalStorage = (newData: LinkleLocalData) => {
     localStorage.setItem('DEV_linkleLocalData', JSON.stringify(newData));
@@ -75,7 +72,7 @@ export function useLocalRecordDev() {
 
   const updateLocalRecord = (newRecord: Record) => {
     setLocalData(prev => {
-      const updatedData = { ...prev, localRecord: newRecord, date: getKSTDateString() };
+      const updatedData = { ...prev, localRecord: newRecord };
       updateLocalStorage(updatedData);
       return updatedData;
     });
@@ -83,7 +80,7 @@ export function useLocalRecordDev() {
 
   const updateLocalFullRecord = (newRecord: Record) => {
     setLocalData(prev => {
-      const updatedData = { ...prev, localFullRecord: newRecord, date: getKSTDateString() };
+      const updatedData = { ...prev, localFullRecord: newRecord };
       updateLocalStorage(updatedData);
       return updatedData;
     });
@@ -91,7 +88,7 @@ export function useLocalRecordDev() {
 
   const updateLocalSingleRecord = (newRecord: Record) => {
     setLocalData(prev => {
-      const updatedData = { ...prev, localSingleRecord: newRecord, date: getKSTDateString() };
+      const updatedData = { ...prev, localSingleRecord: newRecord };
       updateLocalStorage(updatedData);
       return updatedData;
     });
@@ -101,44 +98,40 @@ export function useLocalRecordDev() {
     setLocalData(prev => {
       const updatedData = {
         ...prev,
-        dailyStatus: { ...prev.dailyStatus, hasStartedToday: true, hasClearedToday: true },
-        date: getKSTDateString()
+        challengeStatus: { ...prev.challengeStatus, hasStarted: true, hasCleared: true }
       };
       updateLocalStorage(updatedData);
       return updatedData;
     });
   };
 
-  const setHasStartedToday = (value: boolean) => {
+  const setHasStarted = (value: boolean) => {
     setLocalData(prev => {
       const updatedData = {
         ...prev,
-        dailyStatus: { ...prev.dailyStatus, hasStartedToday: value },
-        date: getKSTDateString()
+        challengeStatus: { ...prev.challengeStatus, hasStarted: value }
       };
       updateLocalStorage(updatedData);
       return updatedData;
     });
   };
 
-  const setHasClearedToday = (value: boolean) => {
+  const setHasCleared = (value: boolean) => {
     setLocalData(prev => {
       const updatedData = {
         ...prev,
-        dailyStatus: { ...prev.dailyStatus, hasClearedToday: value },
-        date: getKSTDateString()
+        challengeStatus: { ...prev.challengeStatus, hasCleared: value }
       };
       updateLocalStorage(updatedData);
       return updatedData;
     });
   };
 
-  const setResultOfToday = (value: string) => {
+  const setResult = (value: string) => {
     setLocalData(prev => {
       const updatedData = {
         ...prev,
-        dailyStatus: { ...prev.dailyStatus, resultOfToday: value },
-        date: getKSTDateString()
+        challengeStatus: { ...prev.challengeStatus, result: value }
       };
       updateLocalStorage(updatedData);
       return updatedData;
@@ -153,12 +146,13 @@ export function useLocalRecordDev() {
     updateLocalFullRecord,
     updateLocalSingleRecord,
     finalizeRecord,
-    hasStartedToday: localData.dailyStatus.hasStartedToday,
-    hasClearedToday: localData.dailyStatus.hasClearedToday,
-    resultOfToday: localData.dailyStatus.resultOfToday,
-    dailyStatus: localData.dailyStatus,
-    setHasStartedToday,
-    setHasClearedToday,
-    setResultOfToday,
+    hasStarted: localData.challengeStatus.hasStarted,
+    hasCleared: localData.challengeStatus.hasCleared,
+    result: localData.challengeStatus.result,
+    challengeStatus: localData.challengeStatus,
+    setHasStarted,
+    setHasCleared,
+    setResult,
+    resetLocalData,
   };
 }

@@ -1,23 +1,20 @@
 "use client";
 
-import { calculateLinkleDayNumber } from '@/assets/constants';
 import { Help } from '@/components/Help';
-import { PathResult } from '@/components/PathRecord';
 import { Button } from '@/components/ui/button';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { OpenAIService } from '@/service/OpenAI/OpenAIService';
-import { CircleHelp, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { CircleHelp, Info } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
-import { formatTimeInKor } from './SuccessScreen';
 import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
-import { DailyChallenge, fetchDailyChallenge } from '../utils/gameDataDev';
-
+import { DailyChallenge, fetchChallenge } from '../utils/gameDataDev';
+import { formatTimeInKor } from './SuccessScreen';
 
 const DEV_StartScreen: React.FC = () => {
-    const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
-    const { hasClearedToday, hasStartedToday } = useLocalRecordDev();
+    const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
+    const [challengeId, setChallengeId] = useState<string | null>(null);
+    const { hasStarted } = useLocalRecordDev(challengeId || '');
     const router = useRouter();
 
     const handleAdminAction = useCallback(() => {
@@ -39,20 +36,30 @@ const DEV_StartScreen: React.FC = () => {
     }, [isPressed, handleAdminAction]);
 
     useEffect(() => {
-        const loadDailyChallenge = async () => {
-            const challenge = await fetchDailyChallenge();
-            setDailyChallenge(challenge);
+        const loadLastChallenge = async () => {
+            const lastChallengeId = localStorage.getItem('DEV_lastChallengeId');
+            if (lastChallengeId) {
+                setChallengeId(lastChallengeId);
+                const loadedChallenge = await fetchChallenge(lastChallengeId);
+                setChallenge(loadedChallenge);
+            }
         };
-        loadDailyChallenge();
+        loadLastChallenge();
     }, []);
 
     const handleNormal = useCallback(() => {
         router.push('/');
     }, [router]);
 
-    const handleDevGame = useCallback(() => {
-        router.push('/dev/game');
+    const handleChallenge = useCallback(() => {
+        router.push('/dev/challenge');
     }, [router]);
+
+    const handleContinueGame = useCallback(() => {
+        if (challengeId) {
+            router.push(`/dev/game/${challengeId}`);
+        }
+    }, [router, challengeId]);
 
     const handleAuthor = useCallback(() => {
         router.push('/author');
@@ -62,26 +69,23 @@ const DEV_StartScreen: React.FC = () => {
         setIsDialogOpen(true);
     };
 
-    const { dailyStatus, localFullRecord, setResultOfToday } = useLocalRecordDev();
-    const linkleCount = calculateLinkleDayNumber();
-    const [shareResult, setShareResult] = useState<string | null>(dailyStatus.resultOfToday);
+    const { localFullRecord, setResult } = useLocalRecordDev(challengeId || '');
+    const [shareResult, setShareResult] = useState<string | null>(null);
     const [shareText, setShareText] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    useEffect(() => {
-        setShareResult(dailyStatus.resultOfToday);
-    }, [dailyStatus.resultOfToday]);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleShareResult = async () => {
+        if (!challengeId) return;
+
         setIsLoading(true);
         if (shareResult === null) {
             try {
                 const openAIService = new OpenAIService();
                 const result = await openAIService.GET_result_for_share(localFullRecord.path);
                 setShareResult(result.result);
-                setResultOfToday(result.result);
-                const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-beta.vercel.app/`;
+                setResult(result.result);
+                const shareText = `링클 챌린지 (ID: ${challengeId})를 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-beta.vercel.app/`;
                 setShareText(shareText);
                 await navigator.clipboard.writeText(shareText);
             } catch (error) {
@@ -89,8 +93,7 @@ const DEV_StartScreen: React.FC = () => {
                 setShareResult('오류가 발생했습니다. 다시 시도해 주세요.');
             }
         } else {
-            setShareResult(dailyStatus.resultOfToday);
-            const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${dailyStatus.resultOfToday}\n\nhttps://linkle-beta.vercel.app/`;
+            const shareText = `링클 챌린지 (ID: ${challengeId})를 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-beta.vercel.app/`;
             setShareText(shareText);
             await navigator.clipboard.writeText(shareText);
         }
@@ -117,36 +120,28 @@ const DEV_StartScreen: React.FC = () => {
                 </header>
                 <div className='pl-[32px] flex flex-row space-x-2'>
                     <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-6xl sm:text-8xl font-[400]">Linkle</h1>
-                    <p className="font-['Rhodium_Libre'] text-[#3366CC] text-md">#{linkleCount}</p>
+                    <p className="font-['Rhodium_Libre'] text-[#3366CC] text-md">Dev</p>
                 </div>
-                <p className="font-[400] text-24 leading-28 mb-[60px] text-red-500">Dev Database</p>
-                {!hasClearedToday ? (
-                    <div className="block mb-[40px]" onClick={handleDevGame}>
-                        <Button className="w-full text-lg bg-linkle px-20 py-6 text-white h-[56px] rounded-[28px]">
-                            {hasStartedToday ? '이어서 도전하기' : '시작'}
+                <p className="font-[400] text-24 leading-28 mb-[30px] text-red-500">Dev Database</p>
+
+                <div className="flex flex-col space-y-4 mb-[40px]">
+                    <Button className="w-full text-lg bg-linkle px-20 py-6 text-white h-[56px] rounded-[28px]" onClick={handleChallenge}>
+                        무한모드 시작
+                    </Button>
+                    {hasStarted && challengeId && (
+                        <Button className="w-full text-lg bg-linkle px-20 py-6 text-white h-[56px] rounded-[28px]" onClick={handleContinueGame}>
+                            이어서 도전하기
                         </Button>
-                    </div>
-                ) : (
-                    <div className='flex flex-col space-y-8 items-center w-full max-w-md px-4'>
-                        <div className="flex flex-col space-y-4 w-full">
-                            <div className="text-xl font-[600] text-center my-6 text-linkle-foreground">{linkleCount}번째 링클을 클리어했습니다!</div>
-                            <div className="flex flex-col space-y-2 w-full justify-start">
-                                <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
-                                <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localFullRecord.moveCount}</span></span>
-                            </div>
-                            <div className="flex flex-col w-full bg-white rounded-xl border border-[2px] border-[#DBE8F9] py-4">
-                                <PathResult path={localFullRecord.path} />
-                            </div>
-                        </div>
-                        <Button className="w-full max-w-[250px] text-lg px-20 py-6 bg-linkle text-white h-[56px] rounded-[28px]" onClick={handleShare}>
-                            {isLoading ? (
-                                <Loader2 className="w-6 h-6 animate-spin" />
-                            ) : (
-                                <span>결과 공유</span>
-                            )}
-                        </Button>
-                    </div>
-                )}
+                    )}
+                </div>
+                <div className='flex flex-row justify-center items-center space-x-2 mb-2'>
+                    <Info className='w-4 h-4 text-red-500' />
+                    <p className="text-sm font-bold">무한모드 특수 사항</p>
+                </div>
+                <div className='flex flex-col justify-center items-center space-y-1 mb-6 w-full'>
+                    <p className="text-sm">1. <strong>이어서 도전하기</strong> 기능이 제한됩니다</p>
+                    <p className="text-sm">2. <strong>성공 화면에서만</strong> 결과를 공유할 수 있습니다</p>
+                </div>
                 <div className='flex flex-col space-y-2 items-center w-full max-w-sm px-4'>
                     <Button
                         onClick={handleNormal}

@@ -6,7 +6,7 @@ import { useScreenSize } from '@/hooks/useScreenSize';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecordDev } from './useLocalRecordDev';
-import { DailyChallenge, MyRanking, fetchDailyChallenge, submitRanking } from '../utils/gameDataDev';
+import { DailyChallenge, MyRanking, fetchChallenge, submitRanking } from '../utils/gameDataDev';
 
 interface WikiPageContent {
     title: string;
@@ -23,7 +23,7 @@ interface Section {
     toclevel: number;
 }
 
-export const useWikipediaDev = () => {
+export const useWikipediaDev = (challengeId: string) => {
     const [currentPage, setCurrentPage] = useState<WikiPageContent | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -37,11 +37,11 @@ export const useWikipediaDev = () => {
     const [forcedEndReason, setForcedEndReason] = useState('');
     const initialLoadRef = useRef(true);
     const initialPlatformRef = useRef<'mobile' | 'desktop' | null>(null);
-    const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
+    const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord } = useLocalRecordDev();
+    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord, resetLocalData } = useLocalRecordDev(challengeId);
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -49,39 +49,33 @@ export const useWikipediaDev = () => {
             initialPlatformRef.current = isMobile ? 'mobile' : 'desktop';
         } else if (!initialLoadRef.current) {
             const currentPlatform = isMobile ? 'mobile' : 'desktop';
-            // if (currentPlatform !== initialPlatformRef.current) {
-            //     setIsForcedEnd(true);
-            //     setForcedEndReason('게임 진행 도중 플랫폼이 변경되었습니다. (모바일 ↔ PC)');
-            // }
+            // Platform change detection logic here if needed
         }
     }, [isMobile]);
 
     useEffect(() => {
-        const loadDailyChallenge = async () => {
-            const challenge = await fetchDailyChallenge();
-            if (challenge) {
-                setDailyChallenge(challenge);
+        const loadChallenge = async () => {
+            const loadedChallenge = await fetchChallenge(challengeId);
+            if (loadedChallenge) {
+                setChallenge(loadedChallenge);
+                resetLocalData(challengeId);
             }
         };
-        loadDailyChallenge();
-    }, []);
+        loadChallenge();
+    }, [challengeId]);
 
     useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            if (localRecord.path.length > 0) {
-                setPath(localRecord.path);
-                setMoveCount(localRecord.moveCount);
-                fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
-            }
-            if (localFullRecord.path.length > 0) {
-                setFullPath(localFullRecord.path);
-            }
-            if (localSingleRecord.path.length > 0) {
-                setSinglePath(localSingleRecord.path);
-            }
-        }, 0);
-
-        return () => clearTimeout(timeoutId);
+        if (localRecord.path.length > 0) {
+            setPath(localRecord.path);
+            setMoveCount(localRecord.moveCount);
+            fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
+        }
+        if (localFullRecord.path.length > 0) {
+            setFullPath(localFullRecord.path);
+        }
+        if (localSingleRecord.path.length > 0) {
+            setSinglePath(localSingleRecord.path);
+        }
     }, [localRecord, localFullRecord, localSingleRecord]);
 
     const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
@@ -97,7 +91,6 @@ export const useWikipediaDev = () => {
 
         return false;
     }, []);
-
 
     const fetchWikiPage = useCallback(async (title: string) => {
         setIsLoading(true);
@@ -137,13 +130,11 @@ export const useWikipediaDev = () => {
                 .filter((section: Section) => sectionsToRemove.some(title => section.line.toLowerCase().includes(title.toLowerCase())))
                 .map((section: Section) => parseInt(section.index));
 
-            // Sort indexes in ascending order to remove from top to bottom
             sectionIndexesToRemove.sort((a: number, b: number) => a - b);
 
             for (let index of sectionIndexesToRemove) {
                 const currentSection = sections.find(s => parseInt(s.index) === index);
                 if (!currentSection) {
-                    // console.log(`Section not found for index ${index}`);
                     continue;
                 }
 
@@ -159,24 +150,15 @@ export const useWikipediaDev = () => {
 
                 if (sectionMatch) {
                     html = html.replace(sectionMatch[0], '');
-                    // console.log(`Removed section: ${currentSection.line}`);
-                } else {
-                    // console.log(`Could not find matches for section: ${currentSection.line}`);
                 }
             }
 
-            // Remove navigation menu
             html = html.replace(/<div id="mw-navigation">.*?<\/div>\s*<div id="footer" role="contentinfo">/gs, '<div id="footer" role="contentinfo">');
-
-            // html = html.replace(/<table class="infobox.*?<\/table>/gs, '');
             html = html.replace(/<div class="mw-references-wrap.*?<\/div>/gs, '');
             html = html.replace(/<span class="mw-editsection.*?<\/span>/g, '');
             html = html.replace(/<div class="dablink.*?<\/div>/g, '');
             html = html.replace(/<audio.*?<\/audio>/g, '');
-
             html = html.replace(/<div\s+(?:[^>]*\s+)?class="(?:[^"]*\s+)?hatnote(?:\s+[^"]*)?"\s*.*?<\/div>/gs, '');
-
-            // Remove navbox completely
             html = html.replace(/<div\s+(?:[^>]*\s+)?class="(?:[^"]*\s+)?navbox(?:\s+[^"]*)?"[^>]*>[\s\S]*?<\/div>\s*(?:<\/?div[^>]*>\s*)*(?=<div|$)/g, '');
 
             const pageTitle = formatPageTitle(page.title);
@@ -186,12 +168,12 @@ export const useWikipediaDev = () => {
                 fullurl: page.fullurl
             });
 
-            if (dailyChallenge) {
-                const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
+            if (challenge) {
+                const isEnd = isEndPage(pageTitle, challenge.endPage);
 
                 const redirects = page.redirects || [];
                 const isRedirectEnd = redirects.some((redirect: any) =>
-                    isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
+                    isEndPage(formatPageTitle(redirect.to), challenge.endPage)
                 );
 
                 if (isEnd || isRedirectEnd) {
@@ -208,7 +190,7 @@ export const useWikipediaDev = () => {
                 initialLoadRef.current = false;
             }
         }
-    }, [dailyChallenge]);
+    }, [challenge, isEndPage]);
 
     const handleLinkClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (isGameOver) return;
@@ -223,18 +205,15 @@ export const useWikipediaDev = () => {
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
 
-                // 새로운 경로 생성
                 const newPath = [...path, formattedTitle];
                 const newFullPath = [...fullPath, formattedTitle];
                 const newSinglePath = [...singlePath, formattedTitle];
 
-                // 상태 업데이트
                 setMoveCount(newMoveCount);
                 setPath(newPath);
                 setFullPath(newFullPath);
                 setSinglePath(newSinglePath);
 
-                // 로컬 레코드 업데이트
                 updateLocalRecord({
                     moveCount: newMoveCount,
                     time: elapsedTime,
@@ -253,17 +232,13 @@ export const useWikipediaDev = () => {
 
                 fetchWikiPage(title);
             }
-            // } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
-            //     setIsForcedEnd(true);
-            //     setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
-            // }
         }
     }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     const goBack = useCallback(() => {
         if (!singlePath[singlePath.length - 2]) return;
 
-        const previousPage = singlePath[singlePath.length - 2]; // 이전 페이지
+        const previousPage = singlePath[singlePath.length - 2];
         const goBackText = '뒤로가기';
 
         const newPath = [...path, previousPage];
@@ -318,12 +293,12 @@ export const useWikipediaDev = () => {
                     path: finalRecord.path
                 };
 
-                await submitRanking(myRanking);
+                await submitRanking(challengeId, myRanking);
                 setIsGameOver(true);
             };
             submitRankingAsync();
         }
-    }, [isGameOver, moveCount, path, nickname]);
+    }, [isGameOver, moveCount, path, nickname, challengeId]);
 
     return {
         currentPage,
@@ -346,7 +321,7 @@ export const useWikipediaDev = () => {
         setIsForcedEnd,
         setForcedEndReason,
         goBack,
-        dailyChallenge,
+        challenge,
     };
 };
 

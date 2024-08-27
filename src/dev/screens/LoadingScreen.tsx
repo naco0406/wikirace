@@ -1,28 +1,32 @@
 "use client";
 
-import { usePermanentDailyTimer } from '@/hooks/usePermanentDailyTimer';
 import { Loader2, MoveDown } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { DailyChallenge, fetchDailyChallenge } from '../utils/gameDataDev';
 import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
+import { DailyChallenge, fetchChallenge } from '../utils/gameDataDev';
+import { useChallengeTimer } from '../hooks/useChallengeTimer';
 
-export const DEV_Loading: React.FC = () => {
+interface DEV_LoadingProps {
+    challengeId: string;
+}
+
+export const DEV_Loading: React.FC<DEV_LoadingProps> = ({ challengeId }) => {
     const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
-    const { formattedTime, startTimer } = usePermanentDailyTimer();
-    const { setHasStartedToday } = useLocalRecordDev();
+    const { formattedTime, startTimer } = useChallengeTimer(challengeId);
 
     useEffect(() => {
         startTimer();
-        setHasStartedToday(true);
     }, [startTimer]);
+    const { setHasStarted } = useLocalRecordDev(challengeId);
 
     useEffect(() => {
         const loadChallenge = async () => {
-            const dailyChallenge = await fetchDailyChallenge();
-            setChallenge(dailyChallenge);
+            const loadedChallenge = await fetchChallenge(challengeId);
+            setChallenge(loadedChallenge);
         };
         loadChallenge();
-    }, []);
+        setHasStarted(true);
+    }, [challengeId, setHasStarted]);
 
     return (
         <div className="min-h-screen w-full flex flex-row items-center justify-center bg-[#F3F7FF] overflow-hidden bg-red">
@@ -37,7 +41,7 @@ export const DEV_Loading: React.FC = () => {
                             <p className="mt-[15px]">도착 문서 : <span className="font-[600] text-[#3366CC]">{challenge.endPage}</span></p>
                         </>
                     ) : (
-                        <p className="font-[400] text-24 leading-28 mb-[80px]">오늘의 게임을 로딩 중입니다</p>
+                        <p className="font-[400] text-24 leading-28 mb-[80px]">게임을 로딩 중입니다</p>
                     )}
                 </div>
             </div>
