@@ -12,7 +12,6 @@ import { useForm, useFieldArray, FieldValues } from 'react-hook-form';
 import { cn } from "@/lib/utils";
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
 import { DatePickerWithToday } from '../ui/date-picker';
-import { PocketService } from '@/service/PocketService';
 
 interface ChallengeInput {
     date: Date | undefined;
@@ -57,22 +56,13 @@ const ChallengeInputScreen: React.FC = () => {
                         endPage: input.endPage,
                         totalCount: 0
                     };
-                    // await addDailyChallenge(format(input.date, 'yyyy-MM-dd'), challengeData);
                     const formattedDate = format(input.date, 'yyyy-MM-dd');
-
-                    // Firebase에 데이터 추가
                     await addDailyChallenge(formattedDate, challengeData);
-
-                    // PocketBase에 데이터 추가
-                    // console.log('Attempting: POST_add_daily_challenge');
-                    // await PocketService.POST_add_daily_challenge(formattedDate, challengeData);
-                    // console.log('PocketBase Uploaded');
                 }
             });
 
             await Promise.all(batch);
             alert('데이터가 성공적으로 추가되었습니다.');
-            // Reset form or handle success
         } catch (error) {
             console.error('Error adding documents: ', error);
             alert('데이터 추가 중 오류가 발생했습니다.');
@@ -136,18 +126,10 @@ const ChallengeInputScreen: React.FC = () => {
         <div className="container mx-auto p-4 max-w-7xl relative">
             <Card>
                 <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <CardTitle className="text-3xl font-bold">관리자 페이지</CardTitle>
-                        <div className="flex space-x-4">
-                            <Button variant="outline" onClick={handleBackToHome}>
-                                <ArrowLeft className="mr-2 h-4 w-4" /> 메인
-                            </Button>
-                            <Button onClick={() => openInNewTab(adminConsoleUrl ?? DEFAULT_CONSOLE_URL)}>
-                                Firebase Console <ExternalLink className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                        <CardTitle className="text-2xl sm:text-3xl font-bold">관리자 페이지</CardTitle>
                     </div>
-                    <CardDescription>
+                    <CardDescription className="mt-2">
                         챌린지를 추가하고 관리하세요.
                     </CardDescription>
                 </CardHeader>
@@ -165,7 +147,7 @@ const ChallengeInputScreen: React.FC = () => {
                                     <Minus className="h-4 w-4" />
                                 </Button>
                                 <CardContent className="pt-6">
-                                    <div className="grid grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                         <div>
                                             <DatePickerWithToday
                                                 onDateChange={(date) => handleDateChange(index, date)}
@@ -229,22 +211,30 @@ const ChallengeInputScreen: React.FC = () => {
                         {isAddingRandomChallenge && (
                             <Card className="mb-4 relative">
                                 <CardContent className="pt-6 flex items-center justify-center h-16">
-                                    <Loader className="animate-spin h-6 w-4" />
+                                    <Loader className="animate-spin h-6 w-6" />
                                 </CardContent>
                             </Card>
                         )}
-                        <div className="flex flex-row mb-4 justify-between">
-                            <div className="mb-4 space-x-4">
-                                <Button type="button" variant="outline" onClick={addNewChallenge}>새 챌린지 추가</Button>
-                                <Button type="button" variant="outline" onClick={addNewRandomChallenge} disabled={isAddingRandomChallenge}>
+                        <div className="flex flex-col sm:flex-row mb-4 justify-between space-y-4 sm:space-y-0">
+                            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                                <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={addNewChallenge}>새 챌린지 추가</Button>
+                                <Button className="w-full sm:w-auto" type="button" variant="outline" onClick={addNewRandomChallenge} disabled={isAddingRandomChallenge}>
                                     새 랜덤 챌린지 추가
                                 </Button>
                             </div>
-                            <Button type="submit">업로드</Button>
+                            <Button className="w-full sm:w-auto" type="submit">업로드</Button>
                         </div>
                     </form>
                 </CardContent>
             </Card>
+            <div className="flex justify-between items-center w-full mt-4 space-x-4">
+                <Button className="w-[49%]" variant="outline" onClick={handleBackToHome}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> 메인
+                </Button>
+                <Button className="w-[49%]" onClick={() => openInNewTab(adminConsoleUrl ?? DEFAULT_CONSOLE_URL)}>
+                    Firebase Console <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
         </div>
     );
 };

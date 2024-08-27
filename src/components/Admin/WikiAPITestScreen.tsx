@@ -83,18 +83,10 @@ const WikiAPITestScreen: React.FC = () => {
       <div className="mb-4 sticky top-0 bg-white z-10 pb-4">
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle className="text-3xl font-bold">위키피디아 API 테스트</CardTitle>
-              <div className="flex space-x-4">
-                <Button variant="outline" onClick={handleBackToHome}>
-                  <ArrowLeft className="mr-2 h-4 w-4" /> 메인
-                </Button>
-                <Button onClick={() => openInNewTab('https://en.wikipedia.org/api/rest_v1/')}>
-                  REST API 문서 <ExternalLink className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+              <CardTitle className="text-2xl sm:text-3xl font-bold">위키피디아 API</CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="mt-2">
               위키피디아 API를 테스트하고 결과를 확인하세요.
             </CardDescription>
           </CardHeader>
@@ -127,7 +119,7 @@ const WikiAPITestScreen: React.FC = () => {
               </Select>
               <div className="bg-gray-100 p-4 rounded-md mb-4">
                 <p className="text-sm font-medium text-gray-500 mb-2">API URL:</p>
-                <p className="text-sm">{WikipediaAPI[apiMethod].url}</p>
+                <p className="text-sm break-all">{WikipediaAPI[apiMethod].url}</p>
                 <Separator className="my-2" />
                 <p className="text-sm font-medium text-gray-500 mb-2">설명:</p>
                 <p className="text-sm">{WikipediaAPI[apiMethod].description}</p>
@@ -174,14 +166,14 @@ const WikiAPITestScreen: React.FC = () => {
               <TabsTrigger value="html" disabled={WikipediaAPI[apiMethod].responseType !== 'html'}>HTML</TabsTrigger>
             </TabsList>
             <TabsContent value="json">
-              <ScrollArea className="h-[500px] w-full rounded-md border">
+              <ScrollArea className="h-[300px] sm:h-[500px] w-full rounded-md border">
                 <pre className="p-4 text-sm">
                   {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
                 </pre>
               </ScrollArea>
             </TabsContent>
             <TabsContent value="tree">
-              <ScrollArea className="h-[500px] w-full rounded-md border">
+              <ScrollArea className="h-[300px] sm:h-[500px] w-full rounded-md border">
                 <div className="p-4">
                   {typeof result === 'object' && result !== null ? (
                     <JSONTreeView data={result} />
@@ -192,13 +184,21 @@ const WikiAPITestScreen: React.FC = () => {
               </ScrollArea>
             </TabsContent>
             <TabsContent value="html">
-              <div className="h-[500px] w-full rounded-md border">
+              <div className="h-[300px] sm:h-[500px] w-full rounded-md border">
                 <iframe srcDoc={htmlResult} className="w-full h-full" />
               </div>
             </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
+      <div className="flex justify-between items-center w-full mt-4 space-x-4">
+        <Button className="w-[49%]" variant="outline" onClick={handleBackToHome}>
+          <ArrowLeft className="mr-2 h-4 w-4" /> 메인
+        </Button>
+        <Button className="w-[49%]" onClick={() => openInNewTab('https://en.wikipedia.org/api/rest_v1/')}>
+          REST API 문서 <ExternalLink className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };

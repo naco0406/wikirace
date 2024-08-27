@@ -140,25 +140,17 @@ const OpenAiAPITestScreen: React.FC = () => {
         <div className="container mx-auto p-4 max-w-7xl relative">
             <Card>
                 <CardHeader>
-                    <div className="flex justify-between items-center">
-                        <CardTitle className="text-3xl font-bold">OpenAI API 테스트</CardTitle>
-                        <div className="flex space-x-4">
-                            <Button variant="outline" onClick={handleBackToHome}>
-                                <ArrowLeft className="mr-2 h-4 w-4" /> 메인
-                            </Button>
-                            <Button onClick={() => openInNewTab('https://platform.openai.com/usage')}>
-                                OpenAI 사용량 <ExternalLink className="ml-2 h-4 w-4" />
-                            </Button>
-                        </div>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                        <CardTitle className="text-2xl sm:text-3xl font-bold">OpenAI API</CardTitle>
                     </div>
-                    <CardDescription>
+                    <CardDescription className="mt-2">
                         OpenAI API를 테스트하고 결과를 확인하세요.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div>
                         <h2 className="text-xl font-semibold mb-4">API 모델 설정</h2>
-                        <div className="flex space-x-2 mb-4">
+                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-4">
                             <Input
                                 placeholder="페이지 제목들 (쉼표로 구분)"
                                 value={pageTitles}
@@ -167,12 +159,12 @@ const OpenAiAPITestScreen: React.FC = () => {
                             />
                             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                                 <DrawerTrigger asChild>
-                                    <Button variant="outline">
+                                    <Button variant="outline" className="w-full sm:w-auto">
                                         <PanelRightOpen className="mr-2 h-4 w-4" />
                                         랜덤 제목
                                     </Button>
                                 </DrawerTrigger>
-                                <DrawerContent className="w-[488px] right-0 left-auto rounded-xl">
+                                <DrawerContent className="w-full sm:w-[488px] right-0 left-auto rounded-xl">
                                     <DrawerHeader>
                                         <DrawerTitle>위키피디아 제목 생성</DrawerTitle>
                                     </DrawerHeader>
@@ -224,7 +216,6 @@ const OpenAiAPITestScreen: React.FC = () => {
                                 <Separator className="my-2" />
                                 <p className="text-sm font-medium mb-2">경로 :</p>
                                 <PathAdmin path={pageTitles.split(',').map(title => title.trim())} />
-                                {/* <p className="text-sm font-mono bg-gray-100 p-2 rounded">{JSON.stringify(pageTitles.split(',').map(title => title.trim()))}</p> */}
                             </AlertDescription>
                         </Alert>
                         <Button onClick={handleApiCall} className="w-full mt-4" disabled={isLoading || pageTitles.split(',').length < 2}>
@@ -245,32 +236,50 @@ const OpenAiAPITestScreen: React.FC = () => {
                     <CardTitle>API 응답</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <ScrollArea className={`w-full rounded-md  ${!result && !error && !fullResponse && !attempts ? 'border h-8' : 'border-transparent'}`}>
+                    <ScrollArea className={`w-full rounded-md ${!result && !error && !fullResponse && !attempts ? 'border h-8' : 'border-transparent'}`}>
                         {result && (
                             <Alert className="mb-4 border-[#10b981]">
                                 <CheckCircle2 className="h-4 w-4" color="#10b981" />
                                 <AlertTitle>성공</AlertTitle>
                                 <AlertDescription>
-                                    <Table className="mt-2">
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-[100px]">이모지</TableHead>
-                                                <TableHead>제목</TableHead>
-                                                <TableHead className="w-[100px]">유사도</TableHead>
-                                                <TableHead>근거</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {detailedResults.slice(0, -1).map((item, index) => (
-                                                <TableRow key={index}>
-                                                    <TableCell>{similarityToEmoji(item.similarity)}</TableCell>
-                                                    <TableCell className="font-medium">{item.word}</TableCell>
-                                                    <TableCell>{item.similarity}</TableCell>
-                                                    <TableCell>{item.reason}</TableCell>
+                                    <div className="hidden sm:block overflow-x-auto">
+                                        <Table className="mt-2 w-full">
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead className="w-[100px]">이모지</TableHead>
+                                                    <TableHead>제목</TableHead>
+                                                    <TableHead className="w-[100px]">유사도</TableHead>
+                                                    <TableHead>근거</TableHead>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {detailedResults.slice(0, -1).map((item, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell>{similarityToEmoji(item.similarity)}</TableCell>
+                                                        <TableCell className="font-medium">{item.word}</TableCell>
+                                                        <TableCell>{item.similarity}</TableCell>
+                                                        <TableCell>{item.reason}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                    <div className="sm:hidden space-y-4 mt-4">
+                                        {detailedResults.slice(0, -1).map((item, index) => (
+                                            <Card key={index}>
+                                                <CardHeader>
+                                                    <CardTitle className="flex items-center space-x-2">
+                                                        <span className="text-sm">{similarityToEmoji(item.similarity)}</span>
+                                                        <span className="text-sm">{item.word}</span>
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <p><strong>유사도:</strong> {item.similarity}</p>
+                                                    <p><strong>근거:</strong> {item.reason}</p>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
                                     <Separator className="my-6" />
                                     <p className="text-sm mt-2">전체 결과: {result}</p>
                                 </AlertDescription>
@@ -303,6 +312,14 @@ const OpenAiAPITestScreen: React.FC = () => {
                     </ScrollArea>
                 </CardContent>
             </Card>
+            <div className="flex justify-between items-center w-full mt-4 space-x-4">
+                <Button className="w-[49%]" variant="outline" onClick={handleBackToHome}>
+                    <ArrowLeft className="mr-2 h-4 w-4" /> 메인
+                </Button>
+                <Button className="w-[49%]" onClick={() => openInNewTab('https://platform.openai.com/usage')}>
+                    OpenAI 사용량 <ExternalLink className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
         </div>
     );
 };
