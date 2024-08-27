@@ -4,7 +4,7 @@ import { usePermanentDailyTimer } from '@/hooks/usePermanentDailyTimer';
 import { Loader2, MoveDown } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { DailyChallenge, fetchDailyChallenge } from '../utils/gameDataDev';
-import { useLocalRecordDev } from '../hooks/useLocalRecorddev';
+import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
 
 export const DEV_Loading: React.FC = () => {
     const [challenge, setChallenge] = useState<DailyChallenge | null>(null);
@@ -25,7 +25,7 @@ export const DEV_Loading: React.FC = () => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full flex flex-row items-center justify-center bg-[#F3F7FF] overflow-hidden">
+        <div className="min-h-screen w-full flex flex-row items-center justify-center bg-[#F3F7FF] overflow-hidden bg-red">
             <div className='w-full h-full flex flex-col items-center justify-center box-border'>
                 <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-8xl font-[400]">Linkle</h1>
                 <Loader2 className="w-[48px] h-[48px] animate-spin mt-[40px] mb-[40px] text-[#3366CC]" />

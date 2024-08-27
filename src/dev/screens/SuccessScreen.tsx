@@ -17,7 +17,7 @@ import { ArrowLeft, Copy, Loader2, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
-import { useLocalRecordDev } from '../hooks/useLocalRecorddev';
+import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
 
 const DEV_SuccessScreen: React.FC = () => {
     const router = useRouter();
@@ -113,7 +113,7 @@ const DEV_SuccessScreen: React.FC = () => {
     }
 
     return (
-        <div className="relative h-screen w-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+        <div className="relative h-screen w-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-red">
             <AnimatedBackground />
             <Card className="relative z-10 w-full max-w-xl bg-white text-gray-800">
                 <CardHeader>

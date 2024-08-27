@@ -5,7 +5,7 @@ import { useNickname } from '@/hooks/useNickname';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocalRecordDev } from './useLocalRecorddev';
+import { useLocalRecordDev } from './useLocalRecordDev';
 import { DailyChallenge, MyRanking, fetchDailyChallenge, submitRanking } from '../utils/gameDataDev';
 
 interface WikiPageContent {

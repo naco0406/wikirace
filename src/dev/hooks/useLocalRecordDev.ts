@@ -40,7 +40,7 @@ export function useLocalRecordDev() {
     const timeoutId = setTimeout(() => {
       if (typeof window === 'undefined') return;
 
-      const storedData = localStorage.getItem('linkleLocalData');
+      const storedData = localStorage.getItem('DEV_linkleLocalData');
       const today = getKSTDateString();
 
       if (storedData) {
@@ -61,7 +61,7 @@ export function useLocalRecordDev() {
             date: today
           };
           setLocalData(newData);
-          localStorage.setItem('linkleLocalData', JSON.stringify(newData));
+          localStorage.setItem('DEV_linkleLocalData', JSON.stringify(newData));
         }
       }
     }, 0);
@@ -70,7 +70,7 @@ export function useLocalRecordDev() {
   }, []);
 
   const updateLocalStorage = (newData: LinkleLocalData) => {
-    localStorage.setItem('linkleLocalData', JSON.stringify(newData));
+    localStorage.setItem('DEV_linkleLocalData', JSON.stringify(newData));
   };
 
   const updateLocalRecord = (newRecord: Record) => {

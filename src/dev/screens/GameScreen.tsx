@@ -11,7 +11,7 @@ import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useWikipediaDev } from '../hooks/useWikipediaDev';
-import { useLocalRecordDev } from '../hooks/useLocalRecorddev';
+import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
 import { DEV_Loading } from './LoadingScreen';
 
 const DEV_GameScreen: React.FC = () => {
@@ -102,7 +102,7 @@ const DEV_GameScreen: React.FC = () => {
 
     if (isLoading && !isFirstLoad) {
         return (
-            <div className="h-[100dvh] flex flex-col">
+            <div className="h-[100dvh] flex flex-col bg-red">
                 <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6 w-full">
                     <div className="flex flex-row items-center">
                         <Button

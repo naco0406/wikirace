@@ -13,9 +13,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { PathResult } from '../PathRecord';
 import { formatTimeInKor } from '../Success/Screen';
 import { Help } from '../Help';
+import { useEnvironment } from '@/contexts/EnvironmentContext';
 
 
 const StartScreen: React.FC = () => {
+    const { isDev } = useEnvironment();
+    console.log(isDev)
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
     const { hasClearedToday, hasStartedToday } = useLocalRecord();
     const router = useRouter();
@@ -48,6 +51,10 @@ const StartScreen: React.FC = () => {
 
     const handleAuthor = useCallback(() => {
         router.push('/author');
+    }, [router]);
+
+    const handleDev = useCallback(() => {
+        router.push('/dev');
     }, [router]);
 
     const handleOpenHelpModal = () => {
@@ -111,8 +118,9 @@ const StartScreen: React.FC = () => {
                     <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-6xl sm:text-8xl font-[400]">Linkle</h1>
                     <p className="font-['Rhodium_Libre'] text-[#3366CC] text-md">#{linkleCount}</p>
                 </div>
+                {isDev && <p className="font-[400] text-24 leading-28 mb-[60px] text-red-500">Prod Database</p>}
                 {/* <p className="font-[400] text-24 leading-28 mt-[28px] mb-[60px] text-linkle-foreground">{`오늘 완료한 사람 수 : ${dailyChallenge ? dailyChallenge.totalCount : '-'}`}</p> */}
-                {!hasClearedToday && <p className="font-[400] text-xl leading-28 mb-[60px] text-linkle-foreground">매일 위키피디아 탐험하기</p>}
+                {!hasClearedToday && !isDev && <p className="font-[400] text-xl leading-28 mb-[60px] text-linkle-foreground">매일 위키피디아 탐험하기</p>}
                 {!hasClearedToday ? (
                     <Link href="/game" className="block mb-[40px]">
                         <Button className="w-full text-lg bg-linkle px-20 py-6 text-white h-[56px] rounded-[28px]">
@@ -137,6 +145,22 @@ const StartScreen: React.FC = () => {
                             ) : (
                                 <span>결과 공유</span>
                             )}
+                        </Button>
+                    </div>
+                )}
+                {isDev && (
+                    <div className='flex flex-col space-y-2 items-center w-full max-w-sm px-4'>
+                        <Button
+                            onClick={handleAdminAction}
+                            className="w-full text-md font-bold bg-transparent text-black h-[40px] rounded-[20px] border border-black hover:bg-black hover:text-white"
+                        >
+                            관리자 페이지
+                        </Button>
+                        <Button
+                            onClick={handleDev}
+                            className="w-full text-md bg-transparent text-black h-[40px] rounded-[20px] border border-black hover:bg-black hover:text-white"
+                        >
+                            무한 모드
                         </Button>
                     </div>
                 )}
