@@ -1,12 +1,12 @@
 "use client";
 
-import { useTimer } from '@/contexts/TimerContext';
 import { useNickname } from '@/hooks/useNickname';
 import { useScreenSize } from '@/hooks/useScreenSize';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecordDev } from './useLocalRecordDev';
 import { DailyChallenge, MyRanking, fetchChallenge, submitRanking } from '../utils/gameDataDev';
+import { useChallengeTimer } from './useChallengeTimer';
 
 interface WikiPageContent {
     title: string;
@@ -23,7 +23,7 @@ interface Section {
     toclevel: number;
 }
 
-export const useWikipediaDev = (challengeId: string) => {
+export const useWikipediaDev = (challengeId: string, elapsedTime: number) => {
     const [currentPage, setCurrentPage] = useState<WikiPageContent | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -42,7 +42,6 @@ export const useWikipediaDev = (challengeId: string) => {
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
     const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord, resetLocalData } = useLocalRecordDev(challengeId);
-    const { elapsedTime } = useTimer();
 
     useEffect(() => {
         if (initialPlatformRef.current === null) {

@@ -20,6 +20,9 @@ interface DEV_GameScreenProps {
 }
 
 const DEV_GameScreen: React.FC<DEV_GameScreenProps> = ({ challengeId }) => {
+    const { isMobile } = useScreenSize();
+    const { formattedTime, startTimer, resetTimer, elapsedTime } = useChallengeTimer(challengeId);
+
     const {
         currentPage,
         isLoading,
@@ -40,10 +43,8 @@ const DEV_GameScreen: React.FC<DEV_GameScreenProps> = ({ challengeId }) => {
         setForcedEndReason,
         goBack,
         challenge,
-    } = useWikipediaDev(challengeId);
+    } = useWikipediaDev(challengeId, elapsedTime);
 
-    const { isMobile } = useScreenSize();
-    const { formattedTime, startTimer, resetTimer } = useChallengeTimer(challengeId);
     const { localRecord, hasStarted, hasCleared } = useLocalRecordDev(challengeId);
     const router = useRouter();
 
