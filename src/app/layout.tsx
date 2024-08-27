@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Viewport } from "next";
 import "../styles/globals.css";
 import { TimerProvider } from '@/contexts/TimerContext';
+import { EnvironmentProvider } from '@/contexts/EnvironmentContext';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
@@ -28,11 +29,13 @@ export default function RootLayout({
           crossOrigin="anonymous"></script>
       </head>
       <body className="font-sans">
-        <TimerProvider>
-          {children}
-        </TimerProvider>
-        <Analytics />
-        <SpeedInsights />
+        <EnvironmentProvider>
+          <TimerProvider>
+            {children}
+          </TimerProvider>
+          <Analytics />
+          <SpeedInsights />
+        </EnvironmentProvider>
       </body>
     </html>
   );
