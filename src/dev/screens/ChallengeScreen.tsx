@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import AutocompleteWikipediaInput from '@/components/AutocompleteWikipediaInput';
+import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
 
 const DEV_ChallengeScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<{ id: string; challenge: DailyChallenge }[]>([]);
@@ -19,8 +20,10 @@ const DEV_ChallengeScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isAddingChallenge, setIsAddingChallenge] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isGeneratingRandom, setIsGeneratingRandom] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
+    const { refetch: refetchTitle } = useRandomWikipediaTitle();
 
     useEffect(() => {
         loadChallenges();
@@ -73,6 +76,29 @@ const DEV_ChallengeScreen: React.FC = () => {
         }
     };
 
+    const handleGenerateRandom = async () => {
+        setIsGeneratingRandom(true);
+        try {
+            const newStartPage = await refetchTitle();
+            const newEndPage = await refetchTitle();
+            setStartPage(newStartPage || '');
+            setEndPage(newEndPage || '');
+            toast({
+                title: "랜덤 챌린지 생성",
+                description: "랜덤한 시작 페이지와 도착 페이지가 생성되었습니다.",
+            });
+        } catch (error) {
+            console.error("랜덤 챌린지 생성 중 오류 발생:", error);
+            toast({
+                title: "랜덤 챌린지 생성 실패",
+                description: "랜덤 챌린지 생성 중 오류가 발생했습니다. 다시 시도해주세요.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsGeneratingRandom(false);
+        }
+    };
+
     return (
         <div className="min-h-screen w-full flex flex-col bg-[#F3F7FF] p-4">
             <header className="flex items-center justify-between mb-6">
@@ -113,6 +139,10 @@ const DEV_ChallengeScreen: React.FC = () => {
                                 placeholder="도착 페이지"
                             />
                         </div>
+                        <Button onClick={handleGenerateRandom} disabled={isGeneratingRandom}>
+                            {isGeneratingRandom ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+                            랜덤 생성
+                        </Button>
                         <Button onClick={handleAddChallenge} disabled={isAddingChallenge || !startPage || !endPage}>
                             {isAddingChallenge ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                             챌린지 추가
