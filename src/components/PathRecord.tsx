@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 
 const PathRecord = ({ path }: { path: string[] }) => {
     return (
-        <div className="flex flex-wrap items-center justify-center max-w-[900px]">
+        <div className="flex flex-wrap items-center justify-center max-w-[900px] max-h-[200px] overflow-y-auto">
             {path.map((item, index) => (
                 <Fragment key={index}>
                     {index > 0 && (
@@ -30,7 +30,7 @@ export default PathRecord;
 
 export const PathResult = ({ path }: { path: string[] }) => {
     return (
-        <div className="flex flex-wrap items-center justify-center max-w-xl px-4">
+        <div className="flex flex-wrap items-center justify-center max-w-xl px-4 max-h-[200px] overflow-y-auto">
             {path.map((item, index) => (
                 <Fragment key={index}>
                     {index > 0 && (
@@ -56,7 +56,7 @@ export const PathResult = ({ path }: { path: string[] }) => {
 
 export const PathAdmin = ({ path }: { path: string[] }) => {
     return (
-        <div className="flex flex-wrap items-center justify-start">
+        <div className="flex flex-wrap items-center justify-start max-h-[200px] overflow-y-auto">
             {path.map((item, index) => (
                 <Fragment key={index}>
                     {index > 0 && (

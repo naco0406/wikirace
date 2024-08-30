@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { ArrowLeft, Plus, Loader2, RefreshCw } from 'lucide-react';
 import { DailyChallenge, fetchAllChallenges, createChallenge } from '../utils/gameDataDev';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import AutocompleteWikipediaInput from '@/components/AutocompleteWikipediaInput';
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import AutocompleteWikipediaInput from '@/components/AutocompleteWikipediaInput';
 
 const DEV_ChallengeScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<{ id: string; challenge: DailyChallenge }[]>([]);
@@ -55,8 +55,7 @@ const DEV_ChallengeScreen: React.FC = () => {
             };
             try {
                 await createChallenge(newChallenge);
-                setStartPage('');
-                setEndPage('');
+                resetInputs();
                 await loadChallenges();
                 setIsDialogOpen(false);
                 toast({
@@ -112,90 +111,95 @@ const DEV_ChallengeScreen: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex flex-col bg-[#F3F7FF] p-4">
-            <header className="flex items-center justify-between mb-6">
+        <div className="h-screen w-full flex flex-col bg-[#F3F7FF]">
+            <header className="flex items-center justify-between p-4">
                 <Button variant="ghost" onClick={handleBack} className="p-2">
                     <ArrowLeft className="w-6 h-6" />
                 </Button>
                 <h1 className="text-2xl font-bold text-center flex-grow">챌린지 목록</h1>
-                <Button variant="ghost" onClick={loadChallenges} className="p-2">
-                    <RefreshCw className="w-6 h-6" />
-                </Button>
+                <div className='flex flex-row space-x-4'>
+                    <div className="flex-shrink-0">
+                        <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
+                            <DialogTrigger asChild>
+                                <Button>
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    새 챌린지 추가
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>새 챌린지 추가</DialogTitle>
+                                </DialogHeader>
+                                <div className="flex flex-col space-y-4">
+                                    <div>
+                                        <Label htmlFor="startPage">시작 페이지</Label>
+                                        <AutocompleteWikipediaInput
+                                            value={startPage}
+                                            onChange={setStartPage}
+                                            placeholder="시작 페이지"
+                                            disabled={isGeneratingRandom}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="endPage">도착 페이지</Label>
+                                        <AutocompleteWikipediaInput
+                                            value={endPage}
+                                            onChange={setEndPage}
+                                            placeholder="도착 페이지"
+                                            disabled={isGeneratingRandom}
+                                        />
+                                    </div>
+                                    <Button onClick={handleGenerateRandom} disabled={isGeneratingRandom}>
+                                        {isGeneratingRandom ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+                                        랜덤 생성
+                                    </Button>
+                                    <Button onClick={handleAddChallenge} disabled={isAddingChallenge || !startPage || !endPage}>
+                                        {isAddingChallenge ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                                        챌린지 추가
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+                    <Button variant="ghost" onClick={loadChallenges} className="p-2">
+                        <RefreshCw className="w-6 h-6" />
+                    </Button>
+                </div>
             </header>
 
-            <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
-                <DialogTrigger asChild>
-                    <Button className="mb-6">
-                        <Plus className="w-4 h-4 mr-2" />
-                        새 챌린지 추가
-                    </Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>새 챌린지 추가</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex flex-col space-y-6 mt-2">
-                        <div className='flex flex-col space-y-2'>
-                            <Label htmlFor="startPage">시작 페이지</Label>
-                            <AutocompleteWikipediaInput
-                                value={startPage}
-                                onChange={setStartPage}
-                                placeholder="시작 페이지"
-                                disabled={isGeneratingRandom}
-                            />
+            <div className="flex-grow overflow-hidden px-4 pb-4">
+                <ScrollArea className="h-full rounded-md">
+                    {isLoading ? (
+                        <div className="flex justify-center items-center h-full">
+                            <Loader2 className="w-8 h-8 animate-spin" />
                         </div>
-                        <div className='flex flex-col space-y-2'>
-                            <Label htmlFor="endPage">도착 페이지</Label>
-                            <AutocompleteWikipediaInput
-                                value={endPage}
-                                onChange={setEndPage}
-                                placeholder="도착 페이지"
-                                disabled={isGeneratingRandom}
-                            />
-                        </div>
-                        <div className='flex flex-col space-y-2'>
-                            <Button onClick={handleGenerateRandom} disabled={isGeneratingRandom}>
-                                {isGeneratingRandom ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
-                                랜덤 생성
-                            </Button>
-                            <Button onClick={handleAddChallenge} disabled={isAddingChallenge || !startPage || !endPage}>
-                                {isAddingChallenge ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
-                                챌린지 추가
+                    ) : challenges.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-center">
+                            <p className="text-lg mb-4">아직 등록된 챌린지가 없습니다.</p>
+                            <p className="text-sm text-gray-500 mb-4">새로운 챌린지를 추가해 보세요!</p>
+                            <Button onClick={() => setIsDialogOpen(true)}>
+                                <Plus className="w-4 h-4 mr-2" />
+                                첫 번째 챌린지 추가하기
                             </Button>
                         </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {isLoading ? (
-                <div className="flex justify-center items-center h-64">
-                    <Loader2 className="w-8 h-8 animate-spin" />
-                </div>
-            ) : challenges.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <p className="text-lg mb-4">아직 등록된 챌린지가 없습니다.</p>
-                    <p className="text-sm text-gray-500 mb-4">새로운 챌린지를 추가해 보세요!</p>
-                    <Button onClick={() => setIsDialogOpen(true)}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        첫 번째 챌린지 추가하기
-                    </Button>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {challenges.map(({ id, challenge }) => (
-                        <Card key={id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleChallengeSelect(id)}>
-                            <CardHeader>
-                                <CardTitle className="text-lg">챌린지 ID : {id.slice(0, 6)}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm mb-2"><strong>시작</strong>: {challenge.startPage}</p>
-                                <p className="text-sm mb-2"><strong>도착</strong>: {challenge.endPage}</p>
-                                <p className="text-sm"><strong>총 성공 횟수</strong>: {challenge.totalCount}</p>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            )}
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
+                            {challenges.map(({ id, challenge }) => (
+                                <Card key={id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleChallengeSelect(id)}>
+                                    <CardHeader>
+                                        <CardTitle className="text-lg">챌린지 ID : {id.slice(0, 6)}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-sm mb-2"><strong>시작</strong>: {challenge.startPage}</p>
+                                        <p className="text-sm mb-2"><strong>도착</strong>: {challenge.endPage}</p>
+                                        <p className="text-sm"><strong>총 성공 횟수</strong>: {challenge.totalCount}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    )}
+                </ScrollArea>
+            </div>
         </div>
     );
 };

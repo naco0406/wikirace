@@ -70,7 +70,7 @@ const Admin = () => {
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-12">
                 <form onSubmit={handleAuthentication} className="p-6 bg-white rounded-lg shadow-md w-full h-full max-w-[768px]">
                     <h2 className="mb-1 text-xl font-bold">관리자 로그인</h2>
-                    <p className="mb-6 text-xs text-gray-300">초기 비밀번호 : 1234</p>
+                    {/* <p className="mb-6 text-xs text-gray-300">초기 비밀번호 : 1234</p> */}
                     <Input
                         type="password"
                         value={password}
