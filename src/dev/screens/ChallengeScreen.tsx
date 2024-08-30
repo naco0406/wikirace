@@ -99,6 +99,18 @@ const DEV_ChallengeScreen: React.FC = () => {
         }
     };
 
+    const resetInputs = () => {
+        setStartPage('');
+        setEndPage('');
+    };
+
+    const handleDialogOpenChange = (open: boolean) => {
+        if (!open) {
+            resetInputs();
+        }
+        setIsDialogOpen(open);
+    };
+
     return (
         <div className="min-h-screen w-full flex flex-col bg-[#F3F7FF] p-4">
             <header className="flex items-center justify-between mb-6">
@@ -111,7 +123,7 @@ const DEV_ChallengeScreen: React.FC = () => {
                 </Button>
             </header>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
                 <DialogTrigger asChild>
                     <Button className="mb-6">
                         <Plus className="w-4 h-4 mr-2" />
@@ -122,31 +134,35 @@ const DEV_ChallengeScreen: React.FC = () => {
                     <DialogHeader>
                         <DialogTitle>새 챌린지 추가</DialogTitle>
                     </DialogHeader>
-                    <div className="flex flex-col space-y-4">
-                        <div>
+                    <div className="flex flex-col space-y-6 mt-2">
+                        <div className='flex flex-col space-y-2'>
                             <Label htmlFor="startPage">시작 페이지</Label>
                             <AutocompleteWikipediaInput
                                 value={startPage}
                                 onChange={setStartPage}
                                 placeholder="시작 페이지"
+                                disabled={isGeneratingRandom}
                             />
                         </div>
-                        <div>
+                        <div className='flex flex-col space-y-2'>
                             <Label htmlFor="endPage">도착 페이지</Label>
                             <AutocompleteWikipediaInput
                                 value={endPage}
                                 onChange={setEndPage}
                                 placeholder="도착 페이지"
+                                disabled={isGeneratingRandom}
                             />
                         </div>
-                        <Button onClick={handleGenerateRandom} disabled={isGeneratingRandom}>
-                            {isGeneratingRandom ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
-                            랜덤 생성
-                        </Button>
-                        <Button onClick={handleAddChallenge} disabled={isAddingChallenge || !startPage || !endPage}>
-                            {isAddingChallenge ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
-                            챌린지 추가
-                        </Button>
+                        <div className='flex flex-col space-y-2'>
+                            <Button onClick={handleGenerateRandom} disabled={isGeneratingRandom}>
+                                {isGeneratingRandom ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+                                랜덤 생성
+                            </Button>
+                            <Button onClick={handleAddChallenge} disabled={isAddingChallenge || !startPage || !endPage}>
+                                {isAddingChallenge ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                                챌린지 추가
+                            </Button>
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>
@@ -165,7 +181,7 @@ const DEV_ChallengeScreen: React.FC = () => {
                     </Button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {challenges.map(({ id, challenge }) => (
                         <Card key={id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleChallengeSelect(id)}>
                             <CardHeader>

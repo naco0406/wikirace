@@ -15,9 +15,10 @@ interface AutocompleteWikipediaInputProps {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
+    disabled?: boolean;
 }
 
-const AutocompleteWikipediaInput: React.FC<AutocompleteWikipediaInputProps> = ({ value, onChange, placeholder = "위키피디아 검색..." }) => {
+const AutocompleteWikipediaInput: React.FC<AutocompleteWikipediaInputProps> = ({ value, onChange, placeholder = "위키피디아 검색...", disabled }) => {
     const [open, setOpen] = useState(false);
     const [suggestions, setSuggestions] = useState<WikipediaResult[]>([]);
     const [inputValue, setInputValue] = useState(value);
@@ -99,9 +100,10 @@ const AutocompleteWikipediaInput: React.FC<AutocompleteWikipediaInputProps> = ({
                 onChange={handleInputChange}
                 onFocus={() => setOpen(true)}
                 className="w-full"
+                disabled={disabled}
             />
             {open && suggestions.length > 0 && (
-                <ul className="absolute top-full left-0 w-full z-10 bg-white rounded-lg border shadow-md mt-1 max-h-60 overflow-auto">
+                <ul className="absolute top-full left-0 w-full z-10 bg-white rounded-lg border shadow-md mt-2 max-h-60 overflow-auto">
                     {suggestions.map((suggestion) => (
                         <li
                             key={suggestion.pageid}
