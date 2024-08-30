@@ -10,6 +10,7 @@ import { DailyChallenge, fetchAllChallenges, createChallenge } from '../utils/ga
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import AutocompleteWikipediaInput from '@/components/AutocompleteWikipediaInput';
 
 const DEV_ChallengeScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<{ id: string; challenge: DailyChallenge }[]>([]);
@@ -98,20 +99,18 @@ const DEV_ChallengeScreen: React.FC = () => {
                     <div className="flex flex-col space-y-4">
                         <div>
                             <Label htmlFor="startPage">시작 페이지</Label>
-                            <Input
-                                id="startPage"
-                                placeholder="시작 페이지"
+                            <AutocompleteWikipediaInput
                                 value={startPage}
-                                onChange={(e) => setStartPage(e.target.value)}
+                                onChange={setStartPage}
+                                placeholder="시작 페이지"
                             />
                         </div>
                         <div>
                             <Label htmlFor="endPage">도착 페이지</Label>
-                            <Input
-                                id="endPage"
-                                placeholder="도착 페이지"
+                            <AutocompleteWikipediaInput
                                 value={endPage}
-                                onChange={(e) => setEndPage(e.target.value)}
+                                onChange={setEndPage}
+                                placeholder="도착 페이지"
                             />
                         </div>
                         <Button onClick={handleAddChallenge} disabled={isAddingChallenge || !startPage || !endPage}>
