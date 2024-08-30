@@ -14,9 +14,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <div className={`full-height bg-background text-foreground overflow-hidden ${isDev ? 'dev-mode' : ''}`}>
       {isDev && (
         <div className="justify-center z-50 absolute top-0 left-0 w-full">
-          <div className="flex flex-row justify-center items-center font-['Rhodium_Libre'] bg-transparent text-center my-auto">
+          <div className="flex flex-row justify-start items-center bg-transparent text-center my-auto px-2">
             <span className="tracking-wider" style={rainbowStyle}>
-              DEVELOPMENT
+              ENV: DEV
             </span>
           </div>
         </div>
