@@ -41,7 +41,7 @@ const Admin = () => {
         return (
             <Layout>
                 <div className="p-6 bg-white w-full min-h-screen mx-auto">
-                    <div className="w-full mx-auto">
+                    <div className="w-full mx-auto overflow-y-auto">
                         <Tabs defaultValue="challenge">
                             <TabsList className="grid w-full max-w-[768px] grid-cols-3 mx-auto">
                                 <TabsTrigger value="challenge">챌린지 입력</TabsTrigger>
