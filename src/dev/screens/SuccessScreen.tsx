@@ -79,7 +79,7 @@ const DEV_SuccessScreen: React.FC<DEV_SuccessScreenProps> = ({ challengeId }) =>
     };
 
     const handleShare = async () => {
-        const shareText = `링클을 클리어했습니다!\n이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-beta.vercel.app/`;
+        const shareText = `링클을 클리어했습니다!\n이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-game.vercel.app/`;
         await navigator.clipboard.writeText(shareText);
         alert('결과가 클립보드에 복사되었습니다.');
     };

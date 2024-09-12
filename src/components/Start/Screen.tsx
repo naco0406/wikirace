@@ -80,7 +80,7 @@ const StartScreen: React.FC = () => {
                 const result = await openAIService.GET_result_for_share(localFullRecord.path);
                 setShareResult(result.result);
                 setResultOfToday(result.result);
-                const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-beta.vercel.app/`;
+                const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-game.vercel.app/`;
                 setShareText(shareText);
                 await navigator.clipboard.writeText(shareText);
             } catch (error) {
@@ -89,7 +89,7 @@ const StartScreen: React.FC = () => {
             }
         } else {
             setShareResult(dailyStatus.resultOfToday);
-            const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${dailyStatus.resultOfToday}\n\nhttps://linkle-beta.vercel.app/`;
+            const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${dailyStatus.resultOfToday}\n\nhttps://linkle-game.vercel.app/`;
             setShareText(shareText);
             await navigator.clipboard.writeText(shareText);
         }

@@ -16,7 +16,7 @@ const DEV_InvalidScreen= () => {
         </CardHeader>
         <CardContent>
           <p className="mb-6 text-sm">개발자 모드에 진입할 수 없습니다.</p>
-          <Link href="https://linkle-beta.vercel.app">
+          <Link href="https://linkle-game.vercel.app">
             <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
               메인으로 돌아가기
             </Button>

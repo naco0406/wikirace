@@ -85,7 +85,7 @@ const DEV_StartScreen: React.FC = () => {
                 const result = await openAIService.GET_result_for_share(localFullRecord.path);
                 setShareResult(result.result);
                 setResult(result.result);
-                const shareText = `링클 챌린지 (ID: ${challengeId})를 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-beta.vercel.app/`;
+                const shareText = `링클 챌린지 (ID: ${challengeId})를 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-game.vercel.app/`;
                 setShareText(shareText);
                 await navigator.clipboard.writeText(shareText);
             } catch (error) {
@@ -93,7 +93,7 @@ const DEV_StartScreen: React.FC = () => {
                 setShareResult('오류가 발생했습니다. 다시 시도해 주세요.');
             }
         } else {
-            const shareText = `링클 챌린지 (ID: ${challengeId})를 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-beta.vercel.app/`;
+            const shareText = `링클 챌린지 (ID: ${challengeId})를 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-game.vercel.app/`;
             setShareText(shareText);
             await navigator.clipboard.writeText(shareText);
         }
