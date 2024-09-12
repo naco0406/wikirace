@@ -21,7 +21,7 @@ const BasicInfoCard = () => (
             <Separator className="bg-gray-700" />
             <div className="flex justify-between items-center">
                 <span>최초 배포일</span>
-                <span>2024.08 예정</span>
+                <span>2024.09.15</span>
             </div>
             <Separator className="bg-gray-700" />
             <div className="flex justify-between items-center">
@@ -118,10 +118,11 @@ interface ReleaseProps {
     content: string;
 }
 const ReleaseHistory: ReleaseProps[] = [
-    { date: "2024.08.24", version: "0.2.0", content: "1차 배포 준비\nios 사파리 지원" },
+    { date: "2024.09.15", version: "1.0.0", content: "Linkle 1.0 배포" },
+    { date: "2024.08.24", version: "0.2.0", content: "ios 사파리 지원\n관리자 페이지 개편" },
     { date: "2024.08.15", version: "0.1.3", content: "전체 컨셉 및 디자인 개편\nVercel Analytics 적용" },
     { date: "2024.08.10", version: "0.1.2", content: "새로운 경로 정책 반영\nGPT를 이용한 결과 공유" },
-    { date: "2024.08.05", version: "0.1.1", content: "위키피디아 API 개선\n링클 디자인 적용\n관리자 랜덤 챌린지 자동 생성\n위키피디아 API 테스트 페이지 생성" },
+    { date: "2024.08.05", version: "0.1.1", content: "위키피디아 API 개선\n링클 디자인 적용\n관리자 챌린지 자동 생성\n위키피디아 API 테스트 페이지 생성" },
     { date: "2024.07.29", version: "0.1.0", content: "링클 이름 도입\n어제의 기록 시범 도입\n랭킹 제거\n대량 리팩토링, 버그 수정" },
     { date: "2024.07.25", version: "0.0.2", content: "관리자 페이지 추가\n시간, 랭킹 정책 변경\n이미지로 결과 공유" },
     { date: "2024.07.13", version: "0.0.1", content: "플레이 가능한 최초 배포\nNext.js, Firebase 사용" },
@@ -153,7 +154,7 @@ const Author = () => {
                 <BasicInfoCard />
                 <CreditsAndFontsCard />
                 <UpdateHistoryCard />
-                <p className="text-md text-center text-white">© 2024 Young Ko & Minseo Lim. All rights reserved.</p>
+                <p className="text-sm text-center text-white">© 2024 <a href='https://github.com/naco0406' className="text-[#3366CC] cursor-pointer underline">Young Ko</a> & Minseo Lim. All rights reserved.</p>
             </div>
         </div>
     );

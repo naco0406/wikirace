@@ -1,6 +1,6 @@
 import { differenceInDays, startOfDay } from "date-fns";
 
-export const LINKLE_FIRST_DATE = new Date('2024-08-01T00:00:00Z');
+export const LINKLE_FIRST_DATE = new Date('2024-09-15T00:00:00Z');
 
 export function calculateLinkleDayNumber() {
     const today = startOfDay(new Date());
