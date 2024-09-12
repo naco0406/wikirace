@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import WikiAPITestScreen from '@/components/Admin/WikiAPITestScreen';
 import OpenAiAPITestScreen from '@/components/Admin/OpenAiAPITestScreen';
 import Layout from '@/components/Layout';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Admin = () => {
     const router = useRouter();
@@ -42,23 +43,24 @@ const Admin = () => {
             <Layout>
                 <div className="p-6 bg-white w-full min-h-screen mx-auto">
                     <div className="w-full mx-auto overflow-y-auto">
-                        <Tabs defaultValue="challenge">
-                            <TabsList className="grid w-full max-w-[768px] grid-cols-3 mx-auto">
-                                <TabsTrigger value="challenge">챌린지 입력</TabsTrigger>
-                                <TabsTrigger value="openai">OpenAI API</TabsTrigger>
-                                <TabsTrigger value="wiki">위키 API</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="challenge">
-                                <ChallengeInputScreen />
-                            </TabsContent>
-                            <TabsContent value="openai">
-                                <OpenAiAPITestScreen />
-                            </TabsContent>
-                            <TabsContent value="wiki">
-                                <WikiAPITestScreen />
-                            </TabsContent>
-                        </Tabs>
-                        {/* <Button variant="ghost" className="grid w-full mt-4 max-w-[768px] mx-auto" onClick={handleBackToHome}>메인으로 돌아가기</Button> */}
+                        <ScrollArea>
+                            <Tabs defaultValue="challenge">
+                                <TabsList className="grid w-full max-w-[768px] grid-cols-3 mx-auto">
+                                    <TabsTrigger value="challenge">챌린지 입력</TabsTrigger>
+                                    <TabsTrigger value="openai">OpenAI API</TabsTrigger>
+                                    <TabsTrigger value="wiki">위키 API</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="challenge">
+                                    <ChallengeInputScreen />
+                                </TabsContent>
+                                <TabsContent value="openai">
+                                    <OpenAiAPITestScreen />
+                                </TabsContent>
+                                <TabsContent value="wiki">
+                                    <WikiAPITestScreen />
+                                </TabsContent>
+                            </Tabs>
+                        </ScrollArea>
                     </div>
                 </div>
             </Layout>
