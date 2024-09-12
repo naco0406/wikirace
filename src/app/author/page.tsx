@@ -154,7 +154,9 @@ const Author = () => {
                 <BasicInfoCard />
                 <CreditsAndFontsCard />
                 <UpdateHistoryCard />
-                <p className="text-sm text-center text-white">© 2024 <a href='https://github.com/naco0406' className="text-[#3366CC] cursor-pointer underline">Young Ko</a> & Minseo Lim. All rights reserved.</p>
+                <p className="text-sm text-center text-white">
+                    © 2024 <a href='https://github.com/naco0406' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Young Ko</a> & <a href='https://dribbble.com/lms00' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Minseo Lim</a>. All rights reserved.
+                </p>
             </div>
         </div>
     );
