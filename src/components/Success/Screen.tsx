@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/CustomAccordion';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
@@ -30,7 +31,7 @@ const SuccessScreen: React.FC = () => {
     const [showCursor, setShowCursor] = useState(true);
 
     useEffect(() => {
-        if(!hasClearedToday) return;
+        if (!hasClearedToday) return;
         confetti({
             particleCount: 100,
             spread: 70,
@@ -125,7 +126,15 @@ const SuccessScreen: React.FC = () => {
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
                         </div>
-                        <PathResult path={localRecord.path} />
+                        {/* <PathResult path={localRecord.path} /> */}
+                        <Accordion type="single" collapsible defaultValue="path-result">
+                            <AccordionItem value="path-result">
+                                <AccordionTrigger>이동 경로</AccordionTrigger>
+                                <AccordionContent>
+                                    <PathResult path={localRecord.path} />
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                     </div>
                 </CardContent>
             </Card>
