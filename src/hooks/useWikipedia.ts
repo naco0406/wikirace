@@ -1,6 +1,6 @@
 "use client";
 
-import { DailyChallenge, MyRanking, fetchDailyChallenge, submitRanking } from '@/lib/gameData';
+import { DailyChallenge, MyRanking, fetchDailyChallenge, fetchRank, submitRanking } from '@/lib/gameData';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecord } from './useLocalRecord';
@@ -336,7 +336,6 @@ export const useWikipedia = () => {
         if (isGameOver) {
             const submitRankingAsync = async () => {
                 const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
-                finalizeRecord();
 
                 const generateUniqueId = () => {
                     return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -353,6 +352,9 @@ export const useWikipedia = () => {
                 };
 
                 await submitRanking(myRanking);
+                const myRank = await fetchRank()
+                finalizeRecord(myRank);
+
                 setIsGameOver(true);
             };
             submitRankingAsync();

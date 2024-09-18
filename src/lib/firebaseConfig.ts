@@ -132,6 +132,24 @@ export const getRankings = async (sortBy: string, limitCount: number = 10): Prom
     });
 };
 
+export const getRank = async (): Promise<number> => {
+    try {
+        const today = getKSTDateString();
+        const challengeRef = doc(db, 'dailyChallenges', today);
+        const challengeDoc = await getDoc(challengeRef);
+
+        if (challengeDoc.exists()) {
+            return challengeDoc.data().totalCount || 1;
+        } else {
+            console.error('No challenge found for today');
+            return 0;
+        }
+    } catch (error) {
+        console.error('Error fetching rank: ', error);
+        throw error;
+    }
+};
+
 export const getAdminPassword = async (): Promise<string | null> => {
     try {
         const passwordRef = doc(db, 'adminSettings', 'constants');

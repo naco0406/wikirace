@@ -12,6 +12,7 @@ interface Record {
 interface DailyStatus {
   hasStartedToday: boolean;
   hasClearedToday: boolean;
+  myRank: number | null;
   resultOfToday: string | null;
 }
 
@@ -31,6 +32,7 @@ export function useLocalRecord() {
     dailyStatus: {
       hasStartedToday: false,
       hasClearedToday: false,
+      myRank: null,
       resultOfToday: null
     },
     date: getKSTDateString()
@@ -56,6 +58,7 @@ export function useLocalRecord() {
             dailyStatus: {
               hasStartedToday: false,
               hasClearedToday: false,
+              myRank: null,
               resultOfToday: null
             },
             date: today
@@ -97,11 +100,11 @@ export function useLocalRecord() {
     });
   };
 
-  const finalizeRecord = () => {
+  const finalizeRecord = (fetchedMyRank: number) => {
     setLocalData(prev => {
       const updatedData = {
         ...prev,
-        dailyStatus: { ...prev.dailyStatus, hasStartedToday: true, hasClearedToday: true },
+        dailyStatus: { ...prev.dailyStatus, myRank: fetchedMyRank, hasStartedToday: true, hasClearedToday: true },
         date: getKSTDateString()
       };
       updateLocalStorage(updatedData);
