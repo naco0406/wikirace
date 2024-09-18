@@ -18,7 +18,6 @@ import { useEnvironment } from '@/contexts/EnvironmentContext';
 
 const StartScreen: React.FC = () => {
     const { isDev } = useEnvironment();
-    console.log(isDev)
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
     const { hasClearedToday, hasStartedToday } = useLocalRecord();
     const router = useRouter();
