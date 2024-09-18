@@ -158,6 +158,7 @@ export function useLocalRecord() {
     finalizeRecord,
     hasStartedToday: localData.dailyStatus.hasStartedToday,
     hasClearedToday: localData.dailyStatus.hasClearedToday,
+    myRank: localData.dailyStatus.myRank,
     resultOfToday: localData.dailyStatus.resultOfToday,
     dailyStatus: localData.dailyStatus,
     setHasStartedToday,
