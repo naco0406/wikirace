@@ -202,7 +202,7 @@ const GameScreen: React.FC = () => {
                 </div>
             </header>
 
-            <div className="flex-grow overflow-auto p-4" onClick={handleLinkClick}>
+            <div className="flex-grow overflow-auto p-4 h-[calc(100%-80px)]" onClick={handleLinkClick}>
                 <div className="wiki-content wiki-content max-w-full overflow-x-hidden break-words" dangerouslySetInnerHTML={{ __html: currentPage.html }} />
             </div>
 
