@@ -252,6 +252,11 @@ export const useWikipedia = () => {
                     path: newSinglePath
                 });
 
+                if(dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
+                    setIsGameOver(true)
+                    return;
+                }
+
                 fetchWikiPage(title);
             }
             // } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
@@ -259,7 +264,7 @@ export const useWikipedia = () => {
             //     setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
             // }
         }
-    }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
+    }, [isGameOver, dailyChallenge, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     const goBack = useCallback(() => {
         if (!singlePath[singlePath.length - 2]) return;

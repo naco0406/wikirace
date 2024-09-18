@@ -229,6 +229,11 @@ export const useWikipediaDev = (challengeId: string, elapsedTime: number) => {
                     path: newSinglePath
                 });
 
+                if (challenge && isEndPage(formattedTitle, challenge.endPage)) {
+                    setIsGameOver(true)
+                    return;
+                }
+
                 fetchWikiPage(title);
             }
         }
