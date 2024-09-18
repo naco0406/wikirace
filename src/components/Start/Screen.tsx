@@ -61,7 +61,7 @@ const StartScreen: React.FC = () => {
         setIsDialogOpen(true);
     };
 
-    const { dailyStatus, localFullRecord, setResultOfToday } = useLocalRecord();
+    const { dailyStatus, localRecord, localFullRecord, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
     const [shareResult, setShareResult] = useState<string | null>(dailyStatus.resultOfToday);
     const [shareText, setShareText] = useState<string | null>(null);
@@ -136,7 +136,7 @@ const StartScreen: React.FC = () => {
                                 <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localFullRecord.moveCount}</span></span>
                             </div>
                             <div className="flex flex-col w-full bg-white rounded-xl border border-[2px] border-[#DBE8F9] py-4">
-                                <PathResult path={localFullRecord.path} />
+                                <PathResult path={localRecord.path} />
                             </div>
                         </div>
                         <Button className="w-full max-w-[250px] text-lg px-20 py-6 bg-linkle text-white h-[56px] rounded-[28px]" onClick={handleShare}>
@@ -149,7 +149,7 @@ const StartScreen: React.FC = () => {
                     </div>
                 )}
                 {isDev && (
-                    <div className='flex flex-col space-y-2 items-center w-full max-w-sm px-4'>
+                    <div className='flex flex-col space-y-2 items-center w-full max-w-sm px-4 mt-4'>
                         <Button
                             onClick={handleAdminAction}
                             className="w-full text-md font-bold bg-transparent text-black h-[40px] rounded-[20px] border border-black hover:bg-black hover:text-white"
