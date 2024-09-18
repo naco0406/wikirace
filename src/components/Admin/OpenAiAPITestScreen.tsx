@@ -137,7 +137,7 @@ const OpenAiAPITestScreen: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 max-w-7xl relative">
+        <div className="container mx-auto p-2 max-w-7xl relative">
             <Card>
                 <CardHeader>
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
