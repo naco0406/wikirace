@@ -125,16 +125,16 @@ const SuccessScreen: React.FC = () => {
                         <div className="flex flex-col space-y-2">
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
+                            {/* <PathResult path={localRecord.path} /> */}
+                            <Accordion type="single" collapsible defaultValue="path-result">
+                                <AccordionItem value="path-result">
+                                    <AccordionTrigger>이동 경로</AccordionTrigger>
+                                    <AccordionContent>
+                                        <PathResult path={localRecord.path} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
-                        {/* <PathResult path={localRecord.path} /> */}
-                        <Accordion type="single" collapsible defaultValue="path-result">
-                            <AccordionItem value="path-result">
-                                <AccordionTrigger>이동 경로</AccordionTrigger>
-                                <AccordionContent>
-                                    <PathResult path={localRecord.path} />
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
                     </div>
                 </CardContent>
             </Card>
