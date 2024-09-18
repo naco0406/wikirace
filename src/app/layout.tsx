@@ -8,8 +8,10 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "링클 - Linkle",
-  description: "매일 위키피디아 탐색하기",
+  title: '링클 | 매일 위키피디아 탐색하기',
+  description: "링클 - Linkle",
+  keywords: ["링클", "Linkle", "위키피디아", "파도타기", "지식", "게임"],
+  authors: [{ name: "Team MYTH" }],
 };
 
 export const viewport: Viewport = {
@@ -24,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <head>
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5140632902651926"
           crossOrigin="anonymous">
