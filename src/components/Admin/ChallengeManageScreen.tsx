@@ -12,6 +12,7 @@ import AutocompleteWikipediaInput from "../AutocompleteWikipediaInput";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { DatePickerWithRange } from "../ui/date-range-picker";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
 const ChallengeManageScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<{ [date: string]: DailyChallengeWithId | null }>({});
@@ -188,6 +189,16 @@ const ChallengeManageScreen: React.FC = () => {
                     <RefreshCw className={`h-4 w-4 ${isRandomEndLoading ? 'animate-spin' : ''}`} />
                 </Button>
             </div>
+            {challenges[editChallenge?.id || ''] &&
+                < div className="mb-2 flex items-center w-full">
+                    <div className="flex-grow">
+                        <Input
+                            value={`클리어 한 사람 : ${editChallenge?.totalCount || 0}명`}
+                            disabled={true}
+                        />
+                    </div>
+                </div>
+            }
             <div className="flex flex-row w-full space-x-2">
                 <Button className="flex-1" onClick={handleUpdateChallenge}>
                     {challenges[editChallenge?.id || ''] ? '업데이트' : '추가'}
@@ -196,7 +207,7 @@ const ChallengeManageScreen: React.FC = () => {
                     <Button variant="destructive" className="flex-1" onClick={handleDeleteChallenge}>삭제</Button>
                 )}
             </div>
-        </div>
+        </div >
     );
 
     return (
