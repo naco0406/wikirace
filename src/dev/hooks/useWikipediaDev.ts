@@ -206,7 +206,6 @@ export const useWikipediaDev = (challengeId: string, elapsedTime: number) => {
 
                 // 링크 클릭 즉시 게임 클리어 조건 확인 및 마지막 경로 마스킹
                 if (challenge && isEndPage(formattedTitle, challenge.endPage)) {
-                    setIsGameOver(true)
                     // 새로운 경로 생성
                     const newPath = [...path, challenge.endPage];
                     const newFullPath = [...fullPath, challenge.endPage];
@@ -234,6 +233,8 @@ export const useWikipediaDev = (challengeId: string, elapsedTime: number) => {
                         time: elapsedTime,
                         path: newSinglePath
                     });
+                    
+                    setIsGameOver(true)
                     return;
                 }
 

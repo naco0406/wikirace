@@ -226,7 +226,6 @@ export const useWikipedia = () => {
 
                 // 링크 클릭 즉시 게임 클리어 조건 확인 및 마지막 경로 마스킹
                 if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
-                    setIsGameOver(true)
                     // 새로운 경로 생성
                     const newPath = [...path, dailyChallenge.endPage];
                     const newFullPath = [...fullPath, dailyChallenge.endPage];
@@ -254,6 +253,31 @@ export const useWikipedia = () => {
                         time: elapsedTime,
                         path: newSinglePath
                     });
+
+                    const submitRankingAsync = async () => {
+                        const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
+
+                        const generateUniqueId = () => {
+                            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+                        };
+
+                        const userId = generateUniqueId();
+
+                        const myRanking: MyRanking = {
+                            userId,
+                            nickname,
+                            moveCount: finalRecord.moveCount,
+                            time: finalRecord.time,
+                            path: finalRecord.path
+                        };
+
+                        await submitRanking(myRanking);
+                        const myRank = await fetchRank()
+                        finalizeRecord(myRank);
+
+                        setIsGameOver(true);
+                    };
+                    submitRankingAsync();
                     return;
                 }
 
@@ -287,10 +311,6 @@ export const useWikipedia = () => {
 
                 fetchWikiPage(title);
             }
-            // } else if (href && (href.includes('action=edit') || href.includes('action=search'))) {
-            //     setIsForcedEnd(true);
-            //     setForcedEndReason('검색 또는 편집 기능 사용이 감지되었습니다.');
-            // }
         }
     }, [isGameOver, dailyChallenge, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
