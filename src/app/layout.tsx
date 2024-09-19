@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: "링클 - Linkle",
   keywords: ["링클", "Linkle", "위키피디아", "파도타기", "지식", "게임"],
   authors: [{ name: "Team MYTH" }],
+  icons: {
+    icon: '/Linkle.ico',
+  },
 };
 
 export const viewport: Viewport = {

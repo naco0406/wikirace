@@ -131,7 +131,7 @@ const StartScreen: React.FC = () => {
                         <div className="flex flex-col space-y-4 w-full">
                             <div className="flex flex-col space-y-2 w-full my-6">
                                 <div className="text-xl font-[600] text-center text-linkle-foreground'">{linkleCount}번째 링클을 클리어했습니다!</div>
-                                <div className='font-[400] text-24 leading-28 text-linkle-foreground text-center'>오늘 <span className="font-[600] text-[#3366CC]">{myRank}</span>번째로 클리어했습니다.</div>
+                                <div className='font-[400] text-24 leading-28 text-linkle-foreground text-center'>일일 순위 : <span className="font-[600] text-[#3366CC]">{myRank}</span>등</div>
                             </div>
                             <div className="flex flex-col space-y-2 w-full justify-start">
                                 <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
