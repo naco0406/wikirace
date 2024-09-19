@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { useLocalRecordDev } from '../hooks/useLocalRecordDev';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/CustomAccordion';
 
 interface DEV_SuccessScreenProps {
     challengeId: string;
@@ -124,8 +125,16 @@ const DEV_SuccessScreen: React.FC<DEV_SuccessScreenProps> = ({ challengeId }) =>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>링클 챌린지 ID: <span className="font-[600] text-[#3366CC]">{challengeId}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
+                            {/* <PathResult path={localRecord.path} /> */}
+                            <Accordion type="single" collapsible defaultValue="path-result">
+                                <AccordionItem value="path-result">
+                                    <AccordionTrigger>이동 경로</AccordionTrigger>
+                                    <AccordionContent>
+                                        <PathResult path={localRecord.path} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
-                        <PathResult path={localRecord.path} />
                     </div>
                 </CardContent>
             </Card>

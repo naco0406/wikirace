@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, limit as firestoreLimit, getDocs, Timestamp, runTransaction, Query, DocumentData } from 'firebase/firestore';
+import { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, limit as firestoreLimit, getDocs, Timestamp, runTransaction, Query, DocumentData, limit, updateDoc, deleteDoc, where } from 'firebase/firestore';
 import { DailyChallenge, MyRanking, Ranking } from './gameData';
-import { format } from 'date-fns';
+import { format, isWithinInterval, parseISO } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 
 const firebaseConfig = {
@@ -132,6 +132,24 @@ export const getRankings = async (sortBy: string, limitCount: number = 10): Prom
     });
 };
 
+export const getRank = async (): Promise<number> => {
+    try {
+        const today = getKSTDateString();
+        const challengeRef = doc(db, 'dailyChallenges', today);
+        const challengeDoc = await getDoc(challengeRef);
+
+        if (challengeDoc.exists()) {
+            return challengeDoc.data().totalCount || 1;
+        } else {
+            console.error('No challenge found for today');
+            return 0;
+        }
+    } catch (error) {
+        console.error('Error fetching rank: ', error);
+        throw error;
+    }
+};
+
 export const getAdminPassword = async (): Promise<string | null> => {
     try {
         const passwordRef = doc(db, 'adminSettings', 'constants');
@@ -160,6 +178,72 @@ export const getAdminConsoleURL = async (): Promise<string | null> => {
         }
     } catch (error) {
         console.error('Error fetching admin console URL: ', error);
+        throw error;
+    }
+};
+
+// DailyChallenge에 id를 추가한 새로운 타입 정의
+export interface DailyChallengeWithId extends DailyChallenge {
+    id: string;
+}
+
+// 특정 챌린지 읽기
+export const getChallenge = async (date: string): Promise<DailyChallengeWithId | null> => {
+    const challengeRef = doc(db, 'dailyChallenges', date);
+    const challengeSnap = await getDoc(challengeRef);
+
+    if (challengeSnap.exists()) {
+        return { id: challengeSnap.id, ...challengeSnap.data() as DailyChallenge };
+    } else {
+        return null;
+    }
+};
+
+// 챌린지 업데이트
+export const updateChallenge = async (date: string, challenge: Partial<DailyChallenge>): Promise<void> => {
+    const challengeRef = doc(db, 'dailyChallenges', date);
+    await updateDoc(challengeRef, challenge);
+};
+
+// 챌린지 삭제
+export const deleteChallenge = async (date: string): Promise<void> => {
+    const challengeRef = doc(db, 'dailyChallenges', date);
+    await deleteDoc(challengeRef);
+};
+
+// 날짜 범위로 챌린지 가져오기
+export const getChallengesByDateRange = async (startDate: Date, endDate: Date): Promise<{ [date: string]: DailyChallengeWithId }> => {
+    const challengesRef = collection(db, 'dailyChallenges');
+    const startDateString = format(startDate, 'yyyy-MM-dd');
+    const endDateString = format(endDate, 'yyyy-MM-dd');
+
+    console.log(`Fetching challenges from ${startDateString} to ${endDateString}`);
+
+    try {
+        const querySnapshot = await getDocs(challengesRef);
+        console.log(`Fetched ${querySnapshot.size} documents`);
+
+        const challenges: { [date: string]: DailyChallengeWithId } = {};
+        querySnapshot.forEach((doc) => {
+            const docDate = parseISO(doc.id);
+            if (isWithinInterval(docDate, { start: startDate, end: endDate })) {
+                const data = doc.data() as DailyChallenge;
+                challenges[doc.id] = {
+                    id: doc.id,
+                    startPage: data.startPage,
+                    endPage: data.endPage,
+                    totalCount: data.totalCount
+                };
+                console.log(`Document ${doc.id}:`, data);
+            } else {
+                console.log(`Skipping document ${doc.id} as it's outside the date range`);
+            }
+        });
+
+        console.log(`Filtered ${Object.keys(challenges).length} challenges within the date range`);
+        return challenges;
+    } catch (error) {
+        console.error("Error fetching challenges:", error);
         throw error;
     }
 };

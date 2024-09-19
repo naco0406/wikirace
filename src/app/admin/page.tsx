@@ -11,6 +11,7 @@ import WikiAPITestScreen from '@/components/Admin/WikiAPITestScreen';
 import OpenAiAPITestScreen from '@/components/Admin/OpenAiAPITestScreen';
 import Layout from '@/components/Layout';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import ChallengeManageScreen from '@/components/Admin/ChallengeManageScreen';
 
 const Admin = () => {
     const router = useRouter();
@@ -44,15 +45,19 @@ const Admin = () => {
                 <div className="p-6 bg-white w-full min-h-screen mx-auto">
                     <div className="w-full mx-auto overflow-y-auto">
                         <ScrollArea>
-                            <Tabs defaultValue="challenge">
+                            <Tabs defaultValue="manage">
                                 <TabsList className="grid w-full max-w-[768px] grid-cols-3 mx-auto">
-                                    <TabsTrigger value="challenge">챌린지 입력</TabsTrigger>
+                                    <TabsTrigger value="manage">챌린지 관리</TabsTrigger>
+                                    {/* <TabsTrigger value="challenge">챌린지 입력</TabsTrigger> */}
                                     <TabsTrigger value="openai">OpenAI API</TabsTrigger>
                                     <TabsTrigger value="wiki">위키 API</TabsTrigger>
                                 </TabsList>
-                                <TabsContent value="challenge">
-                                    <ChallengeInputScreen />
+                                <TabsContent value="manage">
+                                    <ChallengeManageScreen />
                                 </TabsContent>
+                                {/* <TabsContent value="challenge">
+                                    <ChallengeInputScreen />
+                                </TabsContent> */}
                                 <TabsContent value="openai">
                                     <OpenAiAPITestScreen />
                                 </TabsContent>

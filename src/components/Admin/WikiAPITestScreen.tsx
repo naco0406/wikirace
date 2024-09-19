@@ -79,7 +79,7 @@ const WikiAPITestScreen: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
+    <div className="container mx-auto p-2 max-w-7xl">
       <div className="mb-4 sticky top-0 bg-white z-10 pb-4">
         <Card>
           <CardHeader>

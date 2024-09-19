@@ -18,7 +18,6 @@ import { useEnvironment } from '@/contexts/EnvironmentContext';
 
 const StartScreen: React.FC = () => {
     const { isDev } = useEnvironment();
-    console.log(isDev)
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
     const { hasClearedToday, hasStartedToday } = useLocalRecord();
     const router = useRouter();
@@ -61,7 +60,7 @@ const StartScreen: React.FC = () => {
         setIsDialogOpen(true);
     };
 
-    const { dailyStatus, localFullRecord, setResultOfToday } = useLocalRecord();
+    const { dailyStatus, myRank, localRecord, localFullRecord, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
     const [shareResult, setShareResult] = useState<string | null>(dailyStatus.resultOfToday);
     const [shareText, setShareText] = useState<string | null>(null);
@@ -130,13 +129,16 @@ const StartScreen: React.FC = () => {
                 ) : (
                     <div className='flex flex-col space-y-8 items-center w-full max-w-md px-4'>
                         <div className="flex flex-col space-y-4 w-full">
-                            <div className="text-xl font-[600] text-center my-6 text-linkle-foreground">{linkleCount}번째 링클을 클리어했습니다!</div>
+                            <div className="flex flex-col space-y-2 w-full my-6">
+                                <div className="text-xl font-[600] text-center text-linkle-foreground'">{linkleCount}번째 링클을 클리어했습니다!</div>
+                                <div className='font-[400] text-24 leading-28 text-linkle-foreground text-center'>일일 순위 : <span className="font-[600] text-[#3366CC]">{myRank}</span>등</div>
+                            </div>
                             <div className="flex flex-col space-y-2 w-full justify-start">
                                 <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
                                 <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localFullRecord.moveCount}</span></span>
                             </div>
                             <div className="flex flex-col w-full bg-white rounded-xl border border-[2px] border-[#DBE8F9] py-4">
-                                <PathResult path={localFullRecord.path} />
+                                <PathResult path={localRecord.path} />
                             </div>
                         </div>
                         <Button className="w-full max-w-[250px] text-lg px-20 py-6 bg-linkle text-white h-[56px] rounded-[28px]" onClick={handleShare}>
@@ -149,7 +151,7 @@ const StartScreen: React.FC = () => {
                     </div>
                 )}
                 {isDev && (
-                    <div className='flex flex-col space-y-2 items-center w-full max-w-sm px-4'>
+                    <div className='flex flex-col space-y-2 items-center w-full max-w-sm px-4 mt-4'>
                         <Button
                             onClick={handleAdminAction}
                             className="w-full text-md font-bold bg-transparent text-black h-[40px] rounded-[20px] border border-black hover:bg-black hover:text-white"

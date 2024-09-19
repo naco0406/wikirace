@@ -18,10 +18,11 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/CustomAccordion';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
-    const { localRecord, localFullRecord, resultOfToday, setResultOfToday, hasClearedToday } = useLocalRecord();
+    const { localRecord, localFullRecord, myRank, resultOfToday, setResultOfToday, hasClearedToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -30,7 +31,7 @@ const SuccessScreen: React.FC = () => {
     const [showCursor, setShowCursor] = useState(true);
 
     useEffect(() => {
-        if(!hasClearedToday) return;
+        if (!hasClearedToday) return;
         confetti({
             particleCount: 100,
             spread: 70,
@@ -118,14 +119,22 @@ const SuccessScreen: React.FC = () => {
             <Card className="relative z-10 w-full max-w-xl bg-white text-gray-800">
                 <CardHeader>
                     <CardTitle className="text-2xl md:text-2xl font-bold text-center">{linkleCount}번째 링클을 클리어했습니다!</CardTitle>
+                    <span className='font-[400] text-24 leading-28 text-linkle-foreground text-center'>일일 순위 : <span className="font-[600] text-[#3366CC]">{myRank}</span>등</span>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-8">
                         <div className="flex flex-col space-y-2">
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
+                            <Accordion type="single" collapsible defaultValue="path-result">
+                                <AccordionItem value="path-result">
+                                    <AccordionTrigger>이동 경로</AccordionTrigger>
+                                    <AccordionContent>
+                                        <PathResult path={localRecord.path} />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
                         </div>
-                        <PathResult path={localRecord.path} />
                     </div>
                 </CardContent>
             </Card>
