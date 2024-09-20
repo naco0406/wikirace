@@ -19,11 +19,15 @@ import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/CustomAccordion';
+import { useWikipedia } from '@/hooks/useWikipedia';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
     const { localRecord, localFullRecord, myRank, resultOfToday, setResultOfToday, hasClearedToday } = useLocalRecord();
+    const { dailyChallenge } = useWikipedia();
     const linkleCount = calculateLinkleDayNumber();
+
+    const isEndPageInPath = localRecord.path.some(page => page === dailyChallenge?.endPage);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [shareResult, setShareResult] = useState('');
@@ -85,7 +89,7 @@ const SuccessScreen: React.FC = () => {
         alert('결과가 클립보드에 복사되었습니다.');
     };
 
-    if (!hasClearedToday) {
+    if (!hasClearedToday && !isEndPageInPath) {
         return (
             <div className="relative h-screen w-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-red-100">
                 {/* <AnimatedBackground /> */}
