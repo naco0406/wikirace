@@ -89,6 +89,12 @@ export const useWikipedia = () => {
     const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
         if (currentTitle === endTitle) return true;
 
+        if (currentTitle.trim() === endTitle.trim()) return true;
+
+        if (currentTitle.toLowerCase() === endTitle.toLowerCase()) return true;
+
+        if (currentTitle.replace(/_/g, ' ').toLowerCase() === endTitle.replace(/_/g, ' ').toLowerCase()) return true;
+
         const normalizedCurrent = normalizePageTitle(currentTitle);
         const normalizedEnd = normalizePageTitle(endTitle);
         if (normalizedCurrent === normalizedEnd) return true;
