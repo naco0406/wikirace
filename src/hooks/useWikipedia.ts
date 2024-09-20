@@ -42,7 +42,7 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord } = useLocalRecord();
+    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord, setHasClearedToday } = useLocalRecord();
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -183,18 +183,18 @@ export const useWikipedia = () => {
                 fullurl: page.fullurl
             });
 
-            if (dailyChallenge) {
-                const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
+            // if (dailyChallenge) {
+            //     const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
 
-                const redirects = page.redirects || [];
-                const isRedirectEnd = redirects.some((redirect: any) =>
-                    isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
-                );
+            //     const redirects = page.redirects || [];
+            //     const isRedirectEnd = redirects.some((redirect: any) =>
+            //         isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
+            //     );
 
-                if (isEnd || isRedirectEnd) {
-                    setIsGameOver(true)
-                }
-            }
+            //     if (isEnd || isRedirectEnd) {
+            //         setIsGameOver(true)
+            //     }
+            // }
 
         } catch (error) {
             console.error('Error fetching Wikipedia content:', error);
@@ -219,6 +219,64 @@ export const useWikipedia = () => {
                 const title = decodeURIComponent(href.split('/wiki/')[1]);
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
+
+                // 링크 클릭 즉시 게임 클리어 조건 확인 및 마지막 경로 마스킹
+                if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
+                    // 새로운 경로 생성
+                    const newPath = [...path, dailyChallenge.endPage];
+                    const newFullPath = [...fullPath, dailyChallenge.endPage];
+                    const newSinglePath = [...singlePath, dailyChallenge.endPage];
+
+                    // 상태 업데이트
+                    setMoveCount(newMoveCount);
+                    setPath(newPath);
+                    setFullPath(newFullPath);
+                    setSinglePath(newSinglePath);
+
+                    // 로컬 레코드 업데이트
+                    updateLocalRecord({
+                        moveCount: newMoveCount,
+                        time: elapsedTime,
+                        path: newPath
+                    });
+                    updateLocalFullRecord({
+                        moveCount: newMoveCount,
+                        time: elapsedTime,
+                        path: newFullPath
+                    });
+                    updateLocalSingleRecord({
+                        moveCount: newMoveCount,
+                        time: elapsedTime,
+                        path: newSinglePath
+                    });
+
+                    const submitRankingAsync = async () => {
+                        setHasClearedToday(true);
+                        const finalRecord = { moveCount: moveCount, time: elapsedTime, path: newPath };
+
+                        const generateUniqueId = () => {
+                            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+                        };
+
+                        const userId = generateUniqueId();
+
+                        const myRanking: MyRanking = {
+                            userId,
+                            nickname,
+                            moveCount: finalRecord.moveCount,
+                            time: finalRecord.time,
+                            path: finalRecord.path
+                        };
+
+                        await submitRanking(myRanking);
+                        const myRank = await fetchRank()
+                        finalizeRecord(myRank);
+
+                        setIsGameOver(true);
+                    };
+                    submitRankingAsync();
+                    return;
+                }
 
                 // 새로운 경로 생성
                 const newPath = [...path, formattedTitle];
@@ -251,7 +309,7 @@ export const useWikipedia = () => {
                 fetchWikiPage(title);
             }
         }
-    }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
+    }, [isGameOver, dailyChallenge, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     const goBack = useCallback(() => {
         if (!singlePath[singlePath.length - 2]) return;
@@ -291,34 +349,34 @@ export const useWikipedia = () => {
         fetchWikiPage(previousPage);
     }, [path, fullPath, singlePath, fetchWikiPage, moveCount, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
-    useEffect(() => {
-        if (isGameOver) {
-            const submitRankingAsync = async () => {
-                const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
+    // useEffect(() => {
+    //     if (isGameOver) {
+    //         const submitRankingAsync = async () => {
+    //             const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
 
-                const generateUniqueId = () => {
-                    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-                };
+    //             const generateUniqueId = () => {
+    //                 return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    //             };
 
-                const userId = generateUniqueId();
+    //             const userId = generateUniqueId();
 
-                const myRanking: MyRanking = {
-                    userId,
-                    nickname,
-                    moveCount: finalRecord.moveCount,
-                    time: finalRecord.time,
-                    path: finalRecord.path
-                };
+    //             const myRanking: MyRanking = {
+    //                 userId,
+    //                 nickname,
+    //                 moveCount: finalRecord.moveCount,
+    //                 time: finalRecord.time,
+    //                 path: finalRecord.path
+    //             };
 
-                await submitRanking(myRanking);
-                const myRank = await fetchRank()
-                finalizeRecord(myRank);
+    //             await submitRanking(myRanking);
+    //             const myRank = await fetchRank()
+    //             finalizeRecord(myRank);
 
-                setIsGameOver(true);
-            };
-            submitRankingAsync();
-        }
-    }, [isGameOver, moveCount, path, nickname]);
+    //             setIsGameOver(true);
+    //         };
+    //         submitRankingAsync();
+    //     }
+    // }, [isGameOver, moveCount, path, nickname]);
 
     return {
         currentPage,
