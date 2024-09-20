@@ -144,7 +144,6 @@ export const useWikipedia = () => {
             for (let index of sectionIndexesToRemove) {
                 const currentSection = sections.find(s => parseInt(s.index) === index);
                 if (!currentSection) {
-                    // console.log(`Section not found for index ${index}`);
                     continue;
                 }
 
@@ -160,9 +159,6 @@ export const useWikipedia = () => {
 
                 if (sectionMatch) {
                     html = html.replace(sectionMatch[0], '');
-                    // console.log(`Removed section: ${currentSection.line}`);
-                } else {
-                    // console.log(`Could not find matches for section: ${currentSection.line}`);
                 }
             }
 
@@ -255,7 +251,7 @@ export const useWikipedia = () => {
                     });
 
                     const submitRankingAsync = async () => {
-                        const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
+                        const finalRecord = { moveCount: moveCount, time: elapsedTime, path: newPath };
 
                         const generateUniqueId = () => {
                             return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -352,34 +348,34 @@ export const useWikipedia = () => {
         fetchWikiPage(previousPage);
     }, [path, fullPath, singlePath, fetchWikiPage, moveCount, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
-    useEffect(() => {
-        if (isGameOver) {
-            const submitRankingAsync = async () => {
-                const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
+    // useEffect(() => {
+    //     if (isGameOver) {
+    //         const submitRankingAsync = async () => {
+    //             const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
 
-                const generateUniqueId = () => {
-                    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-                };
+    //             const generateUniqueId = () => {
+    //                 return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    //             };
 
-                const userId = generateUniqueId();
+    //             const userId = generateUniqueId();
 
-                const myRanking: MyRanking = {
-                    userId,
-                    nickname,
-                    moveCount: finalRecord.moveCount,
-                    time: finalRecord.time,
-                    path: finalRecord.path
-                };
+    //             const myRanking: MyRanking = {
+    //                 userId,
+    //                 nickname,
+    //                 moveCount: finalRecord.moveCount,
+    //                 time: finalRecord.time,
+    //                 path: finalRecord.path
+    //             };
 
-                await submitRanking(myRanking);
-                const myRank = await fetchRank()
-                finalizeRecord(myRank);
+    //             await submitRanking(myRanking);
+    //             const myRank = await fetchRank()
+    //             finalizeRecord(myRank);
 
-                setIsGameOver(true);
-            };
-            submitRankingAsync();
-        }
-    }, [isGameOver, moveCount, path, nickname]);
+    //             setIsGameOver(true);
+    //         };
+    //         submitRankingAsync();
+    //     }
+    // }, [isGameOver, moveCount, path, nickname]);
 
     return {
         currentPage,
