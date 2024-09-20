@@ -220,63 +220,6 @@ export const useWikipedia = () => {
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
 
-                // 링크 클릭 즉시 게임 클리어 조건 확인 및 마지막 경로 마스킹
-                // if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
-                //     // 새로운 경로 생성
-                //     const newPath = [...path, dailyChallenge.endPage];
-                //     const newFullPath = [...fullPath, dailyChallenge.endPage];
-                //     const newSinglePath = [...singlePath, dailyChallenge.endPage];
-
-                //     // 상태 업데이트
-                //     setMoveCount(newMoveCount);
-                //     setPath(newPath);
-                //     setFullPath(newFullPath);
-                //     setSinglePath(newSinglePath);
-
-                //     // 로컬 레코드 업데이트
-                //     updateLocalRecord({
-                //         moveCount: newMoveCount,
-                //         time: elapsedTime,
-                //         path: newPath
-                //     });
-                //     updateLocalFullRecord({
-                //         moveCount: newMoveCount,
-                //         time: elapsedTime,
-                //         path: newFullPath
-                //     });
-                //     updateLocalSingleRecord({
-                //         moveCount: newMoveCount,
-                //         time: elapsedTime,
-                //         path: newSinglePath
-                //     });
-
-                //     const submitRankingAsync = async () => {
-                //         const finalRecord = { moveCount: moveCount, time: elapsedTime, path: newPath };
-
-                //         const generateUniqueId = () => {
-                //             return Date.now().toString(36) + Math.random().toString(36).substr(2);
-                //         };
-
-                //         const userId = generateUniqueId();
-
-                //         const myRanking: MyRanking = {
-                //             userId,
-                //             nickname,
-                //             moveCount: finalRecord.moveCount,
-                //             time: finalRecord.time,
-                //             path: finalRecord.path
-                //         };
-
-                //         await submitRanking(myRanking);
-                //         const myRank = await fetchRank()
-                //         finalizeRecord(myRank);
-
-                //         setIsGameOver(true);
-                //     };
-                //     submitRankingAsync();
-                //     return;
-                // }
-
                 // 새로운 경로 생성
                 const newPath = [...path, formattedTitle];
                 const newFullPath = [...fullPath, formattedTitle];
@@ -308,7 +251,7 @@ export const useWikipedia = () => {
                 fetchWikiPage(title);
             }
         }
-    }, [isGameOver, dailyChallenge, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
+    }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     const goBack = useCallback(() => {
         if (!singlePath[singlePath.length - 2]) return;
