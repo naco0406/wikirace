@@ -1,13 +1,13 @@
 "use client";
 
+import { useTimer } from '@/contexts/TimerContext';
 import { DailyChallenge, MyRanking, fetchDailyChallenge, fetchRank, submitRanking } from '@/lib/gameData';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecord } from './useLocalRecord';
 import { useNickname } from './useNickname';
 import { useScreenSize } from './useScreenSize';
-import { useTimer } from '@/contexts/TimerContext';
-import { set } from 'date-fns';
 
 interface WikiPageContent {
     title: string;
@@ -40,6 +40,7 @@ export const useWikipedia = () => {
     const initialPlatformRef = useRef<'mobile' | 'desktop' | null>(null);
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
 
+    const router = useRouter();
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
     const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord, setHasClearedToday } = useLocalRecord();
@@ -273,6 +274,7 @@ export const useWikipedia = () => {
                         finalizeRecord(myRank);
 
                         setIsGameOver(true);
+                        router.push('/success');
                     };
                     submitRankingAsync();
                     return;
