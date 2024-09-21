@@ -342,7 +342,7 @@ export const normalizePageTitle = (title: string) => {
     return title.toLowerCase().replace(/\s+/g, ' ').trim();
 };
 
-export const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
+export const isEndPage = (currentTitle: string, endTitle: string) => {
     if (currentTitle === endTitle) return true;
 
     const normalizedCurrent = normalizePageTitle(currentTitle);
@@ -354,4 +354,4 @@ export const isEndPage = useCallback((currentTitle: string, endTitle: string) =>
     if (currentWithoutParentheses === endWithoutParentheses) return true;
 
     return false;
-}, []);
+};
