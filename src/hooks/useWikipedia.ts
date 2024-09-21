@@ -1,13 +1,13 @@
 "use client";
 
-import { useTimer } from '@/contexts/TimerContext';
 import { DailyChallenge, MyRanking, fetchDailyChallenge, fetchRank, submitRanking } from '@/lib/gameData';
 import axios from 'axios';
-import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecord } from './useLocalRecord';
 import { useNickname } from './useNickname';
 import { useScreenSize } from './useScreenSize';
+import { useTimer } from '@/contexts/TimerContext';
+import { set } from 'date-fns';
 
 interface WikiPageContent {
     title: string;
@@ -40,10 +40,9 @@ export const useWikipedia = () => {
     const initialPlatformRef = useRef<'mobile' | 'desktop' | null>(null);
     const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
 
-    const router = useRouter();
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord, setHasClearedToday } = useLocalRecord();
+    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord } = useLocalRecord();
     const { elapsedTime } = useTimer();
 
     useEffect(() => {
@@ -85,27 +84,6 @@ export const useWikipedia = () => {
 
         return () => clearTimeout(timeoutId);
     }, [localRecord, localFullRecord, localSingleRecord]);
-
-    const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
-        if (currentTitle === endTitle) return true;
-
-        if (currentTitle.trim() === endTitle.trim()) return true;
-
-        if (currentTitle.toLowerCase() === endTitle.toLowerCase()) return true;
-
-        if (currentTitle.replace(/_/g, ' ').toLowerCase() === endTitle.replace(/_/g, ' ').toLowerCase()) return true;
-
-        const normalizedCurrent = normalizePageTitle(currentTitle);
-        const normalizedEnd = normalizePageTitle(endTitle);
-        if (normalizedCurrent === normalizedEnd) return true;
-
-        const currentWithoutParentheses = normalizedCurrent.replace(/\s*\(.*?\)\s*/g, '');
-        const endWithoutParentheses = normalizedEnd.replace(/\s*\(.*?\)\s*/g, '');
-        if (currentWithoutParentheses === endWithoutParentheses) return true;
-
-        return false;
-    }, []);
-
 
     const fetchWikiPage = useCallback(async (title: string) => {
         setIsLoading(true);
@@ -151,6 +129,7 @@ export const useWikipedia = () => {
             for (let index of sectionIndexesToRemove) {
                 const currentSection = sections.find(s => parseInt(s.index) === index);
                 if (!currentSection) {
+                    // console.log(`Section not found for index ${index}`);
                     continue;
                 }
 
@@ -166,6 +145,9 @@ export const useWikipedia = () => {
 
                 if (sectionMatch) {
                     html = html.replace(sectionMatch[0], '');
+                    // console.log(`Removed section: ${currentSection.line}`);
+                } else {
+                    // console.log(`Could not find matches for section: ${currentSection.line}`);
                 }
             }
 
@@ -227,65 +209,6 @@ export const useWikipedia = () => {
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
 
-                // 링크 클릭 즉시 게임 클리어 조건 확인 및 마지막 경로 마스킹
-                // if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
-                //     // 새로운 경로 생성
-                //     const newPath = [...path, dailyChallenge.endPage];
-                //     const newFullPath = [...fullPath, dailyChallenge.endPage];
-                //     const newSinglePath = [...singlePath, dailyChallenge.endPage];
-
-                //     // 상태 업데이트
-                //     setMoveCount(newMoveCount);
-                //     setPath(newPath);
-                //     setFullPath(newFullPath);
-                //     setSinglePath(newSinglePath);
-
-                //     // 로컬 레코드 업데이트
-                //     updateLocalRecord({
-                //         moveCount: newMoveCount,
-                //         time: elapsedTime,
-                //         path: newPath
-                //     });
-                //     updateLocalFullRecord({
-                //         moveCount: newMoveCount,
-                //         time: elapsedTime,
-                //         path: newFullPath
-                //     });
-                //     updateLocalSingleRecord({
-                //         moveCount: newMoveCount,
-                //         time: elapsedTime,
-                //         path: newSinglePath
-                //     });
-
-                //     const submitRankingAsync = async () => {
-                //         setHasClearedToday(true);
-                //         const finalRecord = { moveCount: moveCount, time: elapsedTime, path: newPath };
-
-                //         const generateUniqueId = () => {
-                //             return Date.now().toString(36) + Math.random().toString(36).substr(2);
-                //         };
-
-                //         const userId = generateUniqueId();
-
-                //         const myRanking: MyRanking = {
-                //             userId,
-                //             nickname,
-                //             moveCount: finalRecord.moveCount,
-                //             time: finalRecord.time,
-                //             path: finalRecord.path
-                //         };
-
-                //         await submitRanking(myRanking);
-                //         const myRank = await fetchRank()
-                //         finalizeRecord(myRank);
-
-                //         setIsGameOver(true);
-                //         router.push('/success');
-                //     };
-                //     submitRankingAsync();
-                //     return;
-                // }
-
                 // 새로운 경로 생성
                 const newPath = [...path, formattedTitle];
                 const newFullPath = [...fullPath, formattedTitle];
@@ -317,7 +240,7 @@ export const useWikipedia = () => {
                 fetchWikiPage(title);
             }
         }
-    }, [isGameOver, dailyChallenge, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
+    }, [isGameOver, fetchWikiPage, moveCount, path, fullPath, singlePath, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
     const goBack = useCallback(() => {
         if (!singlePath[singlePath.length - 2]) return;
@@ -418,3 +341,17 @@ export const formatPageTitle = (title: string) => {
 export const normalizePageTitle = (title: string) => {
     return title.toLowerCase().replace(/\s+/g, ' ').trim();
 };
+
+export const isEndPage = useCallback((currentTitle: string, endTitle: string) => {
+    if (currentTitle === endTitle) return true;
+
+    const normalizedCurrent = normalizePageTitle(currentTitle);
+    const normalizedEnd = normalizePageTitle(endTitle);
+    if (normalizedCurrent === normalizedEnd) return true;
+
+    const currentWithoutParentheses = normalizedCurrent.replace(/\s*\(.*?\)\s*/g, '');
+    const endWithoutParentheses = normalizedEnd.replace(/\s*\(.*?\)\s*/g, '');
+    if (currentWithoutParentheses === endWithoutParentheses) return true;
+
+    return false;
+}, []);

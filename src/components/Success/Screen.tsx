@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/CustomAccordion';
-import { useWikipedia } from '@/hooks/useWikipedia';
+import { isEndPage, useWikipedia } from '@/hooks/useWikipedia';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
@@ -27,7 +27,7 @@ const SuccessScreen: React.FC = () => {
     const { dailyChallenge } = useWikipedia();
     const linkleCount = calculateLinkleDayNumber();
 
-    const isEndPageInPath = localRecord.path.some(page => page === dailyChallenge?.endPage);
+    const isEndPageInPath = dailyChallenge !== null ? localRecord.path.some(path => isEndPage(path, dailyChallenge.endPage)) : false;
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [shareResult, setShareResult] = useState('');
