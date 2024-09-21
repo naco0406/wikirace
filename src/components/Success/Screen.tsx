@@ -123,7 +123,7 @@ const SuccessScreen: React.FC = () => {
             <Card className="relative z-10 w-full max-w-xl bg-white text-gray-800">
                 <CardHeader>
                     <CardTitle className="text-2xl md:text-2xl font-bold text-center">{linkleCount}번째 링클을 클리어했습니다!</CardTitle>
-                    <span className='font-[400] text-24 leading-28 text-linkle-foreground text-center'>일일 순위 : <span className="font-[600] text-[#3366CC]">{myRank}</span>등</span>
+                    {myRank !== null && <span className='font-[400] text-24 leading-28 text-linkle-foreground text-center'>일일 순위 : <span className="font-[600] text-[#3366CC]">{myRank}</span>등</span>}
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-8">
