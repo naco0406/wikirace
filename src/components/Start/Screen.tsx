@@ -63,7 +63,6 @@ const StartScreen: React.FC = () => {
     const { dailyStatus, myRank, localRecord, localFullRecord, setResultOfToday } = useLocalRecord();
     const linkleCount = calculateLinkleDayNumber();
     const [shareResult, setShareResult] = useState<string | null>(dailyStatus.resultOfToday);
-    const [shareText, setShareText] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
@@ -79,8 +78,7 @@ const StartScreen: React.FC = () => {
                 const result = await openAIService.GET_result_for_share(localFullRecord.path);
                 setShareResult(result.result);
                 setResultOfToday(result.result);
-                const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-game.vercel.app/`;
-                setShareText(shareText);
+                const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n${myRank !== null ? `일일 순위 : ${myRank}등\n` : ''}이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${result.result}\n\nhttps://linkle-game.vercel.app/`;
                 await navigator.clipboard.writeText(shareText);
             } catch (error) {
                 console.error('Error getting share result:', error);
@@ -88,8 +86,7 @@ const StartScreen: React.FC = () => {
             }
         } else {
             setShareResult(dailyStatus.resultOfToday);
-            const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${dailyStatus.resultOfToday}\n\nhttps://linkle-game.vercel.app/`;
-            setShareText(shareText);
+            const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n${myRank !== null ? `일일 순위 : ${myRank}등\n` : ''}이동 횟수: ${localFullRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${dailyStatus.resultOfToday}\n\nhttps://linkle-game.vercel.app/`;
             await navigator.clipboard.writeText(shareText);
         }
         setIsLoading(false);

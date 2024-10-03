@@ -19,15 +19,16 @@ import React, { useEffect, useState } from 'react';
 import { TypeAnimation } from 'react-type-animation';
 import { PathResult } from '../PathRecord';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/CustomAccordion';
-// import { isEndPage, useWikipedia } from '@/hooks/useWikipedia';
+import { isEndPage, useWikipedia } from '@/hooks/useWikipedia';
+import { Loading } from '../Loading';
 
 const SuccessScreen: React.FC = () => {
     const router = useRouter();
-    const { localRecord, localFullRecord, myRank, resultOfToday, setResultOfToday, hasClearedToday } = useLocalRecord();
-    // const { dailyChallenge } = useWikipedia();
+    const { localRecord, localFullRecord, myRank, resultOfToday, setResultOfToday, hasClearedToday, isLoading: isLocalRecordLoading } = useLocalRecord();
+    const { dailyChallenge } = useWikipedia();
     const linkleCount = calculateLinkleDayNumber();
 
-    // const isEndPageInPath = dailyChallenge !== null ? localRecord.path.some(path => isEndPage(path, dailyChallenge.endPage)) : false;
+    const isEndPageInPath = dailyChallenge !== null ? localRecord.path.some(path => isEndPage(path, dailyChallenge.endPage)) : false;
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [shareResult, setShareResult] = useState('');
@@ -35,7 +36,7 @@ const SuccessScreen: React.FC = () => {
     const [showCursor, setShowCursor] = useState(true);
 
     useEffect(() => {
-        // if (!hasClearedToday) return;
+        if (!hasClearedToday) return;
         confetti({
             particleCount: 100,
             spread: 70,
@@ -84,38 +85,39 @@ const SuccessScreen: React.FC = () => {
     };
 
     const handleShare = async () => {
-        const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-game.vercel.app/`;
+        const shareText = `${linkleCount}번째 링클을 클리어했습니다!\n${myRank !== null ? `일일 순위 : ${myRank}등\n` : ''}이동 횟수: ${localRecord.moveCount}\n소요 시간: ${formatTimeInKor(localFullRecord.time)}\n\n${shareResult}\n\nhttps://linkle-game.vercel.app/`;
         await navigator.clipboard.writeText(shareText);
         alert('결과가 클립보드에 복사되었습니다.');
     };
 
-    // if (!hasClearedToday && !isEndPageInPath) {
-    //     return (
-    //         <div className="relative h-screen w-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-red-100">
-    //             {/* <AnimatedBackground /> */}
-    //             <Card className="relative z-10 w-full max-w-xl bg-white text-gray-800">
-    //                 <CardHeader>
-    //                     <CardTitle className="text-xl font-bold text-center break-all">{linkleCount}번째 링클을 아직 시도중입니다</CardTitle>
-    //                 </CardHeader>
-    //                 <CardContent className="space-y-4">
-    //                     <div className="space-y-8">
-    //                         <div className="flex flex-col space-y-2">
-    //                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
-    //                             <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
-    //                         </div>
-    //                         <PathResult path={localRecord.path} />
-    //                     </div>
-    //                 </CardContent>
-    //             </Card>
-    //             <div className="relative z-10 mt-6 w-full max-w-xl flex justify-between">
-    //                 <Button onClick={handleBackToHome} className="w-full py-2 px-4 flex items-center justify-center">
-    //                     <ArrowLeft className="w-4 h-4 mr-1" />
-    //                     <span className="text-sm">메인으로 돌아가기</span>
-    //                 </Button>
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    if (isLocalRecordLoading) return <Loading />;
+
+    if (!hasClearedToday && !isEndPageInPath) {
+        return (
+            <div className="relative h-screen w-screen flex flex-col items-center justify-center p-4 overflow-hidden bg-red-100">
+                <Card className="relative z-10 w-full max-w-xl bg-white text-gray-800">
+                    <CardHeader>
+                        <CardTitle className="text-xl font-bold text-center break-all">{linkleCount}번째 링클을 아직 시도중입니다</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-8">
+                            <div className="flex flex-col space-y-2">
+                                <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: <span className="font-[600] text-[#3366CC]">{formatTimeInKor(localFullRecord.time)}</span></span>
+                                <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: <span className="font-[600] text-[#3366CC]">{localRecord.moveCount}</span></span>
+                            </div>
+                            <PathResult path={localRecord.path} />
+                        </div>
+                    </CardContent>
+                </Card>
+                <div className="relative z-10 mt-6 w-full max-w-xl flex justify-between">
+                    <Button onClick={handleBackToHome} className="w-full py-2 px-4 flex items-center justify-center">
+                        <ArrowLeft className="w-4 h-4 mr-1" />
+                        <span className="text-sm">메인으로 돌아가기</span>
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative h-screen w-screen flex flex-col items-center justify-center p-4 overflow-hidden">
@@ -170,7 +172,8 @@ const SuccessScreen: React.FC = () => {
                             {linkleCount}번째 링클을 클리어했습니다!
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col space-y-1">
+                        {myRank !== null && <span className='font-[400] text-24 leading-28 text-linkle-foreground'>일일 순위 : <span className="font-[600] text-[#3366CC]">{myRank}</span>등</span>}
                         <span className='font-[400] text-24 leading-28 text-linkle-foreground'>소요 시간: {formatTimeInKor(localFullRecord.time)}</span>
                         <span className='font-[400] text-24 leading-28 text-linkle-foreground'>이동 횟수: {localRecord.moveCount}</span>
                         <div className="mt-4 min-h-[2em]">

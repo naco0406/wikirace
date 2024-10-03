@@ -35,11 +35,12 @@ const GameScreen: React.FC = () => {
         setForcedEndReason,
         goBack,
         dailyChallenge,
+        isGameEnding,
     } = useWikipedia();
 
     const { isMobile } = useScreenSize();
     const { formattedTime, startTimer } = useTimer();
-    const { localRecord, hasStartedToday, hasClearedToday } = useLocalRecord();
+    const { localRecord, hasStartedToday, hasClearedToday, isLoading: isLocalRecordLoading } = useLocalRecord();
     const router = useRouter();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -73,34 +74,36 @@ const GameScreen: React.FC = () => {
 
     useEffect(() => {
         if (isFirstLoad) {
-            if (hasClearedToday) {
-                router.push('/success');
-            } else if (hasStartedToday && localRecord.path.length > 0) {
-                setPath(localRecord.path);
-                setMoveCount(localRecord.moveCount);
-                fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
-            } else if (dailyChallenge) {
-                setPath([dailyChallenge.startPage]);
-                setFullPath([dailyChallenge.startPage]);
-                setSinglePath([dailyChallenge.startPage]);
-                fetchWikiPage(dailyChallenge.startPage);
+            if (!isLocalRecordLoading) {
+                if (hasClearedToday) {
+                    router.push('/success');
+                } else if (hasStartedToday && localRecord.path.length > 0) {
+                    setPath(localRecord.path);
+                    setMoveCount(localRecord.moveCount);
+                    fetchWikiPage(localRecord.path[localRecord.path.length - 1]);
+                } else if (dailyChallenge) {
+                    setPath([dailyChallenge.startPage]);
+                    setFullPath([dailyChallenge.startPage]);
+                    setSinglePath([dailyChallenge.startPage]);
+                    fetchWikiPage(dailyChallenge.startPage);
+                }
             }
         }
-    }, [isFirstLoad, hasClearedToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setFullPath, setSinglePath, setMoveCount, router]);
+    }, [isFirstLoad, isLocalRecordLoading, hasClearedToday, hasStartedToday, localRecord, dailyChallenge, fetchWikiPage, setPath, setFullPath, setSinglePath, setMoveCount, router]);
 
     useEffect(() => {
-        if (isGameOver) {
+        if (isGameOver && !isGameEnding) {
             router.push('/success');
         }
-    }, [isGameOver, router]);
+    }, [isGameOver, isGameEnding, router]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
     }
 
-    if (isFirstLoad) return <Loading />;
+    if (isFirstLoad || isLocalRecordLoading) return <Loading />;
 
-    if (isLoading && !isFirstLoad) {
+    if (!isFirstLoad && (isLoading || isGameEnding)) {
         return (
             <div className="h-[100dvh] flex flex-col">
                 <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6 w-full">

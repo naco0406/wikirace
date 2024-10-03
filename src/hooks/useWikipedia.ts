@@ -1,13 +1,12 @@
 "use client";
 
+import { useTimer } from '@/contexts/TimerContext';
 import { DailyChallenge, MyRanking, fetchDailyChallenge, fetchRank, submitRanking } from '@/lib/gameData';
 import axios from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocalRecord } from './useLocalRecord';
 import { useNickname } from './useNickname';
 import { useScreenSize } from './useScreenSize';
-import { useTimer } from '@/contexts/TimerContext';
-import { set } from 'date-fns';
 
 interface WikiPageContent {
     title: string;
@@ -28,6 +27,7 @@ export const useWikipedia = () => {
     const [currentPage, setCurrentPage] = useState<WikiPageContent | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
+    const [isGameEnding, setIsGameEnding] = useState(false);
     const [path, setPath] = useState<string[]>([]);
     const [fullPath, setFullPath] = useState<string[]>([]);
     const [singlePath, setSinglePath] = useState<string[]>([]);
@@ -42,8 +42,38 @@ export const useWikipedia = () => {
 
     const { isMobile } = useScreenSize();
     const nickname = useNickname();
-    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord } = useLocalRecord();
+    const { localRecord, localFullRecord, localSingleRecord, updateLocalRecord, updateLocalSingleRecord, updateLocalFullRecord, finalizeRecord, setHasClearedToday } = useLocalRecord();
     const { elapsedTime } = useTimer();
+
+    const updateGameState = async (formattedTitle: string, newMoveCount: number) => {
+        // 새로운 경로 생성
+        const newPath = [...path, formattedTitle];
+        const newFullPath = [...fullPath, formattedTitle];
+        const newSinglePath = [...singlePath, formattedTitle];
+
+        // 상태 업데이트
+        setMoveCount(newMoveCount);
+        setPath(newPath);
+        setFullPath(newFullPath);
+        setSinglePath(newSinglePath);
+
+        // 로컬 레코드 업데이트
+        await updateLocalRecord({
+            moveCount: newMoveCount,
+            time: elapsedTime,
+            path: newPath
+        });
+        await updateLocalFullRecord({
+            moveCount: newMoveCount,
+            time: elapsedTime,
+            path: newFullPath
+        });
+        await updateLocalSingleRecord({
+            moveCount: newMoveCount,
+            time: elapsedTime,
+            path: newSinglePath
+        });
+    };
 
     useEffect(() => {
         if (initialPlatformRef.current === null) {
@@ -172,7 +202,7 @@ export const useWikipedia = () => {
                 fullurl: page.fullurl
             });
 
-            if (dailyChallenge) {
+            if (dailyChallenge && !setHasClearedToday) {
                 const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
 
                 const redirects = page.redirects || [];
@@ -181,7 +211,8 @@ export const useWikipedia = () => {
                 );
 
                 if (isEnd || isRedirectEnd) {
-                    setIsGameOver(true)
+                    console.log('isEnd || isRedirectEnd');
+                    await submitRankingAsync();
                 }
             }
 
@@ -196,7 +227,7 @@ export const useWikipedia = () => {
         }
     }, [dailyChallenge]);
 
-    const handleLinkClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const handleLinkClick = useCallback(async (e: React.MouseEvent<HTMLDivElement>) => {
         if (isGameOver) return;
 
         const target = e.target as HTMLElement;
@@ -209,34 +240,15 @@ export const useWikipedia = () => {
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
 
-                // 새로운 경로 생성
-                const newPath = [...path, formattedTitle];
-                const newFullPath = [...fullPath, formattedTitle];
-                const newSinglePath = [...singlePath, formattedTitle];
-
-                // 상태 업데이트
-                setMoveCount(newMoveCount);
-                setPath(newPath);
-                setFullPath(newFullPath);
-                setSinglePath(newSinglePath);
-
-                // 로컬 레코드 업데이트
-                updateLocalRecord({
-                    moveCount: newMoveCount,
-                    time: elapsedTime,
-                    path: newPath
-                });
-                updateLocalFullRecord({
-                    moveCount: newMoveCount,
-                    time: elapsedTime,
-                    path: newFullPath
-                });
-                updateLocalSingleRecord({
-                    moveCount: newMoveCount,
-                    time: elapsedTime,
-                    path: newSinglePath
-                });
-
+                if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
+                    setIsGameEnding(true);
+                    console.log('setIsGameEnding(true)');
+                    await updateGameState(formattedTitle, newMoveCount);
+                    await submitRankingAsync();
+                    setIsGameEnding(false);
+                    return;
+                }
+                await updateGameState(formattedTitle, newMoveCount);
                 fetchWikiPage(title);
             }
         }
@@ -280,34 +292,29 @@ export const useWikipedia = () => {
         fetchWikiPage(previousPage);
     }, [path, fullPath, singlePath, fetchWikiPage, moveCount, elapsedTime, updateLocalRecord, updateLocalFullRecord, updateLocalSingleRecord]);
 
-    useEffect(() => {
-        if (isGameOver) {
-            const submitRankingAsync = async () => {
-                const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
+    const submitRankingAsync = async () => {
+        const finalRecord = { moveCount: moveCount, time: elapsedTime, path };
 
-                const generateUniqueId = () => {
-                    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-                };
+        const generateUniqueId = () => {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        };
 
-                const userId = generateUniqueId();
+        const userId = generateUniqueId();
 
-                const myRanking: MyRanking = {
-                    userId,
-                    nickname,
-                    moveCount: finalRecord.moveCount,
-                    time: finalRecord.time,
-                    path: finalRecord.path
-                };
+        const myRanking: MyRanking = {
+            userId,
+            nickname,
+            moveCount: finalRecord.moveCount,
+            time: finalRecord.time,
+            path: finalRecord.path
+        };
 
-                await submitRanking(myRanking);
-                const myRank = await fetchRank()
-                finalizeRecord(myRank);
+        await submitRanking(myRanking);
+        const myRank = await fetchRank()
+        finalizeRecord(myRank);
 
-                setIsGameOver(true);
-            };
-            submitRankingAsync();
-        }
-    }, [isGameOver, moveCount, path, nickname]);
+        setIsGameOver(true);
+    };
 
     return {
         currentPage,
@@ -331,6 +338,7 @@ export const useWikipedia = () => {
         setForcedEndReason,
         goBack,
         dailyChallenge,
+        isGameEnding,
     };
 };
 
@@ -343,15 +351,15 @@ export const normalizePageTitle = (title: string) => {
 };
 
 export const isEndPage = (currentTitle: string, endTitle: string) => {
-    if (currentTitle === endTitle) return true;
+    if (currentTitle.trim() === endTitle.trim()) return true;
 
     const normalizedCurrent = normalizePageTitle(currentTitle);
     const normalizedEnd = normalizePageTitle(endTitle);
-    if (normalizedCurrent === normalizedEnd) return true;
+    if (normalizedCurrent.trim() === normalizedEnd.trim()) return true;
 
     const currentWithoutParentheses = normalizedCurrent.replace(/\s*\(.*?\)\s*/g, '');
     const endWithoutParentheses = normalizedEnd.replace(/\s*\(.*?\)\s*/g, '');
-    if (currentWithoutParentheses === endWithoutParentheses) return true;
+    if (currentWithoutParentheses.trim() === endWithoutParentheses.trim()) return true;
 
     return false;
 };
