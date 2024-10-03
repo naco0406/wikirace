@@ -24,22 +24,25 @@ interface LinkleLocalData {
   date: string;
 }
 
+const getInitialData = (): LinkleLocalData => ({
+  localRecord: { moveCount: 0, time: 0, path: [] },
+  localFullRecord: { moveCount: 0, time: 0, path: [] },
+  localSingleRecord: { moveCount: 0, time: 0, path: [] },
+  dailyStatus: {
+    hasStartedToday: false,
+    hasClearedToday: false,
+    myRank: null,
+    resultOfToday: null
+  },
+  date: getKSTDateString()
+});
+
 export function useLocalRecord() {
-  const [localData, setLocalData] = useState<LinkleLocalData>({
-    localRecord: { moveCount: 0, time: 0, path: [] },
-    localFullRecord: { moveCount: 0, time: 0, path: [] },
-    localSingleRecord: { moveCount: 0, time: 0, path: [] },
-    dailyStatus: {
-      hasStartedToday: false,
-      hasClearedToday: false,
-      myRank: null,
-      resultOfToday: null
-    },
-    date: getKSTDateString()
-  });
+  const [localData, setLocalData] = useState<LinkleLocalData>(getInitialData());
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const loadData = () => {
       if (typeof window === 'undefined') return;
 
       const storedData = localStorage.getItem('linkleLocalData');
@@ -50,26 +53,19 @@ export function useLocalRecord() {
         if (parsedData.date === today) {
           setLocalData(parsedData);
         } else {
-          // Reset data for a new day
-          const newData: LinkleLocalData = {
-            localRecord: { moveCount: 0, time: 0, path: [] },
-            localFullRecord: { moveCount: 0, time: 0, path: [] },
-            localSingleRecord: { moveCount: 0, time: 0, path: [] },
-            dailyStatus: {
-              hasStartedToday: false,
-              hasClearedToday: false,
-              myRank: null,
-              resultOfToday: null
-            },
-            date: today
-          };
+          const newData = getInitialData();
           setLocalData(newData);
           localStorage.setItem('linkleLocalData', JSON.stringify(newData));
         }
+      } else {
+        const newData = getInitialData();
+        setLocalData(newData);
+        localStorage.setItem('linkleLocalData', JSON.stringify(newData));
       }
-    }, 0);
+      setIsLoading(false);
+    };
 
-    return () => clearTimeout(timeoutId);
+    loadData();
   }, []);
 
   const updateLocalStorage = (newData: LinkleLocalData) => {
@@ -164,5 +160,6 @@ export function useLocalRecord() {
     setHasStartedToday,
     setHasClearedToday,
     setResultOfToday,
+    isLoading,
   };
 }
