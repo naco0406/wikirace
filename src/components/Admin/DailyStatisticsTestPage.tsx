@@ -58,7 +58,7 @@ const DailyStatisticsTestPage = () => {
                             <Input
                                 type="date"
                                 value={date}
-                                onChange={(e) => {setDate(e.target.value); setResult(null); setError('');}}
+                                onChange={(e) => { setDate(e.target.value); setResult(null); setError(''); }}
                                 className="pl-10"
                             />
                             <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -139,7 +139,11 @@ const DailyStatisticsTestPage = () => {
                                 <CardContent>
                                     <p className="text-sm mb-1"><strong>사용자 ID:</strong> {result.shortestPath.userId}</p>
                                     <p className="text-sm mb-2"><strong>이동 횟수:</strong> {result.shortestPath.moveCount}</p>
-                                    <PathAdmin path={result.shortestPath.path} />
+                                    {result.shortestPath.path[result.shortestPath.path.length - 1] === result.endPage ? (
+                                        <PathAdmin path={result.shortestPath.path} />
+                                    ) : (
+                                        <PathAdmin path={[...result.shortestPath.path, result.endPage]} />
+                                    )}
                                 </CardContent>
                             </Card>
 
