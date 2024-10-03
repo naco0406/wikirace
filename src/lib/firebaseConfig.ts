@@ -247,3 +247,35 @@ export const getChallengesByDateRange = async (startDate: Date, endDate: Date): 
         throw error;
     }
 };
+
+export interface DailyStatistics {
+    startPage: string;
+    endPage: string;
+    totalCount: number;
+    shortestPath: {
+        userId: string;
+        moveCount: number;
+        path: string[];
+    };
+    fastestTime: {
+        userId: string;
+        time: number;
+    };
+}
+
+export const getDailyStatistics = async (date: string): Promise<DailyStatistics | null> => {
+    try {
+        const statisticsRef = doc(db, 'dailyStatistics', date);
+        const statisticsSnap = await getDoc(statisticsRef);
+
+        if (statisticsSnap.exists()) {
+            return statisticsSnap.data() as DailyStatistics;
+        } else {
+            console.log(`No statistics found for date: ${date}`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error fetching statistics for date ${date}:`, error);
+        throw error;
+    }
+};
