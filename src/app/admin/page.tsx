@@ -12,6 +12,7 @@ import OpenAiAPITestScreen from '@/components/Admin/OpenAiAPITestScreen';
 import Layout from '@/components/Layout';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import ChallengeManageScreen from '@/components/Admin/ChallengeManageScreen';
+import DailyStatisticsTestPage from '@/components/Admin/DailyStatisticsTestPage';
 
 const Admin = () => {
     const router = useRouter();
@@ -46,11 +47,12 @@ const Admin = () => {
                     <div className="w-full mx-auto overflow-y-auto">
                         <ScrollArea>
                             <Tabs defaultValue="manage">
-                                <TabsList className="grid w-full max-w-[768px] grid-cols-3 mx-auto">
+                                <TabsList className="grid w-full max-w-[768px] grid-cols-4 mx-auto">
                                     <TabsTrigger value="manage">챌린지 관리</TabsTrigger>
                                     {/* <TabsTrigger value="challenge">챌린지 입력</TabsTrigger> */}
                                     <TabsTrigger value="openai">OpenAI API</TabsTrigger>
                                     <TabsTrigger value="wiki">위키 API</TabsTrigger>
+                                    <TabsTrigger value="statistics">통계 API</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="manage">
                                     <ChallengeManageScreen />
@@ -63,6 +65,9 @@ const Admin = () => {
                                 </TabsContent>
                                 <TabsContent value="wiki">
                                     <WikiAPITestScreen />
+                                </TabsContent>
+                                <TabsContent value="statistics">
+                                    <DailyStatisticsTestPage />
                                 </TabsContent>
                             </Tabs>
                         </ScrollArea>
