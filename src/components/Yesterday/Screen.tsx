@@ -194,7 +194,7 @@ const YesterdayStatistics: React.FC = () => {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <PathResult path={statistics.shortestPath.path} />
+                            <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
                         </CardContent>
                     </Card>
 
