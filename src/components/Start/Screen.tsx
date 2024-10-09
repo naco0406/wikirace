@@ -163,9 +163,16 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </div>
                 )}
-                <p className="text-xs text-center text-linkle-foreground cursor-pointer absolute bottom-10" onClick={handleAuthor}>
-                    © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
-                </p>
+                <div className="flex flex-col absolute bottom-10">
+                    <Link href="/yesterday" className="block mb-2">
+                        <p className="text-xs text-center text-linkle-foreground cursor-pointer">
+                            어제의 기록
+                        </p>
+                    </Link>
+                    <p className="text-xs text-center text-linkle-foreground cursor-pointer" onClick={handleAuthor}>
+                        © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
+                    </p>
+                </div>
                 <Help isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
             </div>
         </>
