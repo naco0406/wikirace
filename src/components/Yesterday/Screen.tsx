@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyStatistics, getDailyStatistics } from '@/lib/firebaseConfig';
-import { addMinutes, isAfter, isBefore, setHours, setMinutes } from "date-fns";
+import { addMinutes, format, isAfter, isBefore, setHours, setMinutes, subDays } from "date-fns";
 import { ArrowLeft, Calendar, ChevronRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -27,35 +27,45 @@ const YesterdayStatistics: React.FC = () => {
             const midnight = setMinutes(setHours(now, 0), 0);
             const oneMinuteAfterMidnight = addMinutes(midnight, 1);
 
+            // console.log('Current time (local):', format(now, 'yyyy-MM-dd HH:mm:ss'));
+            // console.log('Current time (UTC):', format(now, "yyyy-MM-dd HH:mm:ss 'UTC'"));
+            // console.log('Midnight:', format(midnight, 'yyyy-MM-dd HH:mm:ss'));
+            // console.log('One minute after midnight:', format(oneMinuteAfterMidnight, 'yyyy-MM-dd HH:mm:ss'));
+
             if (isAfter(now, midnight) && isBefore(now, oneMinuteAfterMidnight)) {
+                // console.log('Data processing period detected');
                 setIsDataProcessing(true);
                 setIsLoading(false);
 
                 const intervalId = setInterval(() => {
                     const currentTime = new Date();
+                    // console.log('Checking time:', format(currentTime, 'yyyy-MM-dd HH:mm:ss'));
                     if (isAfter(currentTime, oneMinuteAfterMidnight)) {
+                        // console.log('Processing period over, fetching statistics');
                         clearInterval(intervalId);
                         fetchYesterdayStatistics();
                     }
-                }, 1000); // 1초마다 체크
+                }, 1000);
 
                 return () => clearInterval(intervalId);
             } else {
+                // console.log('Not in processing period, fetching statistics immediately');
                 fetchYesterdayStatistics();
             }
         };
 
         const fetchYesterdayStatistics = async () => {
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const formattedDate = yesterday.toISOString().split('T')[0];
+            const yesterday = subDays(new Date(), 1);
+            const formattedDate = format(yesterday, 'yyyy-MM-dd');
+            // console.log('Fetching statistics for:', formattedDate);
 
             try {
                 setIsLoading(true);
                 const data = await getDailyStatistics(formattedDate);
+                // console.log('Fetched statistics:', data);
                 setStatistics(data);
             } catch (error) {
-                console.error('Error fetching yesterday\'s statistics:', error);
+                // console.error('Error fetching yesterday\'s statistics:', error);
             } finally {
                 setIsLoading(false);
                 setIsDataProcessing(false);
@@ -64,6 +74,7 @@ const YesterdayStatistics: React.FC = () => {
 
         checkTimeAndSetup();
     }, []);
+
 
     const linkleCount = calculateLinkleDayNumber();
 
