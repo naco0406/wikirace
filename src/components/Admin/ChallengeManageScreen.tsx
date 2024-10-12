@@ -13,11 +13,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { DatePickerWithRange } from "../ui/date-range-picker";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { DailyChallenge } from "@/lib/gameData";
+import { createChallenge } from "@/dev/utils/gameDataDev";
+import { toast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
+import { useLocalRecordDev } from "@/dev/hooks/useLocalRecordDev";
 
 const ChallengeManageScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<{ [date: string]: DailyChallengeWithId | null }>({});
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [editChallenge, setEditChallenge] = useState<DailyChallengeWithId | null>(null);
+    const [testChallengeId, setTestChallengeId] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
     const [isRandomStartLoading, setIsRandomStartLoading] = useState(false);
     const [isRandomEndLoading, setIsRandomEndLoading] = useState(false);
@@ -33,6 +39,7 @@ const ChallengeManageScreen: React.FC = () => {
     const [showAlertDialog, setShowAlertDialog] = useState(false);
     const { isMobile } = useScreenSize();
 
+    const router = useRouter();
     const { refetch: refetchTitle } = useRandomWikipediaTitle();
 
     useEffect(() => {
@@ -124,6 +131,44 @@ const ChallengeManageScreen: React.FC = () => {
         }
     };
 
+    const moveToChallenge = (challengeId: string) => {
+        localStorage.setItem('DEV_lastChallengeId', challengeId);
+        router.push(`/dev/game/${challengeId}`);
+    };
+
+    const handleTestChallenge = async () => {
+        if (editChallenge !== null && editChallenge.startPage && editChallenge.endPage) {
+            const { startPage, endPage } = editChallenge;
+            const newChallenge: DailyChallenge = {
+                startPage,
+                endPage,
+                totalCount: 0
+            };
+            console.log("테스트할 챌린지:", newChallenge);
+            try {
+                const newChallangeId = await createChallenge(newChallenge);
+                toast({
+                    title: "챌린지 추가 성공",
+                    description: "새로운 챌린지가 성공적으로 추가되었습니다.",
+                });
+                setTestChallengeId(newChallangeId);
+                console.log("새로운 챌린지 ID:", newChallangeId);
+                setTimeout(() => {
+                    console.log("챌린지 테스트로 이동합니다.");
+                    moveToChallenge(newChallangeId);
+                }, 500);
+            } catch (error) {
+                toast({
+                    title: "챌린지 추가 실패",
+                    description: "챌린지 추가 중 오류가 발생했습니다. 다시 시도해주세요.",
+                    variant: "destructive",
+                });
+            } finally {
+
+            }
+        }
+    };
+
     const handleRandomTitle = async (field: 'startPage' | 'endPage') => {
         if (field === 'startPage') {
             setIsRandomStartLoading(true);
@@ -206,6 +251,9 @@ const ChallengeManageScreen: React.FC = () => {
                 {challenges[editChallenge?.id || ''] && (
                     <Button variant="destructive" className="flex-1" onClick={handleDeleteChallenge}>삭제</Button>
                 )}
+                <Button className="flex-1" onClick={handleTestChallenge} disabled={!(editChallenge && editChallenge.startPage && editChallenge.endPage)}>
+                    테스트하기
+                </Button>
             </div>
         </div >
     );
