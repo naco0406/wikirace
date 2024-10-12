@@ -130,7 +130,7 @@ const YesterdayStatistics: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] p-4 overflow-hidden">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] p-4">
             <Card className="w-full max-w-2xl">
                 <CardHeader>
                     <CardTitle className="flex flex-row text-2xl font-semibold text-center justify-center">
@@ -138,8 +138,8 @@ const YesterdayStatistics: React.FC = () => {
                         <p className="font-['Rhodium_Libre'] text-[#3366CC] text-sm">#{linkleCount - 1}</p>
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <ScrollArea>
+                <CardContent className="pb-4">
+                    <ScrollArea className="max-h-[50dvh] overflow-y-auto">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                             <Card>
                                 <CardHeader className="pb-2">
@@ -190,7 +190,7 @@ const YesterdayStatistics: React.FC = () => {
                             </CardHeader>
                             <CardContent>
                                 <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
-                                <EmojiReason isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} statistics={statistics}/>
+                                <EmojiReason isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} statistics={statistics} />
                             </CardContent>
                         </Card>
                         <Card>
@@ -205,11 +205,10 @@ const YesterdayStatistics: React.FC = () => {
                                 </p>
                             </CardContent>
                         </Card>
-
-                        <Button onClick={handleBack} variant="ghost" className="w-full mt-6">
-                            <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
-                        </Button>
                     </ScrollArea>
+                    <Button onClick={handleBack} variant="ghost" className="w-full mt-2">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
+                    </Button>
                 </CardContent>
             </Card>
         </div>
