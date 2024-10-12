@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { PathResult } from '../PathRecord';
 import { formatTimeInKor } from '../Success/Screen';
+import { ScrollArea } from "../ui/scroll-area";
 
 const YesterdayStatistics: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -127,7 +128,7 @@ const YesterdayStatistics: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] p-4">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] p-4 overflow-hidden">
             <Card className="w-full max-w-2xl">
                 <CardHeader>
                     <CardTitle className="flex flex-row text-2xl font-semibold text-center justify-center">
@@ -136,85 +137,68 @@ const YesterdayStatistics: React.FC = () => {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid grid-cols-3 gap-4 mb-6">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium flex items-center">
-                                    {/* <Users className="mr-2 h-4 w-4" /> */}
-                                    총 참여자
+                    <ScrollArea>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        시작 페이지
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-[600]">{statistics.startPage}</p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        도착 페이지
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-[600]">{statistics.endPage}</p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        총 참여자
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-xl font-bold">{statistics.totalCount}</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        <Card className="mb-4">
+                            <CardHeader>
+                                <CardTitle className="text-md font-semibold flex items-center">
+                                    최단 경로
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-xl font-bold">{statistics.totalCount}</p>
+                                <p className="text-md flex flex-row w-full justify-center mb-2">{statistics.shortestPath.emoji}</p>
+                                <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
                             </CardContent>
                         </Card>
-                        {/* <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium flex items-center">
-                                    <Flag className="mr-2 h-4 w-4" />
-                                    목표
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium">{statistics.startPage}</p>
-                                    <ArrowRight className="h-4 w-4 mx-2" />
-                                    <p className="text-sm font-medium">{statistics.endPage}</p>
-                                </div>
-                            </CardContent>
-                        </Card> */}
                         <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium flex items-center">
-                                    시작 페이지
+                            <CardHeader>
+                                <CardTitle className="text-md font-semibold flex items-center">
+                                    최단 시간
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="font-[600]">{statistics.startPage}</p>
+                                <p className="text-md font-bold">
+                                    {formatTimeInKor(statistics.fastestTime.time)}
+                                </p>
                             </CardContent>
                         </Card>
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-sm font-medium flex items-center">
-                                    도착 페이지
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="font-[600]">{statistics.endPage}</p>
-                            </CardContent>
-                        </Card>
-                    </div>
 
-                    <Card className="mb-6">
-                        <CardHeader>
-                            <CardTitle className="text-md font-semibold flex items-center">
-                                {/* <Move className="mr-2 h-5 w-5" /> */}
-                                {/* 최단 경로 ({statistics.shortestPath.moveCount} 단계) */}
-                                최단 경로
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-md font-semibold flex items-center">
-                                {/* <Clock className="mr-2 h-5 w-5" /> */}
-                                최단 시간
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-md font-bold">
-                                {formatTimeInKor(statistics.fastestTime.time)}
-                            </p>
-                        </CardContent>
-                    </Card>
-
-                    <Button onClick={handleBack} variant="ghost" className="w-full mt-6">
-                        <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
-                    </Button>
+                        <Button onClick={handleBack} variant="ghost" className="w-full mt-6">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
+                        </Button>
+                    </ScrollArea>
                 </CardContent>
             </Card>
         </div>

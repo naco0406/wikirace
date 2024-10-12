@@ -159,6 +159,7 @@ const DailyStatisticsTestPage = () => {
                                 <CardContent>
                                     <p className="text-sm mb-1"><strong>사용자 ID:</strong> {result.shortestPath.userId}</p>
                                     <p className="text-sm mb-2"><strong>이동 횟수:</strong> {result.shortestPath.moveCount}</p>
+                                    <p className="text-sm mb-2"><strong>공유 결과:</strong> {result.shortestPath.emoji}</p>
                                     {result.shortestPath.path[result.shortestPath.path.length - 1] === result.endPage ? (
                                         <PathAdmin path={result.shortestPath.path} />
                                     ) : (
