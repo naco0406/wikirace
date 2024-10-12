@@ -64,6 +64,14 @@ export const similarityToEmoji = (similarity: number): string => {
     return '🟥';
 };
 
+export const similarityToCircleEmoji = (similarity: number): string => {
+    if (similarity >= 0.8) return '🔵';
+    if (similarity >= 0.6) return '🟢';
+    if (similarity >= 0.4) return '🟡';
+    if (similarity >= 0.2) return '🟠';
+    return '🔴';
+};
+
 export const getEmojiLength = (str: string): number => {
     return [...str].length;
 };

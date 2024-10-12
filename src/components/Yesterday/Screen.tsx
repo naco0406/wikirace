@@ -6,17 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DailyStatistics, getDailyStatistics } from '@/lib/firebaseConfig';
 import { addMinutes, isAfter, isBefore, setHours, setMinutes } from "date-fns";
-import { ArrowLeft, Calendar, Loader2 } from 'lucide-react';
+import { ArrowLeft, Calendar, ChevronRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { PathResult } from '../PathRecord';
 import { formatTimeInKor } from '../Success/Screen';
 import { ScrollArea } from "../ui/scroll-area";
+import { EmojiReason } from "./EmojiReason";
 
 const YesterdayStatistics: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [statistics, setStatistics] = useState<DailyStatistics | null>(null);
     const [isDataProcessing, setIsDataProcessing] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -174,12 +176,21 @@ const YesterdayStatistics: React.FC = () => {
                         <Card className="mb-4">
                             <CardHeader>
                                 <CardTitle className="text-md font-semibold flex items-center">
-                                    최단 경로
+                                    <div className="flex flex-row justify-between w-full">
+                                        <div>최단 경로</div>
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => setIsDialogOpen(true)}
+                                            style={{ height: 24, width: 24, padding: 0 }}
+                                        >
+                                            <ChevronRight className="h-6 w-6" />
+                                        </Button>
+                                    </div>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p className="text-md flex flex-row w-full justify-center mb-2">{statistics.shortestPath.emoji}</p>
                                 <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
+                                <EmojiReason isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} statistics={statistics}/>
                             </CardContent>
                         </Card>
                         <Card>
