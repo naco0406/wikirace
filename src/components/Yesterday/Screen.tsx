@@ -140,39 +140,18 @@ const YesterdayStatistics: React.FC = () => {
                 </CardHeader>
                 <CardContent className="pb-4">
                     <ScrollArea className="max-h-[50dvh] overflow-y-auto">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium flex items-center">
-                                        시작 페이지
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="font-[600]">{statistics.startPage}</p>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium flex items-center">
-                                        도착 페이지
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="font-[600]">{statistics.endPage}</p>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-sm font-medium flex items-center">
-                                        총 참여자
-                                    </CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-xl font-bold">{statistics.totalCount}</p>
-                                </CardContent>
-                            </Card>
-                        </div>
-
+                        <Card className="mb-4">
+                            <CardHeader>
+                                <CardTitle className="text-md font-semibold flex items-center">
+                                    최단 시간
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-md font-bold">
+                                    {formatTimeInKor(statistics.fastestTime.time)}
+                                </p>
+                            </CardContent>
+                        </Card>
                         <Card className="mb-4">
                             <CardHeader>
                                 <CardTitle className="text-md font-semibold flex items-center">
@@ -193,18 +172,38 @@ const YesterdayStatistics: React.FC = () => {
                                 <EmojiReason isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} statistics={statistics} />
                             </CardContent>
                         </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-md font-semibold flex items-center">
-                                    최단 시간
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-md font-bold">
-                                    {formatTimeInKor(statistics.fastestTime.time)}
-                                </p>
-                            </CardContent>
-                        </Card>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        총 참여자
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-xl font-bold">{statistics.totalCount}</p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        시작 페이지
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-[600]">{statistics.startPage}</p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        도착 페이지
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-[600]">{statistics.endPage}</p>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </ScrollArea>
                     <Button onClick={handleBack} variant="ghost" className="w-full mt-2">
                         <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
