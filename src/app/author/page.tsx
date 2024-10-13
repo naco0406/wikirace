@@ -118,6 +118,7 @@ interface ReleaseProps {
     content: string;
 }
 const ReleaseHistory: ReleaseProps[] = [
+    { date: "2024.10.13", version: "1.1.0", content: "어제의 기록 추가\n관리자 지속가능 개선 작업" },
     { date: "2024.09.19", version: "1.0.2", content: "정답 처리 로직 개선\n일일 순위 추가" },
     { date: "2024.09.19", version: "1.0.1", content: "자잘한 버그 수정" },
     { date: "2024.09.15", version: "1.0.0", content: "Linkle 1.0 배포" },

@@ -4,14 +4,15 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Plus, Loader2, RefreshCw } from 'lucide-react';
-import { DailyChallenge, fetchAllChallenges, createChallenge } from '../utils/gameDataDev';
+import { ArrowLeft, Plus, Loader2, RefreshCw, Trash2 } from 'lucide-react';
+import { DailyChallenge, fetchAllChallenges, createChallenge, deleteChallenge } from '../utils/gameDataDev';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useRandomWikipediaTitle } from '@/hooks/useRandomWikipedia';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import AutocompleteWikipediaInput from '@/components/AutocompleteWikipediaInput';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 const DEV_ChallengeScreen: React.FC = () => {
     const [challenges, setChallenges] = useState<{ id: string; challenge: DailyChallenge }[]>([]);
@@ -24,6 +25,36 @@ const DEV_ChallengeScreen: React.FC = () => {
     const router = useRouter();
     const { toast } = useToast();
     const { refetch: refetchTitle } = useRandomWikipediaTitle();
+
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [challengeToDelete, setChallengeToDelete] = useState<string | null>(null);
+
+    const handleDeleteChallenge = async (challengeId: string) => {
+        setChallengeToDelete(challengeId);
+        setDeleteConfirmOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (challengeToDelete) {
+            try {
+                await deleteChallenge(challengeToDelete);
+                await loadChallenges();
+                toast({
+                    title: "챌린지 삭제 성공",
+                    description: "챌린지가 성공적으로 삭제되었습니다.",
+                });
+            } catch (error) {
+                console.error("Failed to delete challenge:", error);
+                toast({
+                    title: "챌린지 삭제 실패",
+                    description: "챌린지 삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
+                    variant: "destructive",
+                });
+            }
+        }
+        setDeleteConfirmOpen(false);
+        setChallengeToDelete(null);
+    };
 
     useEffect(() => {
         loadChallenges();
@@ -185,7 +216,7 @@ const DEV_ChallengeScreen: React.FC = () => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4">
                             {challenges.map(({ id, challenge }) => (
-                                <Card key={id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleChallengeSelect(id)}>
+                                <Card key={id} className="relative cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleChallengeSelect(id)}>
                                     <CardHeader>
                                         <CardTitle className="text-lg">챌린지 ID : {id.slice(0, 6)}</CardTitle>
                                     </CardHeader>
@@ -194,12 +225,36 @@ const DEV_ChallengeScreen: React.FC = () => {
                                         <p className="text-sm mb-2"><strong>도착</strong>: {challenge.endPage}</p>
                                         <p className="text-sm"><strong>총 성공 횟수</strong>: {challenge.totalCount}</p>
                                     </CardContent>
+                                    <Button
+                                        variant="ghost"
+                                        className="absolute top-2 right-2"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteChallenge(id);
+                                        }}
+                                    >
+                                        <Trash2 className="w-4 h-4 text-red-500" />
+                                    </Button>
                                 </Card>
                             ))}
                         </div>
                     )}
                 </ScrollArea>
             </div>
+            <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>챌린지 삭제</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            정말로 이 챌린지를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setChallengeToDelete(null)}>취소</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete}>삭제</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };

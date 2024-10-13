@@ -19,27 +19,47 @@ const DailyStatisticsTestPage = () => {
         setResult(null);
 
         try {
-            fetch('https://dev.naco.kr/api/scheduler/analyze-date', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ date }),
-            }).catch(error => console.error('API 호출 중 오류 발생 (무시됨):', error));
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
             const statistics = await getDailyStatistics(date);
             if (statistics) {
                 setResult(statistics);
             } else {
-                setError('해당 날짜의 통계 데이터를 찾을 수 없습니다.');
+                await fetchAndProcessData();
             }
         } catch (error) {
             console.error('데이터 처리 중 오류 발생:', error);
             setError('통계 데이터를 불러오는 중 오류가 발생했습니다.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const fetchAndProcessData = async () => {
+        try {
+            const response = await fetch('https://dev.naco.kr/api/scheduler/analyze-date', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ date }),
+            });
+
+            if (!response.ok) {
+                throw new Error('API 호출 실패');
+            }
+
+            // Wait for 1 second to allow time for data processing
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Try to get the data from Firebase again
+            const updatedStatistics = await getDailyStatistics(date);
+            if (updatedStatistics) {
+                setResult(updatedStatistics);
+            } else {
+                setError('해당 날짜의 통계 데이터를 찾을 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('API 호출 중 오류 발생:', error);
+            setError('통계 데이터를 불러오는 중 오류가 발생했습니다.');
         }
     };
 
@@ -139,6 +159,7 @@ const DailyStatisticsTestPage = () => {
                                 <CardContent>
                                     <p className="text-sm mb-1"><strong>사용자 ID:</strong> {result.shortestPath.userId}</p>
                                     <p className="text-sm mb-2"><strong>이동 횟수:</strong> {result.shortestPath.moveCount}</p>
+                                    <p className="text-sm mb-2"><strong>공유 결과:</strong> {result.shortestPath.emoji}</p>
                                     {result.shortestPath.path[result.shortestPath.path.length - 1] === result.endPage ? (
                                         <PathAdmin path={result.shortestPath.path} />
                                     ) : (

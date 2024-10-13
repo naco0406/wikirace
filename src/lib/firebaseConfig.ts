@@ -3,6 +3,7 @@ import { getFirestore, collection, doc, setDoc, getDoc, query, orderBy, limit as
 import { DailyChallenge, MyRanking, Ranking } from './gameData';
 import { format, isWithinInterval, parseISO } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+import { OpenAIResponse } from '@/service/OpenAI/utils';
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -256,6 +257,8 @@ export interface DailyStatistics {
         userId: string;
         moveCount: number;
         path: string[];
+        emoji: string;
+        reason: OpenAIResponse[];
     };
     fastestTime: {
         userId: string;

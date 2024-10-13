@@ -6,8 +6,8 @@ import DEV_InvalidScreen from '@/dev/screens/InvalidScreen';
 import DEV_SuccessScreen from '@/dev/screens/SuccessScreen';
 
 export default function Success({ params }: { params: { challengeId: string } }) {
-    const { isDev } = useEnvironment();
-    if(!isDev) return <DEV_InvalidScreen />;
+    // const { isDev } = useEnvironment();
+    // if(!isDev) return <DEV_InvalidScreen />;
     return (
         <Layout>
             <DEV_SuccessScreen challengeId={params.challengeId} />

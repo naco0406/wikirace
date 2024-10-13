@@ -6,7 +6,7 @@ import { useKeyboard } from '@/hooks/useKeyboard';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { DailyChallenge, fetchDailyChallenge } from '@/lib/gameData';
 import { OpenAIService } from '@/service/OpenAI/OpenAIService';
-import { CircleHelp, Loader2 } from 'lucide-react';
+import { CircleHelp, Loader2, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -102,6 +102,9 @@ const StartScreen: React.FC = () => {
             <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] overflow-hidden">
                 <header className="absolute top-0 right-0 items-center">
                     <div className="flex flex-row px-4 h-[80px] justify-between items-center">
+                        <Link href="/yesterday" className="block mr-2">
+                            <Trophy className="w-6 h-6 text-linkle-foreground" />
+                        </Link>
                         <Button
                             variant="ghost"
                             onClick={handleOpenHelpModal}
@@ -163,9 +166,11 @@ const StartScreen: React.FC = () => {
                         </Button>
                     </div>
                 )}
-                <p className="text-xs text-center text-linkle-foreground cursor-pointer absolute bottom-10" onClick={handleAuthor}>
-                    © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
-                </p>
+                <div className="flex flex-col absolute bottom-10">
+                    <p className="text-xs text-center text-linkle-foreground cursor-pointer" onClick={handleAuthor}>
+                        © 2024 <span className='text-[#3366CC] font-[600] underline'>Linkle</span>. All rights reserved.
+                    </p>
+                </div>
                 <Help isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} />
             </div>
         </>

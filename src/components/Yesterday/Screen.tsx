@@ -1,91 +1,228 @@
 "use client"
 
-import React, { useState } from 'react';
+import { calculateLinkleDayNumber } from "@/assets/constants";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, Clock, Move, ChevronDown, ChevronUp } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '../ui/button';
+import { DailyStatistics, getDailyStatistics } from '@/lib/firebaseConfig';
+import { addMinutes, format, isAfter, isBefore, setHours, setMinutes, subDays } from "date-fns";
+import { ArrowLeft, Calendar, ChevronRight, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { PathResult } from '../PathRecord';
+import { formatTimeInKor } from '../Success/Screen';
+import { ScrollArea } from "../ui/scroll-area";
+import { EmojiReason } from "./EmojiReason";
 
-interface HistoryRecord {
-    fastestTime: { minutes: number; seconds: number };
-    leastMoves: number;
-    leastMovesPath: string[];
-}
+const YesterdayStatistics: React.FC = () => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [statistics, setStatistics] = useState<DailyStatistics | null>(null);
+    const [isDataProcessing, setIsDataProcessing] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const router = useRouter();
 
-const YesterdayScreen: React.FC = () => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    useEffect(() => {
+        const checkTimeAndSetup = () => {
+            const now = new Date();
+            const midnight = setMinutes(setHours(now, 0), 0);
+            const oneMinuteAfterMidnight = addMinutes(midnight, 1);
 
-    // 이 부분은 실제 데이터를 가져오는 로직으로 대체해야 합니다.
-    const yesterdayRecord: HistoryRecord = {
-        fastestTime: { minutes: 5, seconds: 30 },
-        leastMoves: 12,
-        leastMovesPath: ['시작 페이지', '중간 페이지 1', '중간 페이지 2', '목표 페이지']
+            // console.log('Current time (local):', format(now, 'yyyy-MM-dd HH:mm:ss'));
+            // console.log('Current time (UTC):', format(now, "yyyy-MM-dd HH:mm:ss 'UTC'"));
+            // console.log('Midnight:', format(midnight, 'yyyy-MM-dd HH:mm:ss'));
+            // console.log('One minute after midnight:', format(oneMinuteAfterMidnight, 'yyyy-MM-dd HH:mm:ss'));
+
+            if (isAfter(now, midnight) && isBefore(now, oneMinuteAfterMidnight)) {
+                // console.log('Data processing period detected');
+                setIsDataProcessing(true);
+                setIsLoading(false);
+
+                const intervalId = setInterval(() => {
+                    const currentTime = new Date();
+                    // console.log('Checking time:', format(currentTime, 'yyyy-MM-dd HH:mm:ss'));
+                    if (isAfter(currentTime, oneMinuteAfterMidnight)) {
+                        // console.log('Processing period over, fetching statistics');
+                        clearInterval(intervalId);
+                        fetchYesterdayStatistics();
+                    }
+                }, 1000);
+
+                return () => clearInterval(intervalId);
+            } else {
+                // console.log('Not in processing period, fetching statistics immediately');
+                fetchYesterdayStatistics();
+            }
+        };
+
+        const fetchYesterdayStatistics = async () => {
+            const yesterday = subDays(new Date(), 1);
+            const formattedDate = format(yesterday, 'yyyy-MM-dd');
+            // console.log('Fetching statistics for:', formattedDate);
+
+            try {
+                setIsLoading(true);
+                const data = await getDailyStatistics(formattedDate);
+                // console.log('Fetched statistics:', data);
+                setStatistics(data);
+            } catch (error) {
+                // console.error('Error fetching yesterday\'s statistics:', error);
+            } finally {
+                setIsLoading(false);
+                setIsDataProcessing(false);
+            }
+        };
+
+        checkTimeAndSetup();
+    }, []);
+
+
+    const linkleCount = calculateLinkleDayNumber();
+
+    const handleBack = () => {
+        router.push('/');
     };
 
+    if (isLoading) {
+        return (
+            <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF]">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <p className="mt-4">통계를 불러오는 중...</p>
+            </div>
+        );
+    }
+
+    if (isDataProcessing) {
+        return (
+            <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF]">
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <CardTitle className="flex flex-row text-2xl font-semibold text-center justify-center">
+                            <div className="flex flex-row text-center mr-2">어제의 기록</div>
+                            <p className="font-['Rhodium_Libre'] text-[#3366CC] text-sm">#{linkleCount - 1}</p>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col items-center">
+                        <Loader2 className="w-8 h-8 animate-spin mb-4" />
+                        <p className="text-center">아직 어제의 데이터를 분석하고 있습니다</p>
+                        <Button onClick={handleBack} className="w-full mt-6">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (!statistics) {
+        return (
+            <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF]">
+                <Card className="w-full max-w-md">
+                    <CardHeader>
+                        <CardTitle className="flex flex-row text-2xl font-semibold text-center justify-center">
+                            <div className="flex flex-row text-center mr-2">어제의 기록</div>
+                            <p className="font-['Rhodium_Libre'] text-[#3366CC] text-sm">#{linkleCount - 1}</p>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Alert>
+                            <Calendar className="h-4 w-4" />
+                            <AlertTitle>어제의 통계를 찾을 수 없습니다</AlertTitle>
+                            <AlertDescription className="mt-2">
+                                아직 어제의 통계 데이터가 생성되지 않았거나, 문제가 발생했을 수 있습니다.
+                            </AlertDescription>
+                        </Alert>
+                        <Button onClick={handleBack} className="w-full mt-6">
+                            <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md bg-white text-gray-800 shadow-xl rounded-xl overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-blue-100 to-purple-100 p-6">
-                    <CardTitle className="text-2xl font-bold text-center text-gray-800">
-                        <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-2" />
-                        어제의 기록
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#F3F7FF] p-4">
+            <Card className="w-full max-w-2xl">
+                <CardHeader>
+                    <CardTitle className="flex flex-row text-2xl font-semibold text-center justify-center">
+                        <div className="flex flex-row text-center mr-2">어제의 기록</div>
+                        <p className="font-['Rhodium_Libre'] text-[#3366CC] text-sm">#{linkleCount - 1}</p>
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 space-y-6">
-                    <div className="space-y-4">
-                        <RecordItem
-                            icon={<Clock className="w-8 h-8 text-blue-500" />}
-                            title="가장 빠른 클리어 시간"
-                            value={`${yesterdayRecord.fastestTime.minutes}분 ${yesterdayRecord.fastestTime.seconds}초`}
-                        />
-                        <div className="bg-gray-50 px-4 pt-4 rounded-lg cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-4">
-                                    <Move className="w-8 h-8 text-green-500" />
-                                    <div>
-                                        <h3 className="text-sm font-medium text-gray-500">최소 이동 횟수</h3>
-                                        <p className="text-lg font-bold text-gray-800">{`${yesterdayRecord.leastMoves}번`}</p>
+                <CardContent className="pb-4">
+                    <ScrollArea className="max-h-[50dvh] overflow-y-auto">
+                        <Card className="mb-4">
+                            <CardHeader>
+                                <CardTitle className="text-md font-semibold flex items-center">
+                                    최단 시간
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-md font-bold">
+                                    {formatTimeInKor(statistics.fastestTime.time)}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card className="mb-4">
+                            <CardHeader>
+                                <CardTitle className="text-md font-semibold flex items-center">
+                                    <div className="flex flex-row justify-between w-full">
+                                        <div>최단 경로</div>
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => setIsDialogOpen(true)}
+                                            style={{ height: 24, width: 24, padding: 0 }}
+                                        >
+                                            <ChevronRight className="h-6 w-6" />
+                                        </Button>
                                     </div>
-                                </div>
-                                {isExpanded ? <ChevronUp className="w-6 h-6 text-gray-500" /> : <ChevronDown className="w-6 h-6 text-gray-500" />}
-                            </div>
-                            <div className={`mt-4 overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-96 pb-4 ' : 'max-h-0'}`}>
-                                <h4 className="font-semibold mb-2">이동 경로:</h4>
-                                <ol className="list-decimal list-inside space-y-1">
-                                    {yesterdayRecord.leastMovesPath.map((page, index) => (
-                                        <li key={index} className="text-gray-700">{page}</li>
-                                    ))}
-                                </ol>
-                            </div>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
+                                <EmojiReason isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} statistics={statistics} />
+                            </CardContent>
+                        </Card>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        총 참여자
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-xl font-bold">{statistics.totalCount}</p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        시작 페이지
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-[600]">{statistics.startPage}</p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-medium flex items-center">
+                                        도착 페이지
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="font-[600]">{statistics.endPage}</p>
+                                </CardContent>
+                            </Card>
                         </div>
-                        <span className='text-sm'>베타 기능입니다</span>
-                    </div>
+                    </ScrollArea>
+                    <Button onClick={handleBack} variant="ghost" className="w-full mt-2">
+                        <ArrowLeft className="mr-2 h-4 w-4" /> 메인으로 돌아가기
+                    </Button>
                 </CardContent>
             </Card>
-
-            <div className="mt-6 text-center flex-shrink-0">
-                <Link href="/">
-                    <Button variant="ghost" className='text-white text-md'>메인으로 돌아가기</Button>
-                </Link>
-            </div>
         </div>
     );
 };
 
-interface RecordItemProps {
-    icon: React.ReactNode;
-    title: string;
-    value: string;
-}
-
-const RecordItem: React.FC<RecordItemProps> = ({ icon, title, value }) => (
-    <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
-        <div className="flex-shrink-0">{icon}</div>
-        <div>
-            <h3 className="text-sm font-medium text-gray-500">{title}</h3>
-            <p className="text-lg font-bold text-gray-800">{value}</p>
-        </div>
-    </div>
-);
-
-export default YesterdayScreen;
+export default YesterdayStatistics;

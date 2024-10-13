@@ -1,4 +1,4 @@
-import { Timestamp, doc, updateDoc, increment } from 'firebase/firestore';
+import { Timestamp, doc, updateDoc, increment, deleteDoc } from 'firebase/firestore';
 import { addRanking, getRankings, getChallenge, addChallenge, getAllChallenges, db } from './firebaseConfigDev';
 
 export interface DailyChallenge {
@@ -53,4 +53,9 @@ export const incrementTotalCount = async (challengeId: string): Promise<void> =>
     await updateDoc(challengeRef, {
         totalCount: increment(1)
     });
+};
+
+export const deleteChallenge = async (challengeId: string): Promise<void> => {
+    const challengeRef = doc(db, 'dev_linkle', challengeId);
+    await deleteDoc(challengeRef);
 };
