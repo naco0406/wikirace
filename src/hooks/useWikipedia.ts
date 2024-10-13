@@ -211,7 +211,7 @@ export const useWikipedia = () => {
                 );
 
                 if (isEnd || isRedirectEnd) {
-                    console.log('isEnd || isRedirectEnd');
+                    // console.log('isEnd || isRedirectEnd');
                     await submitRankingAsync();
                 }
             }
@@ -242,7 +242,7 @@ export const useWikipedia = () => {
 
                 if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
                     setIsGameEnding(true);
-                    console.log('setIsGameEnding(true)');
+                    // console.log('setIsGameEnding(true)');
                     await updateGameState(formattedTitle, newMoveCount);
                     await submitRankingAsync();
                     setIsGameEnding(false);

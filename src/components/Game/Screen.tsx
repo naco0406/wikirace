@@ -6,7 +6,7 @@ import { useTimer } from '@/contexts/TimerContext';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useLocalRecord } from '@/hooks/useLocalRecord';
 import { useScreenSize } from '@/hooks/useScreenSize';
-import { useWikipedia } from '@/hooks/useWikipedia';
+import { isEndPage, useWikipedia } from '@/hooks/useWikipedia';
 import { ArrowLeft, CircleHelp, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -20,6 +20,7 @@ const GameScreen: React.FC = () => {
         isLoading,
         isFirstLoad,
         isGameOver,
+        setIsGameOver,
         path,
         singlePath,
         moveCount,
@@ -96,6 +97,12 @@ const GameScreen: React.FC = () => {
             router.push('/success');
         }
     }, [isGameOver, isGameEnding, router]);
+
+    useEffect(() => {
+        if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage)) {
+            setIsGameOver(true);
+        }
+    }, [currentPage, dailyChallenge]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
