@@ -98,20 +98,17 @@ const GameScreen: React.FC = () => {
         }
     }, [isGameOver, isGameEnding, router]);
 
-    // useEffect(async () => {
-    //     if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage)) {
-    //         await submitRankingAsync();
-    //     }
-    // }, [currentPage, dailyChallenge]);
-
+    const [hasSubmittedRanking, setHasSubmittedRanking] = useState(false);
+    const checkEndPage = useCallback(async () => {
+        if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage) && !hasSubmittedRanking) {
+            await submitRankingAsync();
+            setHasSubmittedRanking(true);
+        }
+    }, [currentPage, dailyChallenge, hasSubmittedRanking]);
+    
     useEffect(() => {
-        const checkEndPage = async () => {
-            if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage)) {
-                await submitRankingAsync();
-            }
-        };
         checkEndPage();
-    }, [currentPage, dailyChallenge, submitRankingAsync]);
+    }, [checkEndPage]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
