@@ -27,7 +27,7 @@ export const Loading: React.FC = () => {
     return (
         <div className="min-h-screen w-full flex flex-row items-center justify-center bg-[#F3F7FF] overflow-hidden">
             <div className='w-full h-full flex flex-col items-center justify-center box-border'>
-                <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-8xl font-[400]">Linkle</h1>
+                <h1 className="pt-[24px] font-['Rhodium_Libre'] text-[#3366CC] text-6xl font-[400]">Linkle</h1>
                 <Loader2 className="w-[48px] h-[48px] animate-spin mt-[40px] mb-[40px] text-[#3366CC]" />
                 <div className="flex flex-col min-h-[120px] items-center justify-center">
                     {challenge ? (

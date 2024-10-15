@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import GameForcedEnd from '../ForcedEnd';
 import PathRecord from '../PathRecord';
 import { Help } from '../Help';
+import { usePWA } from '@/hooks/usePWA';
 
 const GameScreen: React.FC = () => {
     const {
@@ -40,6 +41,7 @@ const GameScreen: React.FC = () => {
     } = useWikipedia();
 
     const { isMobile } = useScreenSize();
+    const isPWA = usePWA()
     const { formattedTime, startTimer } = useTimer();
     const { localRecord, hasStartedToday, hasClearedToday, isLoading: isLocalRecordLoading } = useLocalRecord();
     const router = useRouter();
@@ -119,7 +121,7 @@ const GameScreen: React.FC = () => {
     if (!isFirstLoad && (isLoading || isGameEnding)) {
         return (
             <div className="h-[100dvh] flex flex-col">
-                <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6 w-full">
+                <header className={`flex flex-row ${isMobile ? 'max-h-[60px]' : 'max-h-[80px]'} justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6 w-full`}>
                     <div className="flex flex-row items-center">
                         <Button
                             variant="ghost"
@@ -187,7 +189,7 @@ const GameScreen: React.FC = () => {
 
     return (
         <div className="h-[100dvh] flex flex-col">
-            <header className="flex flex-row max-h-[80px] justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6">
+            <header className={`flex flex-row ${isMobile ? 'max-h-[60px]' : 'max-h-[80px]'} justify-between items-center bg-[#F3F7FF] border border-b border-[#E5E5E5] px-4 py-6`}>
                 <div className="flex flex-row items-center">
                     <Button
                         variant="ghost"
@@ -223,7 +225,7 @@ const GameScreen: React.FC = () => {
             </div>
 
             {isMobile ?
-                <footer className="flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 py-4 space-y-2 absolute bottom-0 min-h-[80px] w-full z-10">
+                <footer className={`flex flex-col items-center bg-[#F3F7FF] border border-t border-[#E5E5E5] px-6 pt-4 ${isPWA ? 'pb-6' : 'pb-4'} space-y-2 absolute bottom-0 min-h-[80px] w-full z-10`}>
                     <div className="flex flex-row justify-start w-full font-[400] text-24 leading-28 text-linkle-foreground truncate">
                         <div>현재 문서: <span className="font-[600] text-[#3366CC]">{currentPage.title}</span></div>
                     </div>
