@@ -27,21 +27,13 @@ const YesterdayStatistics: React.FC = () => {
             const midnight = setMinutes(setHours(now, 0), 0);
             const oneMinuteAfterMidnight = addMinutes(midnight, 1);
 
-            // console.log('Current time (local):', format(now, 'yyyy-MM-dd HH:mm:ss'));
-            // console.log('Current time (UTC):', format(now, "yyyy-MM-dd HH:mm:ss 'UTC'"));
-            // console.log('Midnight:', format(midnight, 'yyyy-MM-dd HH:mm:ss'));
-            // console.log('One minute after midnight:', format(oneMinuteAfterMidnight, 'yyyy-MM-dd HH:mm:ss'));
-
             if (isAfter(now, midnight) && isBefore(now, oneMinuteAfterMidnight)) {
-                // console.log('Data processing period detected');
                 setIsDataProcessing(true);
                 setIsLoading(false);
 
                 const intervalId = setInterval(() => {
                     const currentTime = new Date();
-                    // console.log('Checking time:', format(currentTime, 'yyyy-MM-dd HH:mm:ss'));
                     if (isAfter(currentTime, oneMinuteAfterMidnight)) {
-                        // console.log('Processing period over, fetching statistics');
                         clearInterval(intervalId);
                         fetchYesterdayStatistics();
                     }
@@ -49,7 +41,6 @@ const YesterdayStatistics: React.FC = () => {
 
                 return () => clearInterval(intervalId);
             } else {
-                // console.log('Not in processing period, fetching statistics immediately');
                 fetchYesterdayStatistics();
             }
         };
@@ -57,12 +48,10 @@ const YesterdayStatistics: React.FC = () => {
         const fetchYesterdayStatistics = async () => {
             const yesterday = subDays(new Date(), 1);
             const formattedDate = format(yesterday, 'yyyy-MM-dd');
-            // console.log('Fetching statistics for:', formattedDate);
 
             try {
                 setIsLoading(true);
                 const data = await getDailyStatistics(formattedDate);
-                // console.log('Fetched statistics:', data);
                 setStatistics(data);
             } catch (error) {
                 // console.error('Error fetching yesterday\'s statistics:', error);
@@ -179,7 +168,9 @@ const YesterdayStatistics: React.FC = () => {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <PathResult path={[...statistics.shortestPath.path, statistics.endPage]} />
+                                <PathResult path={statistics.shortestPath.path.at(-1) === statistics.endPage
+                                    ? statistics.shortestPath.path
+                                    : [...statistics.shortestPath.path, statistics.endPage]} />
                                 <EmojiReason isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} statistics={statistics} />
                             </CardContent>
                         </Card>

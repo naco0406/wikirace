@@ -49,7 +49,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="font-sans bg-[#3366CC]">
+      <body className="font-sans bg-[#F3F7FF]">
         <EnvironmentProvider>
           <TimerProvider>
             {children}
