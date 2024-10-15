@@ -202,19 +202,19 @@ export const useWikipedia = () => {
                 fullurl: page.fullurl
             });
 
-            if (dailyChallenge && !setHasClearedToday) {
-                const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
+            // if (dailyChallenge && !setHasClearedToday) {
+            //     const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
 
-                const redirects = page.redirects || [];
-                const isRedirectEnd = redirects.some((redirect: any) =>
-                    isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
-                );
+            //     const redirects = page.redirects || [];
+            //     const isRedirectEnd = redirects.some((redirect: any) =>
+            //         isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
+            //     );
 
-                if (isEnd || isRedirectEnd) {
-                    // console.log('isEnd || isRedirectEnd');
-                    await submitRankingAsync();
-                }
-            }
+            //     if (isEnd || isRedirectEnd) {
+            //         // console.log('isEnd || isRedirectEnd');
+            //         await submitRankingAsync();
+            //     }
+            // }
 
         } catch (error) {
             console.error('Error fetching Wikipedia content:', error);
@@ -240,14 +240,14 @@ export const useWikipedia = () => {
                 const formattedTitle = formatPageTitle(title);
                 const newMoveCount = moveCount + 1;
 
-                if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
-                    setIsGameEnding(true);
-                    // console.log('setIsGameEnding(true)');
-                    await updateGameState(formattedTitle, newMoveCount);
-                    await submitRankingAsync();
-                    setIsGameEnding(false);
-                    return;
-                }
+                // if (dailyChallenge && isEndPage(formattedTitle, dailyChallenge.endPage)) {
+                //     setIsGameEnding(true);
+                //     // console.log('setIsGameEnding(true)');
+                //     await updateGameState(formattedTitle, newMoveCount);
+                //     await submitRankingAsync();
+                //     setIsGameEnding(false);
+                //     return;
+                // }
                 await updateGameState(formattedTitle, newMoveCount);
                 fetchWikiPage(title);
             }
@@ -339,6 +339,7 @@ export const useWikipedia = () => {
         goBack,
         dailyChallenge,
         isGameEnding,
+        submitRankingAsync,
     };
 };
 

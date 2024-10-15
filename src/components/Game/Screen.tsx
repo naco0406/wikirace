@@ -20,7 +20,6 @@ const GameScreen: React.FC = () => {
         isLoading,
         isFirstLoad,
         isGameOver,
-        setIsGameOver,
         path,
         singlePath,
         moveCount,
@@ -37,6 +36,7 @@ const GameScreen: React.FC = () => {
         goBack,
         dailyChallenge,
         isGameEnding,
+        submitRankingAsync,
     } = useWikipedia();
 
     const { isMobile } = useScreenSize();
@@ -98,11 +98,20 @@ const GameScreen: React.FC = () => {
         }
     }, [isGameOver, isGameEnding, router]);
 
+    // useEffect(async () => {
+    //     if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage)) {
+    //         await submitRankingAsync();
+    //     }
+    // }, [currentPage, dailyChallenge]);
+
     useEffect(() => {
-        if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage)) {
-            setIsGameOver(true);
-        }
-    }, [currentPage, dailyChallenge]);
+        const checkEndPage = async () => {
+            if (currentPage && dailyChallenge && isEndPage(currentPage.title, dailyChallenge.endPage)) {
+                await submitRankingAsync();
+            }
+        };
+        checkEndPage();
+    }, [currentPage, dailyChallenge, submitRankingAsync]);
 
     if (isForcedEnd) {
         return <GameForcedEnd reason={forcedEndReason} />;
