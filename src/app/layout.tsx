@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   icons: {
     icon: '/Linkle.ico',
   },
+  manifest: '/manifest.json',
+  themeColor: '#3366CC', 
 };
 
 export const viewport: Viewport = {
