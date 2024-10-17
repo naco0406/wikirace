@@ -202,20 +202,6 @@ export const useWikipedia = () => {
                 fullurl: page.fullurl
             });
 
-            if (dailyChallenge && !setHasClearedToday) {
-                const isEnd = isEndPage(pageTitle, dailyChallenge.endPage);
-
-                const redirects = page.redirects || [];
-                const isRedirectEnd = redirects.some((redirect: any) =>
-                    isEndPage(formatPageTitle(redirect.to), dailyChallenge.endPage)
-                );
-
-                if (isEnd || isRedirectEnd) {
-                    // console.log('isEnd || isRedirectEnd');
-                    await submitRankingAsync();
-                }
-            }
-
         } catch (error) {
             console.error('Error fetching Wikipedia content:', error);
         } finally {
@@ -339,6 +325,7 @@ export const useWikipedia = () => {
         goBack,
         dailyChallenge,
         isGameEnding,
+        submitRankingAsync,
     };
 };
 

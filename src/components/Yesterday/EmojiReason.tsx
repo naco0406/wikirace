@@ -21,7 +21,7 @@ interface Props {
 
 export const EmojiReason: React.FC<Props> = ({ isDialogOpen, setIsDialogOpen, statistics }) => {
     const linkleCount = calculateLinkleDayNumber();
-    const reason = statistics.shortestPath.reason;
+    const reason = statistics.shortestPath.path.at(-1) === statistics.endPage ? statistics.shortestPath.reason.slice(0, -1) : statistics.shortestPath.reason;
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="rounded-lg p-6 pt-8 max-w-sm max-h-[calc(100vh-4rem)] flex flex-col">

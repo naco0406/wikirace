@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   icons: {
     icon: '/Linkle.ico',
   },
+  manifest: '/manifest.json',
 };
 
 export const viewport: Viewport = {
@@ -48,7 +49,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className="font-sans">
+      <body className="font-sans bg-[#F3F7FF]">
         <EnvironmentProvider>
           <TimerProvider>
             {children}

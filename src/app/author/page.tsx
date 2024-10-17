@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Instagram, Figma, Flame, FileCode2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useScreenSize } from '@/hooks/useScreenSize';
 
 const BasicInfoCard = () => (
     <Card className="w-full bg-black text-white mb-4 rounded-[20px] border-black">
@@ -118,6 +119,7 @@ interface ReleaseProps {
     content: string;
 }
 const ReleaseHistory: ReleaseProps[] = [
+    { date: "2024.10.16", version: "1.1.1", content: "PWA 추가\nFavicon을 포함한 디자인 개선" },
     { date: "2024.10.13", version: "1.1.0", content: "어제의 기록 추가\n관리자 지속가능 개선 작업" },
     { date: "2024.09.19", version: "1.0.2", content: "정답 처리 로직 개선\n일일 순위 추가" },
     { date: "2024.09.19", version: "1.0.1", content: "자잘한 버그 수정" },
@@ -137,8 +139,11 @@ const Author = () => {
     const handleBack = useCallback(() => {
         router.push('/');
     }, [router]);
+
+    const { isMobile } = useScreenSize();
+
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen px-12 py-8 bg-black">
+        <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 bg-black">
             <header className="absolute top-0 left-0 items-center">
                 <div className="flex flex-row px-4 h-[80px] justify-between items-center">
                     <Button
@@ -157,9 +162,24 @@ const Author = () => {
                 <BasicInfoCard />
                 <CreditsAndFontsCard />
                 <UpdateHistoryCard />
-                <p className="text-sm text-center text-white">
-                    © 2024 <a href='https://github.com/naco0406' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Young Ko</a> & <a href='https://dribbble.com/lms00' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Minseo Lim</a>. All rights reserved.
-                </p>
+                <div className="flex flex-col items-center justify-center space-y-1">
+                    {isMobile ?
+                        <>
+                            <p className="text-sm text-center text-white">
+                                © 2024 <a href='https://github.com/naco0406' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Young Ko</a> & <a href='https://dribbble.com/lms00' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Minseo Lim</a>.
+                            </p>
+                            <p className="text-sm text-center text-white">
+                                All rights reserved.
+                            </p>
+                        </>
+                        :
+                        <>
+                            <p className="text-sm text-center text-white">
+                                © 2024 <a href='https://github.com/naco0406' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Young Ko</a> & <a href='https://dribbble.com/lms00' className="text-[#3366CC] cursor-pointer underline" target="_blank" rel="noopener noreferrer">Minseo Lim</a>. All rights reserved.
+                            </p>
+                        </>
+                    }
+                </div>
             </div>
         </div>
     );
